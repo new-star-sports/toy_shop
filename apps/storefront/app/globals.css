@@ -1,5 +1,9 @@
 @import "tailwindcss";
-@import "@nss/ui/globals.css";
+
+@source "../**/*.{ts,tsx}";
+@source "../../../packages/ui/components/**/*.{ts,tsx}";
+
+@import "../../../packages/ui/globals.css";
 
 @theme {
   /* ── NSS Brand Colors ── */

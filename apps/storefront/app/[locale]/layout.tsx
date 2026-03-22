@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Sans_Arabic, IBM_Plex_Mono } from "next/font/google";
 import "../globals.css";
+import Header from "../_components/header";
+import Footer from "../_components/footer";
+import MobileBottomNav from "../_components/mobile-bottom-nav";
+import type { Locale } from "@/lib/i18n";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -52,8 +56,11 @@ export default async function RootLayout({
       className={`${ibmPlexSans.variable} ${ibmPlexArabic.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-nss-surface font-sans antialiased">
-        {children}
+      <body className="min-h-screen bg-nss-surface font-sans antialiased flex flex-col pb-16 sm:pb-0">
+        <Header locale={locale as Locale} />
+        <main className="flex-1">{children}</main>
+        <Footer locale={locale as Locale} />
+        <MobileBottomNav locale={locale as Locale} />
       </body>
     </html>
   );

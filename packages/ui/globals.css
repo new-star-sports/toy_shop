@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Shared NSS styles (Tailwind base imported by consumer) */
+
 
 @layer base {
   :root {
@@ -43,7 +42,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-nss-border;
   }
 
   body {
