@@ -171,7 +171,7 @@ This rule appears as a checklist on every ticket. See Section 25 for the full ga
 | Vercel | Hosting, CDN, Edge Network, image optimisation | Day 1 |
 | MyFatoorah | Primary payment: KNET, Visa, MC, Apple Pay, KWD | Day 1 — 7-14 day approval |
 | Tap Payments | Secondary payment: international cards, backup | Week 1 |
-| Upstash Redis | Rate limiting, cart session cache | Week 1 |
+| Supabase pg_cron | Scheduled tasks: stock expiry, flash sales, best sellers, alerts | Day 1 |
 | Algolia | Instant search — Arabic stemming support | Week 1 |
 | Resend | Transactional emails — order confirm, shipping, welcome | Week 1 |
 | Sentry | Error tracking, both apps | Week 1 |
@@ -271,16 +271,12 @@ newstarsports/
 │   │   │       └── settings/
 │   │   └── middleware.ts              # RBAC route protection
 │   │
-│   └── api/                           # Edge API — webhooks, cron
+│   └── api/                           # Edge API — webhooks only
 │       └── app/api/
 │           ├── webhooks/myfatoorah/
 │           ├── webhooks/tap/
-│           ├── webhooks/supabase/
-│           └── cron/
-│               ├── revalidate-cache/
-│               ├── best-sellers/      # Refresh materialized view
-│               ├── expire-reservations/  # Release held stock
-│               └── flash-sale-check/  # Auto-start/end flash sales
+│           └── webhooks/supabase/
+│       # NOTE: All cron jobs run via Supabase pg_cron (see Section 5)
 │
 ├── packages/
 │   ├── ui/                            # All shared shadcn components
@@ -367,9 +363,26 @@ answers               -- Q&A answers
 settings              -- key-value store for all configurable settings
 audit_log             -- append-only, NO UPDATE, NO DELETE ever
 inventory_logs        -- every stock change: who, what, when, why
-best_sellers_weekly   -- materialized view, refreshed by cron hourly
-best_sellers_monthly  -- materialized view, refreshed by cron daily
+best_sellers_weekly   -- materialized view, refreshed by pg_cron hourly
+best_sellers_monthly  -- materialized view, refreshed by pg_cron daily
 ```
+
+### Supabase pg_cron — scheduled jobs
+
+All scheduled tasks run via Supabase's built-in `pg_cron` extension. No Vercel cron routes or external scheduler needed. Jobs are defined in database migrations so they are version-controlled and reviewed in PRs.
+
+| Job | Schedule | Type | Description |
+|---|---|---|---|
+| Refresh `best_sellers_weekly` | Every hour | Direct SQL | `REFRESH MATERIALIZED VIEW CONCURRENTLY best_sellers_weekly` |
+| Refresh `best_sellers_monthly` | Daily at 02:00 UTC | Direct SQL | `REFRESH MATERIALIZED VIEW CONCURRENTLY best_sellers_monthly` |
+| Expire stock reservations | Every 5 minutes | Direct SQL | `DELETE FROM stock_reservations WHERE expires_at < NOW()` |
+| Flash sale auto-start/end | Every minute | Edge Function | Check `flash_sales` table, activate/deactivate, call revalidate |
+| KUCAS certificate expiry | Daily at 00:00 UTC | Direct SQL | Auto-unpublish products with expired KUCAS certificates |
+| Abandoned cart recovery | Every hour | Edge Function → Resend | Email users with carts idle > 24h |
+| Low-stock alerts | Every hour | Edge Function → Resend | Email admin when stock falls below threshold |
+
+> **Limits:** Max 8 concurrent jobs, each under 10 minutes. Our 7 jobs fit comfortably.
+> **Observability:** Every job run is logged in `cron.job_run_details` — visible in Supabase dashboard.
 
 ### Critical: RLS policy on every table
 
@@ -398,7 +411,7 @@ CREATE TABLE stock_reservations (
   expires_at      TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '15 minutes'),
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
--- Cron job runs every 5 minutes to DELETE WHERE expires_at < NOW()
+-- pg_cron job runs every 5 minutes: DELETE FROM stock_reservations WHERE expires_at < NOW()
 ```
 
 ---
@@ -911,7 +924,7 @@ Ministry of Commerce and Industry — State of Kuwait
 | Change price | New price shown within 5 minutes | ISR 300s revalidation |
 | Stock → 0 | "Out of stock" shown, add-to-cart disabled | ISR + Supabase Realtime |
 | Activate flash sale | Flash sale section appears on home with countdown | `revalidateTag('home')` + Realtime |
-| End / expire flash sale | Section disappears, prices revert | Cron job `flash-sale-check` + revalidate |
+| End / expire flash sale | Section disappears, prices revert | pg_cron Edge Function + revalidate |
 | Enable announcement bar | Bar appears sitewide immediately | Settings cache invalidate |
 | Edit announcement bar text | New text visible on next page load | Settings cache invalidate |
 | Disable trust bar | Trust bar hidden immediately | Settings cache invalidate |
@@ -995,6 +1008,8 @@ Kuwait has no postcode system. Addresses use a structured format: Governorate �
 ## 12. Checkout Flow
 
 Multi-step. No step can be skipped. Each step validates before advancing.
+
+**Guest cart:** Stored in a signed encrypted cookie (set by Server Action). When a guest logs in or creates an account, the cart contents are automatically migrated to their Supabase profile. No Redis or external session store needed.
 
 ```
 Step 1: Address
@@ -1423,7 +1438,7 @@ xl:  1280px
 
 - [ ] JWT validation via Supabase session
 - [ ] RBAC route protection: all `/admin/*` routes check staff role
-- [ ] Rate limiting via Upstash Redis: 100 req/min per IP for API routes, 10 req/min for auth routes
+- [ ] Rate limiting via Vercel Pro edge rate limiting (middleware.ts): 100 req/min per IP for API routes, 10 req/min for auth routes — no Redis needed
 - [ ] Security headers set:
   - `Content-Security-Policy`
   - `X-Frame-Options: DENY`
@@ -1785,7 +1800,7 @@ Push notifications require opt-in permission — requested after first successfu
 - [ ] Instant search component (debounced 300ms)
 - [ ] Search results page with faceted filters
 - [ ] Cart: persistent for logged-in users (Supabase)
-- [ ] Cart: guest cart (Upstash Redis session, 30-day TTL)
+- [ ] Cart: guest cart (signed encrypted cookie, migrates to Supabase on login)
 - [ ] Cart slide-over drawer
 - [ ] Cart page (full view)
 - [ ] Quantity update in cart
@@ -1832,7 +1847,7 @@ Push notifications require opt-in permission — requested after first successfu
 - [ ] Idempotency key: transaction ID as unique key prevents duplicate orders
 - [ ] All order fields snapshotted (name, email, phone, address, product names, prices, SKU)
 - [ ] Stock soft-reservation (15 min) created when checkout starts
-- [ ] Reservation released if checkout abandoned after 15 min (cron)
+- [ ] Reservation released if checkout abandoned after 15 min (pg_cron every 5 min)
 - [ ] Order number generated by DB sequence: `NSS-YYYY-NNNNN`
 - [ ] Invoice number generated by DB sequence: `INV-YYYY-NNNNN`
 
@@ -1961,10 +1976,10 @@ Push notifications require opt-in permission — requested after first successfu
 
 **Flash sale**
 - [ ] Flash sale creator: set start/end, select products, set discount %
-- [ ] Scheduled activation (auto-starts at scheduled time via cron)
+- [ ] Scheduled activation (auto-starts at scheduled time via pg_cron Edge Function)
 - [ ] Flash sale appears on home page when active
 - [ ] Flash sale countdown live on home page
-- [ ] Flash sale ends → prices revert → section disappears (via cron + revalidate)
+- [ ] Flash sale ends → prices revert → section disappears (via pg_cron Edge Function + revalidate)
 
 **Coupons**
 - [ ] Create coupon: code, type (% or flat KWD), value

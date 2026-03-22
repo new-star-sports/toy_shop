@@ -37,16 +37,9 @@ export const envSchema = {
   NEXT_PUBLIC_POSTHOG_KEY: "PostHog project API key",
   NEXT_PUBLIC_POSTHOG_HOST: "PostHog host URL",
 
-  // ── Upstash Redis ──
-  UPSTASH_REDIS_REST_URL: "Upstash Redis REST URL",
-  UPSTASH_REDIS_REST_TOKEN: "Upstash Redis REST token",
-
   // ── App ──
   NEXT_PUBLIC_SITE_URL: "Public site URL",
   NEXT_PUBLIC_DEFAULT_LOCALE: "Default locale (ar or en)",
-
-  // ── Cron ──
-  CRON_SECRET: "Secret for cron endpoint authentication",
 } as const;
 
 /**
