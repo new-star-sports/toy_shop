@@ -1,0 +1,12 @@
+{
+  "name": "@nss/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./tsconfig/*": "./tsconfig/*",
+    "./eslint": "./eslint/index.js",
+    "./env": "./env/index.ts",
+    "./i18n/en": "./i18n/en.json",
+    "./i18n/ar": "./i18n/ar.json"
+  }
+}

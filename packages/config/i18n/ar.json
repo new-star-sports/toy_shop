@@ -1,0 +1,252 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "cart": "سلة التسوق",
+    "search": "بحث",
+    "wishlist": "المفضلة",
+    "account": "حسابي",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "categories": "الأقسام",
+    "brands": "العلامات التجارية",
+    "all_products": "جميع المنتجات",
+    "new_arrivals": "وصل حديثاً",
+    "sale": "تخفيضات",
+    "language_toggle": "English"
+  },
+  "home": {
+    "hero": {
+      "cta_primary": "تسوق الآن",
+      "cta_secondary": "عرض جميع التخفيضات"
+    },
+    "flash_sale": {
+      "title": "تخفيضات سريعة",
+      "ends_in": "تنتهي التخفيضات خلال",
+      "view_all": "عرض جميع منتجات التخفيضات"
+    },
+    "categories": {
+      "title": "تسوق حسب القسم",
+      "view_all": "عرض جميع الأقسام"
+    },
+    "new_arrivals": {
+      "title": "وصل حديثاً",
+      "view_all": "عرض جميع المنتجات الجديدة"
+    },
+    "brands": {
+      "title": "تسوق حسب العلامة التجارية"
+    },
+    "age_groups": {
+      "title": "تسوق حسب العمر"
+    },
+    "best_sellers": {
+      "title": "الأكثر مبيعاً",
+      "this_week": "هذا الأسبوع",
+      "this_month": "هذا الشهر",
+      "all_time": "كل الأوقات",
+      "rank": "الأكثر مبيعاً #{{rank}}",
+      "sold": "{{count}} بيعت هذا الأسبوع"
+    },
+    "reviews": {
+      "title": "آراء عملائنا",
+      "verified": "عملية شراء موثقة"
+    },
+    "blog": {
+      "title": "أدلة الهدايا والمقالات",
+      "read_time": "{{minutes}} دقائق للقراءة"
+    },
+    "loyalty": {
+      "title": "برنامج الولاء",
+      "earn": "اكسب نقاط",
+      "redeem": "استبدل المكافآت",
+      "birthday": "مكافأة عيد الميلاد",
+      "cta_guest": "أنشئ حساباً مجانياً",
+      "points_rate": "اكسب نقطة واحدة لكل {{amount}} د.ك تنفقها"
+    },
+    "newsletter": {
+      "title": "ابقَ على اطلاع",
+      "subtitle": "احصل على عروض حصرية وتنبيهات المنتجات الجديدة",
+      "placeholder": "أدخل بريدك الإلكتروني",
+      "subscribe": "اشترك",
+      "whatsapp_optin": "أرسل لي تحديثات عبر واتساب أيضاً",
+      "consent": "أوافق على سياسة الخصوصية",
+      "success": "تم الاشتراك! أهلاً بك.",
+      "duplicate": "أنت مشترك بالفعل!",
+      "incentive": "احصل على خصم {{discount}}% على طلبك الأول"
+    },
+    "trust_bar": {
+      "free_delivery": "توصيل مجاني للطلبات أعلى من {{threshold}} د.ك",
+      "genuine": "منتجات أصلية ومرخصة",
+      "returns": "إرجاع سهل خلال {{days}} يوم",
+      "all_kuwait": "توصيل لجميع مناطق الكويت"
+    }
+  },
+  "product": {
+    "add_to_cart": "أضف إلى السلة",
+    "added_to_cart": "تمت الإضافة إلى السلة",
+    "out_of_stock": "نفد من المخزون",
+    "only_x_left": "متبقي {{count}} فقط",
+    "new_badge": "جديد",
+    "sale_badge": "خصم {{percent}}%",
+    "age_range": "الأعمار {{min}}–{{max}}",
+    "age_from": "الأعمار {{min}}+",
+    "safety_warning": "تحذير السلامة",
+    "kucas_certified": "معتمد من هيئة السلامة الكويتية",
+    "country_of_origin": "بلد المنشأ",
+    "materials": "المواد",
+    "warranty": "ضمان {{months}} شهر",
+    "reviews_count": "{{count}} تقييم",
+    "no_reviews": "لا توجد تقييمات بعد",
+    "write_review": "اكتب تقييماً",
+    "related": "منتجات ذات صلة",
+    "description": "الوصف",
+    "specifications": "المواصفات",
+    "questions": "أسئلة وأجوبة",
+    "share": "مشاركة",
+    "wishlist_add": "أضف إلى المفضلة",
+    "wishlist_remove": "إزالة من المفضلة"
+  },
+  "cart": {
+    "title": "سلة التسوق",
+    "empty": "سلة التسوق فارغة",
+    "continue_shopping": "متابعة التسوق",
+    "subtotal": "المجموع الفرعي",
+    "shipping": "الشحن",
+    "total": "الإجمالي",
+    "checkout": "إتمام الشراء",
+    "remove": "إزالة",
+    "coupon_placeholder": "أدخل رمز الكوبون",
+    "coupon_apply": "تطبيق",
+    "coupon_applied": "تم تطبيق الكوبون: {{code}}",
+    "coupon_invalid": "رمز كوبون غير صالح",
+    "free_delivery_progress": "أضف {{amount}} د.ك للحصول على توصيل مجاني",
+    "free_delivery_achieved": "لقد حصلت على توصيل مجاني!",
+    "quantity": "الكمية"
+  },
+  "checkout": {
+    "title": "إتمام الشراء",
+    "step_address": "عنوان التوصيل",
+    "step_shipping": "طريقة الشحن",
+    "step_payment": "الدفع",
+    "step_review": "مراجعة وتأكيد الطلب",
+    "select_address": "اختر عنوان التوصيل",
+    "add_new_address": "إضافة عنوان جديد",
+    "standard_delivery": "توصيل عادي",
+    "express_delivery": "توصيل سريع",
+    "same_day": "توصيل في نفس اليوم",
+    "estimated": "يقدر بـ {{days}} أيام",
+    "free": "مجاني",
+    "payment_knet": "كي نت",
+    "payment_visa_mc": "فيزا / ماستركارد",
+    "payment_apple_pay": "أبل باي",
+    "payment_cod": "الدفع عند الاستلام",
+    "gift_wrap": "إضافة تغليف هدية",
+    "gift_message": "رسالة الهدية (اختياري)",
+    "place_order": "تأكيد الطلب",
+    "processing": "جارٍ المعالجة...",
+    "order_success": "تم تأكيد طلبك بنجاح!",
+    "order_number": "رقم الطلب",
+    "points_earned": "لقد حصلت على {{points}} نقطة ولاء"
+  },
+  "account": {
+    "title": "حسابي",
+    "profile": "الملف الشخصي",
+    "orders": "سجل الطلبات",
+    "addresses": {
+      "title": "عناويني",
+      "add": "إضافة عنوان",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "set_default": "تعيين كافتراضي",
+      "default_badge": "افتراضي",
+      "governorate": "المحافظة",
+      "area": "المنطقة",
+      "block": "القطعة",
+      "street": "الشارع",
+      "building": "المبنى / المنزل",
+      "floor": "الطابق",
+      "apartment": "الشقة",
+      "landmark": "علامة مميزة",
+      "landmark_hint": "مثال: بالقرب من سلطان سنتر",
+      "phone": "الهاتف",
+      "recipient_name": "اسم المستلم",
+      "type_home": "المنزل",
+      "type_work": "العمل",
+      "type_other": "أخرى",
+      "max_reached": "تم الوصول للحد الأقصى 10 عناوين"
+    },
+    "wishlist": "المفضلة",
+    "returns": "المرتجعات",
+    "loyalty": "نقاط الولاء",
+    "download_data": "تحميل بياناتي",
+    "delete_account": "حذف حسابي",
+    "change_password": "تغيير كلمة المرور"
+  },
+  "auth": {
+    "login_title": "تسجيل الدخول",
+    "register_title": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "full_name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "reset_password": "إعادة تعيين كلمة المرور",
+    "or_continue_with": "أو المتابعة عبر",
+    "google": "جوجل",
+    "consent_marketing": "أرغب في استقبال رسائل ترويجية",
+    "consent_privacy": "أوافق على سياسة الخصوصية وشروط الخدمة",
+    "already_have_account": "لديك حساب بالفعل؟ سجّل الدخول",
+    "no_account": "ليس لديك حساب؟ سجّل الآن"
+  },
+  "order": {
+    "status_pending": "قيد الانتظار",
+    "status_confirmed": "مؤكد",
+    "status_processing": "قيد التجهيز",
+    "status_shipped": "تم الشحن",
+    "status_delivered": "تم التوصيل",
+    "status_cancelled": "ملغي",
+    "status_refunded": "مسترد",
+    "tracking": "رقم التتبع",
+    "invoice": "تحميل الفاتورة"
+  },
+  "legal": {
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "returns_policy": "سياسة الإرجاع",
+    "delivery_info": "معلومات التوصيل",
+    "cookie_policy": "سياسة ملفات تعريف الارتباط"
+  },
+  "footer": {
+    "tagline": "وجهتك للألعاب في الكويت",
+    "shop": "تسوق",
+    "help": "المساعدة",
+    "legal": "قانوني",
+    "copyright": "© {{year}} نيو ستار سبورتس. جميع الحقوق محفوظة.",
+    "cr_number": "رقم السجل التجاري: {{number}}",
+    "moci": "وزارة التجارة والصناعة — دولة الكويت"
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ ما",
+    "retry": "حاول مرة أخرى",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "view_all": "عرض الكل",
+    "kwd": "د.ك",
+    "offline": "أنت غير متصل بالإنترنت",
+    "offline_checkout": "اتصل بالإنترنت لإتمام طلبك"
+  },
+  "governorates": {
+    "capital": "العاصمة",
+    "hawalli": "حولي",
+    "farwaniya": "الفروانية",
+    "ahmadi": "الأحمدي",
+    "jahra": "الجهراء",
+    "mubarak_al_kabeer": "مبارك الكبير"
+  }
+}

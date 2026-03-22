@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "@nss/ui/globals.css";
+
+@theme {
+  --color-nss-primary: #1B3A6B;
+  --color-nss-accent: #FF6B2B;
+  --color-nss-gold: #FFD700;
+  --color-nss-surface: #F8F7F4;
+  --color-nss-card: #FFFFFF;
+  --color-nss-text-primary: #1A1A2E;
+  --color-nss-text-secondary: #6B6B80;
+  --color-nss-success: #16A34A;
+  --color-nss-danger: #DC2626;
+  --color-nss-border: #E5E2DA;
+}

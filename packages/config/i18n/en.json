@@ -1,0 +1,252 @@
+{
+  "nav": {
+    "home": "Home",
+    "cart": "Cart",
+    "search": "Search",
+    "wishlist": "Wishlist",
+    "account": "Account",
+    "login": "Login",
+    "register": "Create Account",
+    "logout": "Logout",
+    "categories": "Categories",
+    "brands": "Brands",
+    "all_products": "All Products",
+    "new_arrivals": "New Arrivals",
+    "sale": "Sale",
+    "language_toggle": "عربي"
+  },
+  "home": {
+    "hero": {
+      "cta_primary": "Shop Now",
+      "cta_secondary": "View All Sale"
+    },
+    "flash_sale": {
+      "title": "Flash Sale",
+      "ends_in": "Sale ends in",
+      "view_all": "View all sale items"
+    },
+    "categories": {
+      "title": "Shop by Category",
+      "view_all": "View All Categories"
+    },
+    "new_arrivals": {
+      "title": "New Arrivals",
+      "view_all": "View All New Arrivals"
+    },
+    "brands": {
+      "title": "Shop by Brand"
+    },
+    "age_groups": {
+      "title": "Shop by Age"
+    },
+    "best_sellers": {
+      "title": "Best Sellers",
+      "this_week": "This Week",
+      "this_month": "This Month",
+      "all_time": "All Time",
+      "rank": "#{{rank}} Best Seller",
+      "sold": "{{count}} sold this week"
+    },
+    "reviews": {
+      "title": "What Our Customers Say",
+      "verified": "Verified Purchase"
+    },
+    "blog": {
+      "title": "Gift Guides & Articles",
+      "read_time": "{{minutes}} min read"
+    },
+    "loyalty": {
+      "title": "Loyalty Programme",
+      "earn": "Earn Points",
+      "redeem": "Redeem Rewards",
+      "birthday": "Birthday Reward",
+      "cta_guest": "Create Free Account",
+      "points_rate": "Earn 1 point per {{amount}} KD spent"
+    },
+    "newsletter": {
+      "title": "Stay in the Loop",
+      "subtitle": "Get exclusive deals and new arrival alerts",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe",
+      "whatsapp_optin": "Also send me WhatsApp updates",
+      "consent": "I agree to the privacy policy",
+      "success": "You're subscribed! Welcome aboard.",
+      "duplicate": "You're already subscribed!",
+      "incentive": "Get {{discount}}% off your first order"
+    },
+    "trust_bar": {
+      "free_delivery": "Free delivery above {{threshold}} KD",
+      "genuine": "Genuine Licensed Products",
+      "returns": "{{days}}-Day Easy Returns",
+      "all_kuwait": "Delivery Across All Kuwait"
+    }
+  },
+  "product": {
+    "add_to_cart": "Add to Cart",
+    "added_to_cart": "Added to Cart",
+    "out_of_stock": "Out of Stock",
+    "only_x_left": "Only {{count}} left",
+    "new_badge": "New",
+    "sale_badge": "{{percent}}% Off",
+    "age_range": "Ages {{min}}–{{max}}",
+    "age_from": "Ages {{min}}+",
+    "safety_warning": "Safety Warning",
+    "kucas_certified": "Kuwait Safety Certified",
+    "country_of_origin": "Country of Origin",
+    "materials": "Materials",
+    "warranty": "{{months}}-Month Warranty",
+    "reviews_count": "{{count}} Reviews",
+    "no_reviews": "No reviews yet",
+    "write_review": "Write a Review",
+    "related": "Related Products",
+    "description": "Description",
+    "specifications": "Specifications",
+    "questions": "Questions & Answers",
+    "share": "Share",
+    "wishlist_add": "Add to Wishlist",
+    "wishlist_remove": "Remove from Wishlist"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "remove": "Remove",
+    "coupon_placeholder": "Enter coupon code",
+    "coupon_apply": "Apply",
+    "coupon_applied": "Coupon applied: {{code}}",
+    "coupon_invalid": "Invalid coupon code",
+    "free_delivery_progress": "Add {{amount}} KD more for free delivery",
+    "free_delivery_achieved": "You qualify for free delivery!",
+    "quantity": "Qty"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "step_address": "Delivery Address",
+    "step_shipping": "Shipping Method",
+    "step_payment": "Payment",
+    "step_review": "Review & Place Order",
+    "select_address": "Select a delivery address",
+    "add_new_address": "Add New Address",
+    "standard_delivery": "Standard Delivery",
+    "express_delivery": "Express Delivery",
+    "same_day": "Same Day Delivery",
+    "estimated": "Estimated {{days}} days",
+    "free": "Free",
+    "payment_knet": "KNET",
+    "payment_visa_mc": "Visa / Mastercard",
+    "payment_apple_pay": "Apple Pay",
+    "payment_cod": "Cash on Delivery",
+    "gift_wrap": "Add Gift Wrapping",
+    "gift_message": "Gift message (optional)",
+    "place_order": "Place Order",
+    "processing": "Processing...",
+    "order_success": "Order Placed Successfully!",
+    "order_number": "Order Number",
+    "points_earned": "You earned {{points}} loyalty points"
+  },
+  "account": {
+    "title": "My Account",
+    "profile": "Profile",
+    "orders": "Order History",
+    "addresses": {
+      "title": "My Addresses",
+      "add": "Add Address",
+      "edit": "Edit",
+      "delete": "Delete",
+      "set_default": "Set as Default",
+      "default_badge": "Default",
+      "governorate": "Governorate",
+      "area": "Area",
+      "block": "Block",
+      "street": "Street",
+      "building": "Building / House",
+      "floor": "Floor",
+      "apartment": "Apartment",
+      "landmark": "Landmark",
+      "landmark_hint": "e.g. Near Sultan Center",
+      "phone": "Phone",
+      "recipient_name": "Recipient Name",
+      "type_home": "Home",
+      "type_work": "Work",
+      "type_other": "Other",
+      "max_reached": "Maximum 10 addresses reached"
+    },
+    "wishlist": "Wishlist",
+    "returns": "Returns",
+    "loyalty": "Loyalty Points",
+    "download_data": "Download My Data",
+    "delete_account": "Delete My Account",
+    "change_password": "Change Password"
+  },
+  "auth": {
+    "login_title": "Login",
+    "register_title": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "full_name": "Full Name",
+    "phone": "Phone Number",
+    "forgot_password": "Forgot Password?",
+    "reset_password": "Reset Password",
+    "or_continue_with": "Or continue with",
+    "google": "Google",
+    "consent_marketing": "I'd like to receive promotional emails",
+    "consent_privacy": "I agree to the Privacy Policy and Terms of Service",
+    "already_have_account": "Already have an account? Login",
+    "no_account": "Don't have an account? Register"
+  },
+  "order": {
+    "status_pending": "Pending",
+    "status_confirmed": "Confirmed",
+    "status_processing": "Processing",
+    "status_shipped": "Shipped",
+    "status_delivered": "Delivered",
+    "status_cancelled": "Cancelled",
+    "status_refunded": "Refunded",
+    "tracking": "Tracking Number",
+    "invoice": "Download Invoice"
+  },
+  "legal": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "returns_policy": "Returns Policy",
+    "delivery_info": "Delivery Information",
+    "cookie_policy": "Cookie Policy"
+  },
+  "footer": {
+    "tagline": "Kuwait's home for toys",
+    "shop": "Shop",
+    "help": "Help",
+    "legal": "Legal",
+    "copyright": "© {{year}} NewStarSports. All rights reserved.",
+    "cr_number": "Commercial Registration No: {{number}}",
+    "moci": "Ministry of Commerce and Industry — State of Kuwait"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "view_all": "View All",
+    "kwd": "KD",
+    "offline": "You're offline",
+    "offline_checkout": "Connect to the internet to place your order"
+  },
+  "governorates": {
+    "capital": "Capital",
+    "hawalli": "Hawalli",
+    "farwaniya": "Farwaniya",
+    "ahmadi": "Ahmadi",
+    "jahra": "Jahra",
+    "mubarak_al_kabeer": "Mubarak Al-Kabeer"
+  }
+}

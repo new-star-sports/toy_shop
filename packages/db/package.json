@@ -1,0 +1,17 @@
+{
+  "name": "@nss/db",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./client": "./client.ts",
+    "./types": "./types.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/ssr": "^0.6.1"
+  },
+  "devDependencies": {
+    "@nss/config": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}

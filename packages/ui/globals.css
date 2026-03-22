@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── NSS Design Tokens (CSS Custom Properties) ──────── */
+    --nss-primary: #1B3A6B;
+    --nss-accent: #FF6B2B;
+    --nss-gold: #FFD700;
+    --nss-surface: #F8F7F4;
+    --nss-card: #FFFFFF;
+    --nss-text-primary: #1A1A2E;
+    --nss-text-secondary: #6B6B80;
+    --nss-success: #16A34A;
+    --nss-danger: #DC2626;
+    --nss-border: #E5E2DA;
+    --nss-overlay: rgba(27, 58, 107, 0.6);
+
+    /* ── shadcn/ui semantic tokens (HSL) ────────────────── */
+    --background: 40 17% 97%;
+    --foreground: 240 27% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 27% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 27% 13%;
+    --primary: 216 58% 26%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 24 100% 58%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 40 14% 93%;
+    --muted-foreground: 240 5% 46%;
+    --accent: 24 100% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 37 14% 87%;
+    --input: 37 14% 87%;
+    --ring: 216 58% 26%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-nss-surface text-nss-text-primary;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Numbers always LTR — even in RTL context */
+  .ltr-nums {
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+
+  /* Touch targets minimum 44×44px */
+  button,
+  a,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@nss/storefront",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@nss/ui": "workspace:*",
+    "@nss/db": "workspace:*",
+    "@nss/auth": "workspace:*",
+    "@nss/validators": "workspace:*",
+    "@nss/config": "workspace:*",
+    "zustand": "^5.0.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "tailwindcss": "^4.0.14",
+    "@tailwindcss/postcss": "^4.0.14",
+    "postcss": "^8.5.3"
+  }
+}

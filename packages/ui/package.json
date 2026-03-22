@@ -1,0 +1,22 @@
+{
+  "name": "@nss/ui",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": ["**/*.css"],
+  "exports": {
+    "./globals.css": "./globals.css",
+    "./lib/utils": "./lib/utils.ts",
+    "./components/*": "./components/*.tsx",
+    "./tailwind.config": "./tailwind.config.ts"
+  },
+  "devDependencies": {
+    "@nss/config": "workspace:*",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0",
+    "class-variance-authority": "^0.7.1",
+    "@radix-ui/react-slot": "^1.1.1"
+  }
+}

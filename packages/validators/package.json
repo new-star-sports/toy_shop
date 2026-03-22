@@ -1,0 +1,19 @@
+{
+  "name": "@nss/validators",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./product": "./product.ts",
+    "./order": "./order.ts",
+    "./address": "./address.ts",
+    "./checkout": "./checkout.ts",
+    "./settings": "./settings.ts"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@nss/config": "workspace:*",
+    "typescript": "^5.7.3"
+  }
+}
