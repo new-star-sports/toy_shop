@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
+    ".": "./index.ts",
     "./client": "./client.ts",
-    "./types": "./types.ts"
+    "./types": "./types.ts",
+    "./queries": "./queries/index.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
