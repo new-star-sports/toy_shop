@@ -1,12 +1,21 @@
 import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
+import { SearchBar } from "./search-bar";
+import { CartButton } from "./cart-button";
 
 interface HeaderProps {
   locale: Locale;
+  user?: {
+    email?: string;
+    user_metadata?: {
+      full_name?: string;
+    };
+  } | null;
 }
 
-export default function Header({ locale }: HeaderProps) {
+export default function Header({ locale, user }: HeaderProps) {
   const isAr = locale === "ar";
+  const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0];
 
   return (
     <header className="sticky top-0 z-50">
@@ -35,21 +44,7 @@ export default function Header({ locale }: HeaderProps) {
 
             {/* Search Bar */}
             <div className="flex-1 max-w-xl mx-4 hidden md:block">
-              <div className="relative">
-                <input
-                  type="search"
-                  placeholder={isAr ? "ابحث عن ألعاب..." : "Search for toys..."}
-                  className="w-full h-10 pl-10 rtl:pr-10 rtl:pl-4 pr-4 rounded-full border border-nss-border bg-nss-surface text-sm focus:outline-none focus:ring-2 focus:ring-nss-primary/20 focus:border-nss-primary transition-all"
-                />
-                <svg
-                  className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 w-4 h-4 text-nss-text-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+              <SearchBar locale={locale} />
             </div>
 
             {/* Right Actions */}
@@ -74,29 +69,33 @@ export default function Header({ locale }: HeaderProps) {
               </Link>
 
               {/* Cart */}
-              <Link
-                href={`/${locale}/cart`}
-                className="relative p-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
-                aria-label={isAr ? "السلة" : "Cart"}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span className="absolute -top-0.5 -right-0.5 rtl:-left-0.5 rtl:right-auto w-4 h-4 rounded-full bg-nss-accent text-white text-[10px] flex items-center justify-center font-bold">
-                  0
-                </span>
-              </Link>
+              <CartButton locale={locale} />
 
               {/* Account */}
-              <Link
-                href={`/${locale}/login`}
-                className="p-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
-                aria-label={isAr ? "الحساب" : "Account"}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </Link>
+              {user ? (
+                <Link
+                  href={`/${locale}/account/profile`}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
+                  aria-label={isAr ? "الحساب" : "Account"}
+                >
+                  <div className="w-8 h-8 rounded-full bg-nss-primary/10 flex items-center justify-center text-nss-primary font-bold text-xs">
+                    {userDisplayName?.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden lg:block text-xs font-medium max-w-[100px] truncate">
+                    {userDisplayName}
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  href={`/${locale}/login`}
+                  className="p-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
+                  aria-label={isAr ? "تسجيل الدخول" : "Login"}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </Link>
+              )}
             </div>
           </div>
         </div>

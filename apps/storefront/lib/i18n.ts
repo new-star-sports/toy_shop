@@ -21,6 +21,8 @@ export function formatKWD(amount: number, locale: Locale = "en"): string {
   return `KD ${amount.toFixed(3)}`;
 }
 
+export const formatCurrency = formatKWD;
+
 /** Get discount percentage between compare and sale price */
 export function getDiscountPercent(price: number, compareAt: number | null): number | null {
   if (!compareAt || compareAt <= price) return null;

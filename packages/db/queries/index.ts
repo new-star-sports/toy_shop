@@ -17,3 +17,16 @@ export type {
   LoyaltySettings,
   PaymentMethodSettings,
 } from "./settings";
+
+export {
+  getUserAddresses,
+  getAddressById,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  getGovernorates,
+  getAreasByGovernorate,
+  unsetOtherDefaultAddresses,
+} from "./addresses";
+
+export { getOrderByNumber, getUserOrders, getOrderDetails } from "./orders";

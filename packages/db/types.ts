@@ -248,6 +248,24 @@ export interface OrderItem {
   created_at: string;
 }
 
+export interface OrderTimeline {
+  id: string;
+  order_id: string;
+  status: OrderStatus;
+  note: string | null;
+  changed_by: string | null;
+  created_at: string;
+}
+
+export interface StockReservation {
+  id: string;
+  variant_id: string;
+  quantity: number;
+  session_id: string;
+  expires_at: string;
+  created_at: string;
+}
+
 export interface Banner {
   id: string;
   banner_type: BannerType;
@@ -328,24 +346,44 @@ export interface Coupon {
 export interface Database {
   public: {
     Tables: {
-      profiles: { Row: Profile };
-      staff_members: { Row: StaffMember };
-      categories: { Row: Category };
-      brands: { Row: Brand };
-      products: { Row: Product };
-      product_variants: { Row: ProductVariant };
-      product_images: { Row: ProductImage };
-      tags: { Row: Tag };
-      governorates: { Row: Governorate };
-      areas: { Row: Area };
-      addresses: { Row: Address };
-      orders: { Row: Order };
-      order_items: { Row: OrderItem };
-      banners: { Row: Banner };
-      reviews: { Row: Review };
-      settings: { Row: Setting };
-      wishlist_items: { Row: WishlistItem };
-      coupons: { Row: Coupon };
+      profiles: { Row: Profile; Insert: Partial<Profile>; Update: Partial<Profile> };
+      staff_members: { Row: StaffMember; Insert: Partial<StaffMember>; Update: Partial<StaffMember> };
+      categories: { Row: Category; Insert: Partial<Category>; Update: Partial<Category> };
+      brands: { Row: Brand; Insert: Partial<Brand>; Update: Partial<Brand> };
+      products: { Row: Product; Insert: Partial<Product>; Update: Partial<Product> };
+      product_variants: { Row: ProductVariant; Insert: Partial<ProductVariant>; Update: Partial<ProductVariant> };
+      product_images: { Row: ProductImage; Insert: Partial<ProductImage>; Update: Partial<ProductImage> };
+      tags: { Row: Tag; Insert: Partial<Tag>; Update: Partial<Tag> };
+      governorates: { Row: Governorate; Insert: Partial<Governorate>; Update: Partial<Governorate> };
+      areas: { Row: Area; Insert: Partial<Area>; Update: Partial<Area> };
+      addresses: { Row: Address; Insert: Partial<Address>; Update: Partial<Address> };
+      orders: { Row: Order; Insert: Partial<Order>; Update: Partial<Order> };
+      order_items: { Row: OrderItem; Insert: Partial<OrderItem>; Update: Partial<OrderItem> };
+      order_timeline: { Row: OrderTimeline; Insert: Partial<OrderTimeline>; Update: Partial<OrderTimeline> };
+      stock_reservations: { Row: StockReservation; Insert: Partial<StockReservation>; Update: Partial<StockReservation> };
+      banners: { Row: Banner; Insert: Partial<Banner>; Update: Partial<Banner> };
+      reviews: { Row: Review; Insert: Partial<Review>; Update: Partial<Review> };
+      settings: { Row: Setting; Insert: Partial<Setting>; Update: Partial<Setting> };
+      wishlist_items: { Row: WishlistItem; Insert: Partial<WishlistItem>; Update: Partial<WishlistItem> };
+      coupons: { Row: Coupon; Insert: Partial<Coupon>; Update: Partial<Coupon> };
+    };
+    Functions: {
+      decrement_stock: {
+        Args: {
+          p_variant_id: string;
+          p_quantity: number;
+        };
+        Returns: boolean;
+      };
+      generate_order_number: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+    };
+    Enums: {
+      order_status: OrderStatus;
+      payment_status: PaymentStatus;
+      address_type: AddressType;
     };
   };
 }

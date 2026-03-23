@@ -4,6 +4,8 @@ import "../globals.css";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
 import MobileBottomNav from "../_components/mobile-bottom-nav";
+import { CartDrawer } from "./_components/cart/cart-drawer";
+import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/i18n";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -49,6 +51,9 @@ export default async function RootLayout({
   const { locale } = await params;
   const dir = locale === "ar" ? "rtl" : "ltr";
 
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <html
       lang={locale}
@@ -57,10 +62,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-nss-surface font-sans antialiased flex flex-col pb-16 sm:pb-0">
-        <Header locale={locale as Locale} />
+        <Header locale={locale as Locale} user={user} />
         <main className="flex-1">{children}</main>
         <Footer locale={locale as Locale} />
         <MobileBottomNav locale={locale as Locale} />
+        <CartDrawer locale={locale as Locale} />
       </body>
     </html>
   );

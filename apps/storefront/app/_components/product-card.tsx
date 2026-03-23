@@ -19,7 +19,7 @@ export default function ProductCardComponent({ product, locale }: ProductCardCom
 
   return (
     <Link
-      href={`/${locale}/products/${product.slug}`}
+      href={`/${locale}/product/${product.slug}`}
       className="group block bg-nss-card rounded-2xl border border-nss-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-nss-primary/5 hover:-translate-y-0.5"
     >
       {/* Image Container */}
