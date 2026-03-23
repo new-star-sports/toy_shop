@@ -1,4 +1,5 @@
 import { getProducts, getCategoryBySlug, getFeaturedBrands } from "@nss/db/queries";
+import { getActiveFlashSale } from "@/lib/marketing";
 import { notFound } from "next/navigation";
 import ProductCardComponent from "../../../_components/product-card";
 import { ProductFilters } from "../../_components/catalog/product-filters";
@@ -39,7 +40,10 @@ export default async function CategoryPage({
     page: sParams.page ? parseInt(sParams.page) : 1,
   };
 
-  const { data: products, count } = await getProducts(filters);
+  const [{ data: products, count }, activeFlashSale] = await Promise.all([
+    getProducts(filters),
+    getActiveFlashSale(),
+  ]);
 
   const breadcrumbItems = [
     { 
@@ -91,6 +95,7 @@ export default async function CategoryPage({
                   key={product.id} 
                   product={product} 
                   locale={locale} 
+                  flashSaleActive={!!activeFlashSale}
                 />
               ))}
             </div>

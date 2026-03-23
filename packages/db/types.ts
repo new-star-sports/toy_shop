@@ -379,6 +379,12 @@ export interface Database {
         Args: Record<string, never>;
         Returns: string;
       };
+      increment_coupon_usage: {
+        Args: {
+          p_coupon_id: string;
+        };
+        Returns: void;
+      };
     };
     Enums: {
       order_status: OrderStatus;

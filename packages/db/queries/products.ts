@@ -242,3 +242,135 @@ export async function getHomepageFeatured(limit = 8): Promise<ProductCard[]> {
     };
   });
 }
+
+/** Admin: Fetch all products with pagination, search, and status filter */
+export async function getAdminProducts(options?: {
+  page?: number;
+  perPage?: number;
+  status?: Product["status"];
+  categorySlug?: string;
+  search?: string;
+}): Promise<{ data: ProductWithRelations[]; count: number }> {
+  const supabase = createServiceClient();
+  const page = options?.page ?? 1;
+  const perPage = options?.perPage ?? 20;
+  const from = (page - 1) * perPage;
+  const to = from + perPage - 1;
+
+  let query = supabase
+    .from("products")
+    .select(`
+      *,
+      brands ( name_en, name_ar, slug ),
+      categories ( name_en, name_ar, slug ),
+      product_images ( * ),
+      product_variants ( * ),
+      reviews ( rating )
+    `, { count: "exact" })
+    .range(from, to)
+    .order("created_at", { ascending: false });
+
+  if (options?.status) {
+    query = query.eq("status", options.status);
+  }
+
+  if (options?.categorySlug) {
+    query = query.eq("categories.slug", options.categorySlug);
+  }
+
+  if (options?.search) {
+    query = query.or(`name_en.ilike.%${options.search}%,name_ar.ilike.%${options.search}%,sku.ilike.%${options.search}%`);
+  }
+
+  const { data, count, error } = await query;
+  if (error) throw error;
+
+  const products: ProductWithRelations[] = (data ?? []).map((p: any) => {
+    const reviews = (p.reviews as { rating: number }[]) ?? [];
+    const avgRating = reviews.length > 0
+      ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10) / 10
+      : null;
+
+    return {
+      ...p,
+      images: (p.product_images ?? []).sort((a: any, b: any) => a.display_order - b.display_order),
+      variants: (p.product_variants ?? []).sort((a: any, b: any) => a.display_order - b.display_order),
+      category: p.categories,
+      brand: p.brands,
+      avg_rating: avgRating,
+      review_count: reviews.length,
+    };
+  });
+
+  return { data: products, count: count ?? 0 };
+}
+
+/** Admin: Fetch a single product by ID with all relations */
+export async function getAdminProductById(id: string): Promise<ProductWithRelations | null> {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      *,
+      product_images ( * ),
+      product_variants ( * ),
+      brands ( * ),
+      categories ( * ),
+      reviews ( rating )
+    `)
+    .eq("id", id)
+    .single();
+
+  if (error || !data) return null;
+
+  const p = data as any;
+  const reviews = (p.reviews as { rating: number }[]) ?? [];
+  const avgRating = reviews.length > 0
+    ? Math.round((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10) / 10
+    : null;
+
+  return {
+    ...p,
+    images: (p.product_images ?? []).sort((a: any, b: any) => a.display_order - b.display_order),
+    variants: (p.product_variants ?? []).sort((a: any, b: any) => a.display_order - b.display_order),
+    category: p.categories,
+    brand: p.brands,
+    avg_rating: avgRating,
+    review_count: reviews.length,
+  };
+}
+
+/**
+ * Admin: Update stock quantity for a product or variant
+ */
+export async function updateStock(
+  id: string,
+  type: "product" | "variant",
+  quantity: number
+): Promise<void> {
+  const supabase = createServiceClient();
+
+  if (type === "product") {
+    const { error } = await supabase
+      .from("products" as any)
+      .update({ stock_quantity: quantity } as any)
+      .eq("id", id);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from("product_variants" as any)
+      .update({ stock_quantity: quantity } as any)
+      .eq("id", id);
+    if (error) throw error;
+  }
+}
+
+/**
+ * Update a product's details
+ */
+export async function updateProduct(id: string, data: any): Promise<void> {
+  const supabase = createServiceClient();
+  const { error } = await supabase.from("products" as any).update(data as any).eq("id", id);
+  if (error) throw error;
+}

@@ -10,22 +10,27 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@nss/auth": "workspace:*",
+    "@nss/config": "workspace:*",
+    "@nss/db": "workspace:*",
+    "@nss/ui": "workspace:*",
+    "@nss/validators": "workspace:*",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.577.0",
     "next": "^15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@nss/ui": "workspace:*",
-    "@nss/db": "workspace:*",
-    "@nss/auth": "workspace:*",
-    "@nss/validators": "workspace:*",
-    "@nss/config": "workspace:*",
+    "react-hook-form": "^7.72.0",
+    "sonner": "^2.0.7",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "typescript": "^5.7.3",
+    "@tailwindcss/postcss": "^4.0.14",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "postcss": "^8.5.3",
     "tailwindcss": "^4.0.14",
-    "@tailwindcss/postcss": "^4.0.14",
-    "postcss": "^8.5.3"
+    "typescript": "^5.7.3"
   }
 }

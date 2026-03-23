@@ -14,9 +14,10 @@ import type { Locale } from "@/lib/i18n";
 interface ProductDetailProps {
   product: ProductWithRelations;
   locale: Locale;
+  flashSaleActive?: boolean;
 }
 
-export function ProductDetail({ product, locale }: ProductDetailProps) {
+export function ProductDetail({ product, locale, flashSaleActive = false }: ProductDetailProps) {
   const isAr = locale === "ar";
   const [selectedVariant, setSelectedVariant] = useState(
     product.variants.length > 0 ? product.variants[0] : null
@@ -37,15 +38,24 @@ export function ProductDetail({ product, locale }: ProductDetailProps) {
       brandAr: product.brand?.name_ar,
       sku: selectedVariant?.sku || product.sku || "",
       image: product.images[0]?.url || null,
-      price: price,
-      compareAtPrice: compareAtPrice || null,
+      price: finalPrice,
+      compareAtPrice: finalComparePrice || null,
       stockQuantity: currentStock,
     }, 1);
   };
 
-  const price = selectedVariant?.price_override_kwd ?? product.price_kwd;
-  const compareAtPrice = selectedVariant?.compare_at_price_kwd || product.compare_at_price_kwd;
-  const discount = compareAtPrice ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100) : 0;
+  const basePrice = selectedVariant?.price_override_kwd ?? product.price_kwd;
+  const baseCompareAtPrice = selectedVariant?.compare_at_price_kwd || product.compare_at_price_kwd;
+  
+  const hasFlashSale = flashSaleActive && product.include_in_flash_sale;
+  const flashSaleDiscount = product.flash_sale_discount_percent || 0;
+  
+  const finalPrice = hasFlashSale 
+    ? basePrice * (1 - flashSaleDiscount / 100)
+    : basePrice;
+    
+  const finalComparePrice = hasFlashSale ? basePrice : baseCompareAtPrice;
+  const discount = finalComparePrice ? Math.round(((finalComparePrice - finalPrice) / finalComparePrice) * 100) : 0;
   
   const currentStock = selectedVariant?.stock_quantity ?? product.stock_quantity;
   const isOutOfStock = currentStock <= 0;
@@ -86,9 +96,16 @@ export function ProductDetail({ product, locale }: ProductDetailProps) {
                 {isAr ? product.brand.name_ar : product.brand.name_en}
               </Link>
             )}
-            <h1 className="text-3xl md:text-4xl font-bold text-nss-text-primary leading-tight">
-              {isAr ? product.name_ar : product.name_en}
-            </h1>
+            <div className="flex flex-wrap gap-2">
+              <h1 className="text-3xl md:text-4xl font-bold text-nss-text-primary leading-tight">
+                {isAr ? product.name_ar : product.name_en}
+              </h1>
+              {hasFlashSale && (
+                <Badge className="bg-nss-danger hover:bg-nss-danger text-white border-none animate-pulse">
+                  ⚡ {isAr ? "عرض بطل" : "FLASH SALE"}
+                </Badge>
+              )}
+            </div>
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1 text-yellow-500">
@@ -113,15 +130,15 @@ export function ProductDetail({ product, locale }: ProductDetailProps) {
 
           <div className="space-y-4 bg-nss-surface p-6 rounded-3xl border border-nss-border/30">
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-nss-primary">
-                {price.toFixed(3)} {isAr ? "د.ك" : "KWD"}
+              <span className={`text-3xl font-bold ${hasFlashSale ? 'text-nss-danger' : 'text-nss-primary'}`}>
+                {finalPrice.toFixed(3)} {isAr ? "د.ك" : "KWD"}
               </span>
-              {compareAtPrice && (
+              {finalComparePrice && finalComparePrice > finalPrice && (
                 <>
                   <span className="text-lg text-nss-text-secondary line-through">
-                    {compareAtPrice.toFixed(3)}
+                    {finalComparePrice.toFixed(3)}
                   </span>
-                  <Badge className="bg-red-500 hover:bg-red-600 text-white border-none">
+                  <Badge className="bg-nss-accent hover:bg-nss-accent text-white border-none">
                     -{discount}%
                   </Badge>
                 </>

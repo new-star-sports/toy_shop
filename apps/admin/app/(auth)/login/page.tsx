@@ -1,4 +1,4 @@
-import { Button } from "@nss/ui/components/button";
+import { LoginForm } from "./_components/login-form";
 
 export default function AdminLoginPage() {
   return (
@@ -13,34 +13,7 @@ export default function AdminLoginPage() {
           <p className="text-sm text-nss-text-secondary mt-1">Sign in to your dashboard</p>
         </div>
 
-        {/* Login form placeholder */}
-        <form className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-nss-text-primary mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="admin@newstarsports.com"
-              className="w-full rounded-md border border-nss-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-nss-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-nss-text-primary mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="w-full rounded-md border border-nss-border bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-nss-primary"
-            />
-          </div>
-          <Button type="submit" className="w-full" size="lg">
-            Sign In
-          </Button>
-        </form>
+        <LoginForm />
       </div>
     </main>
   );

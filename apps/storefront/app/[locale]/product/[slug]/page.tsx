@@ -1,4 +1,5 @@
 import { getProductBySlug } from "@nss/db/queries";
+import { getActiveFlashSale } from "@/lib/marketing";
 import { notFound } from "next/navigation";
 import { ProductDetail } from "../../_components/catalog/product-detail";
 import type { Locale } from "@/lib/i18n";
@@ -10,11 +11,14 @@ export default async function ProductPage({
 }) {
   const { locale, slug } = await params;
   
-  const product = await getProductBySlug(slug);
+  const [product, activeFlashSale] = await Promise.all([
+    getProductBySlug(slug),
+    getActiveFlashSale(),
+  ]);
 
   if (!product) {
     notFound();
   }
 
-  return <ProductDetail product={product} locale={locale} />;
+  return <ProductDetail product={product} locale={locale} flashSaleActive={!!activeFlashSale} />;
 }

@@ -1,44 +1,88 @@
+import Link from "next/link";
 import { Button } from "@nss/ui/components/button";
+import { Badge } from "@nss/ui/components/badge";
+import { getDashboardStats, getAdminOrders } from "@nss/db/queries";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const stats = await getDashboardStats();
+  const { data: recentOrders } = await getAdminOrders({ page: 1, perPage: 5 });
+
+  const kpis = [
+    { label: "Revenue Today", value: `${stats.revenueToday.toFixed(3)} KD`, change: "+0%", icon: "💰" },
+    { label: "Orders Today", value: stats.orderCountToday.toString(), change: "+0", icon: "🛒" },
+    { label: "Low Stock Items", value: stats.lowStockCount.toString(), change: stats.lowStockCount > 0 ? "Action Required" : "", icon: "⚠️", color: stats.lowStockCount > 0 ? "text-nss-danger" : "" },
+    { label: "New Customers", value: stats.customerCount.toString(), change: `+${stats.customerCount}`, icon: "👤" },
+  ];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-start">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Revenue Today", value: "0.000 KD", change: "+0%", icon: "💰" },
-          { label: "Orders Today", value: "0", change: "+0", icon: "🛒" },
-          { label: "Low Stock Items", value: "0", change: "", icon: "⚠️" },
-          { label: "New Customers", value: "0", change: "+0", icon: "👤" },
-        ].map((kpi) => (
+        {kpis.map((kpi) => (
           <div
             key={kpi.label}
-            className="rounded-xl bg-nss-card border border-nss-border p-5 space-y-2"
+            className="rounded-xl bg-nss-card border border-nss-border p-5 space-y-2 hover:border-nss-primary/30 transition-colors"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm text-nss-text-secondary">{kpi.label}</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-nss-text-secondary">{kpi.label}</span>
               <span className="text-xl">{kpi.icon}</span>
             </div>
-            <p className="text-2xl font-semibold text-nss-text-primary font-mono">
+            <p className={`text-2xl font-bold font-mono ${kpi.color || "text-nss-text-primary"}`}>
               {kpi.value}
             </p>
             {kpi.change && (
-              <p className="text-xs text-nss-success">{kpi.change}</p>
+              <p className={`text-[10px] font-bold ${kpi.color?.includes('danger') ? 'text-nss-danger' : 'text-nss-success'}`}>
+                {kpi.change}
+              </p>
             )}
           </div>
         ))}
       </div>
 
       {/* Recent Orders */}
-      <div className="rounded-xl bg-nss-card border border-nss-border">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-nss-border">
-          <h3 className="font-semibold text-nss-text-primary">Recent Orders</h3>
-          <Button variant="outline" size="sm">
-            View All
+      <div className="rounded-xl bg-nss-card border border-nss-border overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-nss-border bg-nss-surface/30">
+          <h3 className="font-bold text-nss-text-primary uppercase tracking-wide text-sm">Recent Orders</h3>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/orders">View All</Link>
           </Button>
         </div>
-        <div className="p-8 text-center text-nss-text-secondary">
-          <p className="text-sm">No orders yet. Orders will appear here in real time.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-start">
+            <tbody className="divide-y divide-nss-border">
+              {recentOrders.length === 0 ? (
+                <tr>
+                  <td className="px-6 py-10 text-center text-nss-text-secondary italic">
+                    No orders today.
+                  </td>
+                </tr>
+              ) : (
+                recentOrders.map((order) => (
+                  <tr key={order.id} className="hover:bg-nss-surface/50 transition-colors">
+                    <td className="px-6 py-4 font-mono font-bold text-nss-primary">
+                      #{order.order_number}
+                    </td>
+                    <td className="px-6 py-4 text-nss-text-primary">
+                      {order.customer_name}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant="outline" className="capitalize text-[10px]">
+                        {order.status}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4 font-mono font-semibold">
+                      {Number(order.total_kwd).toFixed(3)} KD
+                    </td>
+                    <td className="px-6 py-4 text-end">
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/orders/${order.id}`}>Details</Link>
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 

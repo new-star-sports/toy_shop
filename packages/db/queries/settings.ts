@@ -11,6 +11,9 @@ export interface StoreInfoSettings {
   contact_phone: string;
   whatsapp_number: string;
   cr_number: string;
+  instagram_url?: string;
+  tiktok_url?: string;
+  facebook_url?: string;
 }
 
 export interface TrustBarSettings {
@@ -66,6 +69,14 @@ export interface PaymentMethodSettings {
   cod_extra_kwd: number;
 }
 
+export interface FlashSaleSettings {
+  enabled: boolean;
+  title_en: string;
+  title_ar: string;
+  start_time: string;
+  end_time: string;
+}
+
 // ── Setting key → type mapping ───────────────────────────────────────────────
 interface SettingKeyMap {
   store_info: StoreInfoSettings;
@@ -74,6 +85,7 @@ interface SettingKeyMap {
   shipping: ShippingSettings;
   loyalty: LoyaltySettings;
   payment_methods: PaymentMethodSettings;
+  flash_sale: FlashSaleSettings;
 }
 
 /** Fetch a single typed setting by key */
@@ -110,4 +122,23 @@ export async function getSettings<K extends keyof SettingKeyMap>(
     result[row.key as K] = row.value as unknown as SettingKeyMap[K];
   }
   return result;
+}
+
+/** Update a typed setting by key */
+export async function updateSetting<K extends keyof SettingKeyMap>(
+  key: K,
+  value: SettingKeyMap[K]
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = createServiceClient();
+
+  const { error } = await supabase
+    .from("settings")
+    .upsert({ key, value } as any);
+
+  if (error) {
+    console.error(`Error updating setting ${key}:`, error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
 }

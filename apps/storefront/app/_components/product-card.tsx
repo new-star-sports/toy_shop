@@ -10,11 +10,20 @@ interface ProductCardComponentProps {
   locale: Locale;
 }
 
-export default function ProductCardComponent({ product, locale }: ProductCardComponentProps) {
+export default function ProductCardComponent({ product, locale, flashSaleActive = false }: ProductCardComponentProps & { flashSaleActive?: boolean }) {
   const isAr = locale === "ar";
   const name = isAr ? product.name_ar : product.name_en;
   const brandName = isAr ? product.brand_name_ar : product.brand_name_en;
-  const discount = getDiscountPercent(product.price_kwd, product.compare_at_price_kwd);
+  
+  // Calculate Flash Sale Price if applicable
+  const hasFlashSale = flashSaleActive && product.include_in_flash_sale;
+  const currentPrice = hasFlashSale 
+    ? product.price_kwd * (1 - (product.flash_sale_discount_percent || 0) / 100)
+    : product.price_kwd;
+  
+  const comparePrice = hasFlashSale ? product.price_kwd : product.compare_at_price_kwd;
+  const discount = getDiscountPercent(currentPrice, comparePrice);
+  
   const isOutOfStock = product.stock_quantity <= 0;
 
   return (
@@ -47,14 +56,14 @@ export default function ProductCardComponent({ product, locale }: ProductCardCom
               {isAr ? "جديد" : "NEW"}
             </span>
           )}
-          {discount && (
-            <span className="px-2 py-0.5 bg-nss-accent text-white text-xs font-semibold rounded-full">
-              -{discount}%
+          {hasFlashSale && (
+            <span className="px-2 py-0.5 bg-nss-danger text-white text-xs font-semibold rounded-full animate-pulse shadow-sm shadow-nss-danger/50">
+              ⚡ {isAr ? "عرض بطل" : "FLASH SALE"}
             </span>
           )}
-          {product.include_in_flash_sale && (
-            <span className="px-2 py-0.5 bg-nss-danger text-white text-xs font-semibold rounded-full animate-pulse">
-              🔥 {isAr ? "عرض" : "SALE"}
+          {discount && !hasFlashSale && (
+            <span className="px-2 py-0.5 bg-nss-accent text-white text-xs font-semibold rounded-full">
+              -{discount}%
             </span>
           )}
         </div>
@@ -116,12 +125,12 @@ export default function ProductCardComponent({ product, locale }: ProductCardCom
 
         {/* Price */}
         <div className="flex items-baseline gap-2">
-          <span className="text-base font-bold text-nss-primary ltr-nums">
-            {formatKWD(product.price_kwd, locale)}
+          <span className={`text-base font-bold ltr-nums ${hasFlashSale ? 'text-nss-danger' : 'text-nss-primary'}`}>
+            {formatKWD(currentPrice, locale)}
           </span>
-          {product.compare_at_price_kwd && (
+          {comparePrice && comparePrice > currentPrice && (
             <span className="text-xs text-nss-text-secondary line-through ltr-nums">
-              {formatKWD(product.compare_at_price_kwd, locale)}
+              {formatKWD(comparePrice, locale)}
             </span>
           )}
         </div>

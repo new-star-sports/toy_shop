@@ -3,6 +3,8 @@ import type { Locale } from "@/lib/i18n";
 import { SearchBar } from "./search-bar";
 import { CartButton } from "./cart-button";
 
+import { getSetting } from "@nss/db/queries";
+
 interface HeaderProps {
   locale: Locale;
   user?: {
@@ -13,20 +15,35 @@ interface HeaderProps {
   } | null;
 }
 
-export default function Header({ locale, user }: HeaderProps) {
+export default async function Header({ locale, user }: HeaderProps) {
   const isAr = locale === "ar";
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0];
+  
+  const annSettings = await getSetting("announcement_bar");
+  const showAnn = annSettings?.enabled && annSettings.messages.some(m => m.enabled);
 
   return (
     <header className="sticky top-0 z-50">
       {/* ── Announcement Bar ── */}
-      <div className="bg-nss-primary text-white text-center py-2 px-4 text-sm">
-        <p>
-          {isAr
-            ? "توصيل مجاني للطلبات أعلى من 10 د.ك 🚚"
-            : "Free delivery on orders above 10 KD 🚚"}
-        </p>
-      </div>
+      {showAnn && (
+        <div 
+          className="text-center py-2 px-4 text-sm font-medium overflow-hidden"
+          style={{ 
+            backgroundColor: annSettings.bg_color || "var(--nss-primary)",
+            color: annSettings.text_color || "#FFFFFF"
+          }}
+        >
+          <div className="flex items-center justify-center gap-4 animate-in fade-in duration-500">
+            {annSettings.messages
+              .filter(m => m.enabled)
+              .map((msg, idx) => (
+                <span key={idx} className={idx > 0 ? "hidden md:inline" : ""}>
+                   {isAr ? msg.text_ar : msg.text_en}
+                </span>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Main Nav ── */}
       <nav className="bg-nss-card border-b border-nss-border shadow-sm">

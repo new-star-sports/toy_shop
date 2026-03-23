@@ -7,7 +7,10 @@
     "./order": "./order.ts",
     "./address": "./address.ts",
     "./checkout": "./checkout.ts",
-    "./settings": "./settings.ts"
+    "./settings": "./settings.ts",
+    "./banner": "./banner.ts",
+    "./marketing": "./marketing.ts",
+    "./coupon": "./coupon.ts"
   },
   "dependencies": {
     "zod": "^3.24.2"

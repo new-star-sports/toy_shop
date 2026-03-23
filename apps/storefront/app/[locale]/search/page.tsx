@@ -1,4 +1,5 @@
 import { getProducts, getFeaturedBrands } from "@nss/db/queries";
+import { getActiveFlashSale } from "@/lib/marketing";
 import ProductCardComponent from "../../_components/product-card";
 import { ProductFilters } from "../_components/catalog/product-filters";
 import { ProductSort } from "../_components/catalog/product-sort";
@@ -35,7 +36,10 @@ export default async function SearchPage({
     page: sParams.page ? parseInt(sParams.page) : 1,
   };
 
-  const { data: products, count } = await getProducts(filters);
+  const [{ data: products, count }, activeFlashSale] = await Promise.all([
+    getProducts(filters),
+    getActiveFlashSale(),
+  ]);
 
   const breadcrumbItems = [
     { 
@@ -84,6 +88,7 @@ export default async function SearchPage({
                   key={product.id} 
                   product={product} 
                   locale={locale} 
+                  flashSaleActive={!!activeFlashSale}
                 />
               ))}
             </div>

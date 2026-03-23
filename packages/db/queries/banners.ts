@@ -66,3 +66,41 @@ export async function getPromoBanners(): Promise<Banner[]> {
   if (error) throw error;
   return (data ?? []) as Banner[];
 }
+/** Fetch all banners for admin with optional filtering */
+export async function getAdminBanners({
+  type,
+  isActive,
+}: {
+  type?: string;
+  isActive?: boolean;
+} = {}): Promise<Banner[]> {
+  const supabase = createServiceClient();
+
+  let query = supabase.from("banners").select("*");
+
+  if (type && type !== "all") {
+    query = query.eq("banner_type", type);
+  }
+
+  if (isActive !== undefined) {
+    query = query.eq("is_active", isActive);
+  }
+
+  const { data, error } = await query.order("display_order", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as Banner[];
+}
+/** Fetch a single banner by ID for admin */
+export async function getAdminBannerById(id: string): Promise<Banner | null> {
+  const supabase = createServiceClient();
+
+  const { data, error } = await supabase
+    .from("banners")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return null;
+  return data as Banner | null;
+}

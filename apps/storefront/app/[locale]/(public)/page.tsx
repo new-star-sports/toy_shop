@@ -3,6 +3,11 @@ import type { Locale } from "@/lib/i18n";
 import { getHeroBanners, getHomepagePinnedCategories, getFeaturedBrands, getNewArrivals, getFlashSaleProducts, getHomepageFeatured } from "@nss/db/queries";
 import { getSetting } from "@nss/db/queries";
 import ProductCardComponent from "../../_components/product-card";
+import { FlashSaleBanner } from "../../_components/flash-sale-banner";
+import { getActiveFlashSale } from "@/lib/marketing";
+import { getBlogs, type Blog } from "@nss/db/queries";
+import { format } from "date-fns";
+import { ChevronRight, FileText } from "lucide-react";
 
 type Params = Promise<{ locale: string }>;
 
@@ -20,6 +25,8 @@ export default async function HomePage({ params }: { params: Params }) {
     newArrivals,
     flashSaleProducts,
     homepageFeatured,
+    activeFlashSale,
+    blogs,
   ] = await Promise.all([
     getHeroBanners(),
     getSetting("trust_bar"),
@@ -28,10 +35,20 @@ export default async function HomePage({ params }: { params: Params }) {
     getNewArrivals(10),
     getFlashSaleProducts(8),
     getHomepageFeatured(8),
+    getActiveFlashSale(),
+    getBlogs({ publishedOnly: true }),
   ]);
 
   return (
     <>
+      {activeFlashSale && (
+        <FlashSaleBanner
+          endTime={activeFlashSale.endTime}
+          titleEn={activeFlashSale.titleEn}
+          titleAr={activeFlashSale.titleAr}
+          locale={locale}
+        />
+      )}
       {/* ── Section 02: Hero Banner ── */}
       <section id="hero" className="relative bg-gradient-to-br from-nss-primary to-nss-primary/90 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
@@ -114,6 +131,7 @@ export default async function HomePage({ params }: { params: Params }) {
                     {item.icon === "shield" && <svg className="w-5 h-5 text-nss-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>}
                     {item.icon === "refresh" && <svg className="w-5 h-5 text-nss-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>}
                     {item.icon === "map" && <svg className="w-5 h-5 text-nss-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
+                    {item.icon === "help" && <svg className="w-5 h-5 text-nss-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
                   </div>
                   <span className="text-xs sm:text-sm font-medium text-nss-text-primary">
                     {isAr ? item.text_ar : item.text_en}
@@ -147,7 +165,7 @@ export default async function HomePage({ params }: { params: Params }) {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {flashSaleProducts.slice(0, 4).map((product) => (
-                <ProductCardComponent key={product.id} product={product} locale={locale} />
+                <ProductCardComponent key={product.id} product={product} locale={locale} flashSaleActive={!!activeFlashSale} />
               ))}
             </div>
           </div>
@@ -210,7 +228,7 @@ export default async function HomePage({ params }: { params: Params }) {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {newArrivals.slice(0, 5).map((product) => (
-                <ProductCardComponent key={product.id} product={product} locale={locale} />
+                <ProductCardComponent key={product.id} product={product} locale={locale} flashSaleActive={!!activeFlashSale} />
               ))}
             </div>
           </div>
@@ -371,7 +389,7 @@ export default async function HomePage({ params }: { params: Params }) {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {homepageFeatured.slice(0, 8).map((product) => (
-                <ProductCardComponent key={product.id} product={product} locale={locale} />
+                <ProductCardComponent key={product.id} product={product} locale={locale} flashSaleActive={!!activeFlashSale} />
               ))}
             </div>
           </div>
@@ -520,6 +538,71 @@ export default async function HomePage({ params }: { params: Params }) {
           </p>
         </div>
       </section>
+
+      {/* ── Section 16: From the Blog ── */}
+      {blogs && blogs.length > 0 && (
+        <section id="blogs" className="py-20 bg-nss-surface">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-baseline justify-between gap-4 mb-10">
+              <div>
+                <h2 className="text-3xl font-extrabold text-nss-text-primary mb-2">
+                  {isAr ? "من المدونة" : "From the Blog"}
+                </h2>
+                <p className="text-nss-text-secondary">
+                  {isAr ? "أحدث الأخبار، المراجعات، والنصائح للأطفال." : "Latest news, reviews, and tips for kids."}
+                </p>
+              </div>
+              <Link 
+                href={`/${locale}/blog`} 
+                className="text-nss-primary font-bold text-sm hover:underline flex items-center gap-1"
+              >
+                {isAr ? "عرض كل المقالات" : "View All Articles"}
+                <ChevronRight className={`h-4 w-4 ${isAr ? 'rotate-180' : ''}`} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {blogs.slice(0, 3).map((post: Blog) => (
+                <article key={post.id} className="group bg-white rounded-2xl border border-nss-border overflow-hidden shadow-sm hover:shadow-md transition-all h-full flex flex-col">
+                  <Link href={`/${locale}/blog/${post.slug}`} className="block aspect-[16/9] overflow-hidden bg-nss-surface">
+                    {post.image_url ? (
+                      <img 
+                        src={post.image_url} 
+                        alt={isAr ? post.title_ar : post.title_en} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-nss-text-secondary/20">
+                        <FileText className="h-10 w-10" />
+                      </div>
+                    )}
+                  </Link>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="text-[10px] font-bold text-nss-text-secondary uppercase tracking-widest mb-2">
+                      {post.published_at ? format(new Date(post.published_at), "MMM d, yyyy") : "Draft"}
+                    </div>
+                    <h3 className="text-lg font-bold text-nss-text-primary mb-3 line-clamp-2 h-14 leading-snug group-hover:underline">
+                      <Link href={`/${locale}/blog/${post.slug}`}>
+                        {isAr ? post.title_ar : post.title_en}
+                      </Link>
+                    </h3>
+                    <p className="text-nss-text-secondary text-sm line-clamp-2 mb-6 flex-1">
+                      {isAr ? post.excerpt_ar : post.excerpt_en}
+                    </p>
+                    <Link 
+                      href={`/${locale}/blog/${post.slug}`} 
+                      className="inline-flex items-center text-xs font-bold text-nss-primary gap-1"
+                    >
+                      {isAr ? "اقرأ المزيد" : "Read More"}
+                      <ChevronRight className={`h-3 w-3 ${isAr ? 'rotate-180' : ''}`} />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

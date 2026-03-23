@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: {
@@ -34,6 +36,7 @@ export default function RootLayout({
     <html lang="en" dir="ltr" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
       <body className="min-h-screen bg-nss-surface font-sans antialiased">
         {children}
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getAddressById, getSetting } from "@nss/db/queries";
 import { createServiceClient } from "@nss/db";
 import { revalidatePath } from "next/cache";
-import type { Database } from "@nss/db/types";
 
 interface OrderItemInput {
   productId: string;
@@ -17,6 +16,7 @@ interface CreateOrderData {
   addressId: string;
   paymentMethod: string;
   items: OrderItemInput[];
+  couponCode?: string;
   idempotencyKey?: string;
 }
 
@@ -83,7 +83,8 @@ export async function createOrder(data: CreateOrderData) {
          name_en,
          name_ar,
          price_kwd,
-         slug
+         slug,
+         category_id
       )
     `)
     .in("id", variantIds);
@@ -124,7 +125,35 @@ export async function createOrder(data: CreateOrderData) {
   const threshold = shippingData?.free_delivery_threshold_kwd ?? 10;
   
   const shipping = subtotal >= threshold ? 0 : shippingFee;
-  const total = subtotal + shipping;
+  
+  // -- Coupon Logic --
+  let discount = 0;
+  let appliedCouponId: string | null = null;
+  
+  if (data.couponCode) {
+    const { validateCouponAction } = await import("./coupon");
+    const result = await validateCouponAction(
+      data.couponCode, 
+      subtotal, 
+      orderItemsInsert.map((i: any) => {
+        const v = variants.find(vnt => vnt.id === i.variant_id);
+        return { 
+          productId: i.product_id as string, 
+          categoryId: (v?.products as any)?.category_id || null, 
+          price: i.unit_price_kwd, 
+          quantity: i.quantity 
+        };
+      }),
+      user.id
+    );
+    
+    if (result.success) {
+      discount = result.discountAmount || 0;
+      appliedCouponId = result.coupon?.id || null;
+    }
+  }
+
+  const total = Math.max(0, subtotal - discount + shipping);
 
   // 3. Generate Order Number
   const { data: orderNumber, error: seqError } = await supabase.rpc("generate_order_number");
@@ -143,7 +172,9 @@ export async function createOrder(data: CreateOrderData) {
       payment_method: data.paymentMethod,
       subtotal_kwd: subtotal,
       shipping_kwd: shipping,
-      discount_kwd: 0,
+      discount_kwd: discount,
+      coupon_code: data.couponCode,
+      coupon_discount_kwd: discount,
       total_kwd: total,
       customer_name: user.user_metadata.full_name || user.email?.split("@")[0] || "Customer",
       customer_email: user.email || "",
@@ -189,6 +220,19 @@ export async function createOrder(data: CreateOrderData) {
     status: "pending",
     note: "Order created successfully",
   });
+
+  // 8. Record Coupon Usage (Atomic)
+  if (appliedCouponId) {
+    const { incrementCouponUsage } = await import("@nss/db/queries");
+    await incrementCouponUsage(appliedCouponId);
+    
+    // Create record in coupon_usage table
+    await (adminClient as any).from("coupon_usage").insert({
+      coupon_id: appliedCouponId,
+      user_id: user.id,
+      order_id: (order as any).id,
+    });
+  }
 
   revalidatePath(`/${data.locale}/account/orders`);
   

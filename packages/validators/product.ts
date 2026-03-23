@@ -134,3 +134,34 @@ export type ProductSafety = z.infer<typeof productSafetySchema>;
 export type ProductShipping = z.infer<typeof productShippingSchema>;
 export type ProductSeo = z.infer<typeof productSeoSchema>;
 export type ProductCustoms = z.infer<typeof productCustomsSchema>;
+
+// ── Category Schema ──
+export const categorySchema = z.object({
+  name_en: z.string().min(1, "Name (English) is required").max(200),
+  name_ar: z.string().min(1, "Name (Arabic) is required").max(200),
+  slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, and hyphens only"),
+  description_en: z.string().optional().nullable(),
+  description_ar: z.string().optional().nullable(),
+  parent_id: z.string().uuid().nullable().optional(),
+  image_url: z.string().url().or(z.literal("")).nullable().optional(),
+  is_homepage_pinned: z.boolean(),
+  homepage_order: z.number().nullable().optional(),
+  is_active: z.boolean(),
+});
+
+export type Category = z.infer<typeof categorySchema>;
+
+// ── Brand Schema ──
+export const brandSchema = z.object({
+  name_en: z.string().min(1, "Name (English) is required").max(200),
+  name_ar: z.string().min(1, "Name (Arabic) is required").max(200),
+  slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, and hyphens only"),
+  logo_url: z.string().url().or(z.literal("")).nullable().optional(),
+  description_en: z.string().optional().nullable(),
+  description_ar: z.string().optional().nullable(),
+  is_featured: z.boolean(),
+  display_order: z.number().nullable().optional(),
+  is_active: z.boolean(),
+});
+
+export type Brand = z.infer<typeof brandSchema>;

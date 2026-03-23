@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, CreditCard, Truck, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+import { MapPin, CreditCard, Truck, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Ticket, ShoppingCart } from "lucide-react";
 import { Button } from "@nss/ui/components/button";
 import { Card } from "@nss/ui/components/card";
 import { useCartStore } from "@/store/cart-store";
@@ -43,9 +43,52 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
   const subtotal = getTotalPrice();
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setIsValidatingCoupon(true);
+    setCouponMessage(null);
+    
+    try {
+      const { validateCouponAction } = await import("@/app/_actions/coupon");
+      
+      const result = await validateCouponAction(
+        couponCode, 
+        subtotal, 
+        items.map(i => ({ 
+          productId: i.productId, 
+          categoryId: i.categoryId, 
+          price: i.price, 
+          quantity: i.quantity 
+        })),
+        user.id
+      );
+
+      if (result.success) {
+        setAppliedCoupon(result.coupon);
+        setDiscountAmount(result.discountAmount || 0);
+        setCouponMessage({ type: 'success', text: result.message });
+      } else {
+        setAppliedCoupon(null);
+        setDiscountAmount(0);
+        setCouponMessage({ type: 'error', text: result.message });
+      }
+    } catch (err) {
+      setCouponMessage({ type: 'error', text: "Failed to validate coupon" });
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
   const shippingValue = subtotal >= shippingSettings.freeShippingThreshold ? 0 : shippingSettings.shippingFee;
-  const totalValue = subtotal + shippingValue;
+  const totalValue = Math.max(0, subtotal - discountAmount + shippingValue);
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
@@ -66,6 +109,7 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
           variantId: item.variantId,
           quantity: item.quantity
         })),
+        couponCode: appliedCoupon?.code,
         idempotencyKey,
       });
       
@@ -208,10 +252,53 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
                   {shippingValue === 0 ? (isAr ? "مجاني" : "FREE") : `${shippingValue.toFixed(3)} ${isAr ? "د.ك" : "KWD"}`}
                 </span>
               </div>
+
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-sm animate-in fade-in slide-in-from-top-1">
+                  <div className="flex items-center gap-1.5 text-green-600 font-medium">
+                    <Ticket className="h-3.5 w-3.5" />
+                    <span>{isAr ? "الخصم" : "Discount"} ({appliedCoupon?.code})</span>
+                  </div>
+                  <span className="font-bold text-green-600 line-nums">-{discountAmount.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
+                </div>
+              )}
               <div className="pt-4 border-t border-nss-border/30 flex justify-between">
                 <span className="text-lg font-bold text-nss-text-primary">{isAr ? "الإجمالي" : "Total"}</span>
                 <span className="text-2xl font-bold text-nss-primary">{totalValue.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
               </div>
+            </div>
+
+            <div className="mb-6 space-y-2 relative">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-nss-text-secondary" />
+                  <input
+                    type="text"
+                    placeholder={isAr ? "كود الخصم" : "Coupon Code"}
+                    className="w-full h-11 pl-9 pr-4 rounded-xl border border-nss-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-nss-primary/20 focus:border-nss-primary/50 transition-all uppercase"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="h-11 rounded-xl px-4 font-bold border-nss-border/50 hover:bg-nss-surface"
+                  onClick={handleApplyCoupon}
+                  disabled={isValidatingCoupon || !couponCode}
+                >
+                  {isValidatingCoupon ? (
+                    <div className="h-4 w-4 border-2 border-nss-text-secondary/30 border-t-nss-text-primary rounded-full animate-spin" />
+                  ) : (
+                    isAr ? "تطبيق" : "Apply"
+                  )}
+                </Button>
+              </div>
+              {couponMessage && (
+                <p className={`text-[11px] px-1 animate-in fade-in slide-in-from-top-1 ${couponMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                  {couponMessage.text}
+                </p>
+              )}
             </div>
 
             {error && (
@@ -270,5 +357,3 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
     </div>
   );
 }
-
-import { ShoppingCart } from "lucide-react";
