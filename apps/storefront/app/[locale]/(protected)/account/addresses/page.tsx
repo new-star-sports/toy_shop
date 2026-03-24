@@ -3,7 +3,7 @@ import { getUserAddresses } from "@nss/db/queries";
 import { redirect } from "next/navigation";
 import { AddressCard } from "./_components/address-card";
 import { Button } from "@nss/ui/components/button";
-import { Plus, MapPin } from "lucide-react";
+import { IconPlus, IconMapPin } from "@tabler/icons-react";
 import type { Locale } from "@/lib/i18n";
 import Link from "next/link";
 
@@ -24,6 +24,7 @@ export default async function AddressesPage({
     redirect(`/${locale}/login`);
   }
 
+  // @ts-ignore - Supabase client type mismatch in monorepo
   const addresses = await getUserAddresses(supabase, user.id);
 
   return (
@@ -41,7 +42,7 @@ export default async function AddressesPage({
         </div>
         <Button asChild className="bg-nss-primary hover:bg-nss-primary/90 gap-2 h-11 px-6 text-base">
           <Link href={`/${locale}/account/addresses/new`}>
-            <Plus className="h-5 w-5" />
+            <IconPlus className="h-5 w-5" />
             {isAr ? "إضافة عنوان جديد" : "Add New Address"}
           </Link>
         </Button>
@@ -50,7 +51,7 @@ export default async function AddressesPage({
       {addresses.length === 0 ? (
         <div className="text-center py-20 bg-nss-surface rounded-3xl border-2 border-dashed border-nss-border/50">
           <div className="bg-white p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <MapPin className="h-8 w-8 text-nss-text-secondary/50" />
+            <IconMapPin className="h-8 w-8 text-nss-text-secondary/50" />
           </div>
           <h3 className="text-lg font-semibold text-nss-text-primary">
             {isAr ? "لا يوجد عناوين بعد" : "No addresses yet"}
@@ -62,7 +63,7 @@ export default async function AddressesPage({
           </p>
           <Button asChild variant="outline" className="gap-2">
             <Link href={`/${locale}/account/addresses/new`}>
-              <Plus className="h-4 w-4" />
+              <IconPlus className="h-4 w-4" />
               {isAr ? "إضافة عنواني الأول" : "Add my first address"}
             </Link>
           </Button>

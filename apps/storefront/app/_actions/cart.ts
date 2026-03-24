@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
 
 export async function reserveStock(items: { variantId: string; quantity: number }[]) {
   const supabase = await createClient();

@@ -10,12 +10,18 @@ interface ProductCardComponentProps {
   locale: Locale;
 }
 
+import { 
+  IconHeart, 
+  IconStar, 
+  IconBolt,
+  IconPhotoOff
+} from "@tabler/icons-react";
+
 export default function ProductCardComponent({ product, locale, flashSaleActive = false }: ProductCardComponentProps & { flashSaleActive?: boolean }) {
   const isAr = locale === "ar";
   const name = isAr ? product.name_ar : product.name_en;
   const brandName = isAr ? product.brand_name_ar : product.brand_name_en;
   
-  // Calculate Flash Sale Price if applicable
   const hasFlashSale = flashSaleActive && product.include_in_flash_sale;
   const currentPrice = hasFlashSale 
     ? product.price_kwd * (1 - (product.flash_sale_discount_percent || 0) / 100)
@@ -29,40 +35,39 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
   return (
     <Link
       href={`/${locale}/product/${product.slug}`}
-      className="group block bg-nss-card rounded-2xl border border-nss-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-nss-primary/5 hover:-translate-y-0.5"
+      className="group block bg-background rounded-[32px] border border-border/40 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1"
     >
       {/* Image Container */}
-      <div className="relative aspect-square bg-nss-surface overflow-hidden">
+      <div className="relative aspect-square bg-muted/20 overflow-hidden">
         {product.primary_image_url ? (
           <Image
             src={product.primary_image_url}
             alt={name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+            className="object-contain p-6 group-hover:scale-110 transition-transform duration-700 ease-out"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-nss-text-secondary">
-            <svg className="w-12 h-12 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
+            <IconPhotoOff size={48} stroke={1} />
           </div>
         )}
 
-        {/* Badges */}
-        <div className="absolute top-2 left-2 rtl:right-2 rtl:left-auto flex flex-col gap-1">
+        {/* Badges Container */}
+        <div className="absolute top-3 left-3 rtl:right-3 rtl:left-auto flex flex-col gap-1.5 z-10">
           {product.is_new_arrival && (
-            <span className="px-2 py-0.5 bg-nss-primary text-white text-xs font-semibold rounded-full">
-              {isAr ? "جديد" : "NEW"}
+            <span className="px-3 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-primary/20">
+              {isAr ? "جديد" : "New"}
             </span>
           )}
           {hasFlashSale && (
-            <span className="px-2 py-0.5 bg-nss-danger text-white text-xs font-semibold rounded-full animate-pulse shadow-sm shadow-nss-danger/50">
-              ⚡ {isAr ? "عرض بطل" : "FLASH SALE"}
+            <span className="px-3 py-1 bg-accent text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-accent/20 flex items-center gap-1 animate-pulse">
+              <IconBolt size={10} fill="currentColor" />
+              {isAr ? "بطل" : "Sale"}
             </span>
           )}
           {discount && !hasFlashSale && (
-            <span className="px-2 py-0.5 bg-nss-accent text-white text-xs font-semibold rounded-full">
+            <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-primary text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg border border-primary/10">
               -{discount}%
             </span>
           )}
@@ -70,75 +75,70 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
 
         {/* Out of Stock Overlay */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <span className="px-4 py-2 bg-nss-text-primary text-white text-sm font-semibold rounded-full">
-              {isAr ? "نفد المخزون" : "Out of Stock"}
+          <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center z-20">
+            <span className="px-5 py-2 bg-zinc-900 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-2xl">
+              {isAr ? "نفد المخزون" : "Sold Out"}
             </span>
           </div>
         )}
 
         {/* Quick Wishlist */}
         <button
-          className="absolute top-2 right-2 rtl:left-2 rtl:right-auto w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-nss-text-secondary hover:text-nss-danger transition-colors opacity-0 group-hover:opacity-100 min-h-0 min-w-0"
+          className="absolute top-3 right-3 rtl:left-3 rtl:right-auto w-10 h-10 rounded-full bg-white/80 backdrop-blur-md border border-white/20 shadow-xl flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-white transition-all opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 duration-300 z-30 min-h-0 min-w-0"
           aria-label={isAr ? "أضف للمفضلة" : "Add to wishlist"}
           onClick={(e) => { e.preventDefault(); }}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
+          <IconHeart size={20} className="transition-transform active:scale-125" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-1.5">
-        {/* Brand */}
-        {brandName && (
-          <p className="text-xs text-nss-accent font-medium uppercase tracking-wide truncate">
-            {brandName}
-          </p>
-        )}
-
-        {/* Name */}
-        <h3 className="text-sm font-semibold text-nss-text-primary line-clamp-2 leading-snug group-hover:text-nss-primary transition-colors">
-          {name}
-        </h3>
-
-        {/* Rating */}
-        {product.avg_rating && (
-          <div className="flex items-center gap-1">
-            <div className="flex text-nss-gold">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`w-3 h-3 ${i < Math.round(product.avg_rating!) ? "fill-current" : "fill-none stroke-current"}`}
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-              ))}
-            </div>
-            <span className="text-[10px] text-nss-text-secondary ltr-nums">
-              ({product.review_count})
-            </span>
-          </div>
-        )}
-
-        {/* Price */}
-        <div className="flex items-baseline gap-2">
-          <span className={`text-base font-bold ltr-nums ${hasFlashSale ? 'text-nss-danger' : 'text-nss-primary'}`}>
-            {formatKWD(currentPrice, locale)}
-          </span>
-          {comparePrice && comparePrice > currentPrice && (
-            <span className="text-xs text-nss-text-secondary line-through ltr-nums">
-              {formatKWD(comparePrice, locale)}
-            </span>
+      <div className="p-5 pt-4 space-y-3">
+        <div className="space-y-1">
+          {brandName && (
+            <p className="text-[10px] text-accent font-black uppercase tracking-[0.15em] truncate">
+              {brandName}
+            </p>
           )}
+
+          <h3 className="text-sm font-bold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors min-h-[2.5rem]">
+            {name}
+          </h3>
         </div>
 
-        {/* Age */}
-        <p className="text-[10px] text-nss-text-secondary">
-          {isAr ? `${product.min_age}+ سنوات` : `${product.min_age}+ years`}
-        </p>
+        {/* Rating */}
+        <div className="flex items-center gap-1.5">
+          <div className="flex text-amber-400">
+            {[...Array(5)].map((_, i) => (
+              <IconStar
+                key={i}
+                size={12}
+                className={i < Math.round(product.avg_rating || 5) ? "fill-current" : "text-muted-foreground/30"}
+              />
+            ))}
+          </div>
+          <span className="text-[10px] font-bold text-muted-foreground ltr-nums">
+            {product.avg_rating ? `(${product.review_count})` : "(0)"}
+          </span>
+        </div>
+
+        {/* Price & Actions */}
+        <div className="flex items-end justify-between gap-2 pt-1">
+          <div className="flex flex-col">
+            {comparePrice && comparePrice > currentPrice && (
+              <span className="text-[11px] text-muted-foreground line-through decoration-destructive/50 ltr-nums font-medium">
+                {formatKWD(comparePrice, locale)}
+              </span>
+            )}
+            <span className={`text-lg font-black ltr-nums tracking-tight ${hasFlashSale ? 'text-accent' : 'text-primary'}`}>
+              {formatKWD(currentPrice, locale)}
+            </span>
+          </div>
+
+          <div className="w-8 h-8 rounded-full border border-border/60 flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all duration-300">
+            <IconBolt size={16} />
+          </div>
+        </div>
       </div>
     </Link>
   );

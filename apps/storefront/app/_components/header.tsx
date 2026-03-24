@@ -2,8 +2,13 @@ import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
 import { SearchBar } from "./search-bar";
 import { CartButton } from "./cart-button";
-
+import { AccountButton } from "./account-button";
 import { getSetting } from "@nss/db/queries";
+import { 
+  IconHeart, 
+  IconSparkles
+} from "@tabler/icons-react";
+import { Button } from "@nss/ui";
 
 interface HeaderProps {
   locale: Locale;
@@ -17,7 +22,6 @@ interface HeaderProps {
 
 export default async function Header({ locale, user }: HeaderProps) {
   const isAr = locale === "ar";
-  const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0];
   
   const annSettings = await getSetting("announcement_bar");
   const showAnn = annSettings?.enabled && annSettings.messages.some(m => m.enabled);
@@ -27,17 +31,18 @@ export default async function Header({ locale, user }: HeaderProps) {
       {/* ── Announcement Bar ── */}
       {showAnn && (
         <div 
-          className="text-center py-2 px-4 text-sm font-medium overflow-hidden"
+          className="text-center py-2 px-4 text-[11px] sm:text-xs font-semibold uppercase tracking-wider overflow-hidden shadow-sm"
           style={{ 
             backgroundColor: annSettings.bg_color || "var(--nss-primary)",
             color: annSettings.text_color || "#FFFFFF"
           }}
         >
-          <div className="flex items-center justify-center gap-4 animate-in fade-in duration-500">
+          <div className="flex items-center justify-center gap-4 animate-in slide-in-from-top-full duration-700">
             {annSettings.messages
               .filter(m => m.enabled)
               .map((msg, idx) => (
-                <span key={idx} className={idx > 0 ? "hidden md:inline" : ""}>
+                <span key={idx} className={cn("flex items-center gap-2", idx > 0 ? "hidden md:flex" : "flex")}>
+                   <IconSparkles size={14} className="opacity-70" stroke={2} />
                    {isAr ? msg.text_ar : msg.text_en}
                 </span>
               ))}
@@ -46,103 +51,87 @@ export default async function Header({ locale, user }: HeaderProps) {
       )}
 
       {/* ── Main Nav ── */}
-      <nav className="bg-nss-card border-b border-nss-border shadow-sm">
+      <nav className="bg-background/80 backdrop-blur-md border-b border-border/50 shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
-            <Link href={`/${locale}`} className="flex items-center gap-2 min-h-0 min-w-0">
-              <div className="w-10 h-10 rounded-lg bg-nss-primary flex items-center justify-center flex-shrink-0">
-                <span className="text-xl text-white font-bold">★</span>
+            <Link href={`/${locale}`} className="flex items-center gap-3 group transition-transform hover:scale-[1.02]">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 rotate-1 group-hover:rotate-0 transition-transform">
+                <span className="text-xl sm:text-2xl text-white font-black">★</span>
               </div>
-              <span className="text-lg font-bold text-nss-primary hidden sm:block">
-                {isAr ? "نيو ستار سبورتس" : "NewStarSports"}
-              </span>
+              <div className="flex flex-col -space-y-1">
+                <span className="text-xl sm:text-2xl font-black text-primary tracking-tighter">
+                  {isAr ? "نيو ستار" : "NewStar"}
+                </span>
+                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.2em]">
+                  {isAr ? "سبورتس" : "Sports"}
+                </span>
+              </div>
             </Link>
 
-            {/* Search Bar */}
-            <div className="flex-1 max-w-xl mx-4 hidden md:block">
+            {/* Search Bar - Center */}
+            <div className="flex-1 max-w-lg mx-6 hidden md:block">
               <SearchBar locale={locale} />
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-3">
               {/* Language Toggle */}
               <Link
                 href={`/${locale === "ar" ? "en" : "ar"}`}
-                className="hidden sm:flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
+                className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full text-xs font-bold text-muted-foreground hover:bg-muted/40 hover:text-foreground border border-transparent hover:border-border/40 transition-all duration-200"
               >
-                {isAr ? "EN" : "عربي"}
+                {isAr ? "EN" : "AR"}
               </Link>
 
               {/* Wishlist */}
-              <Link
-                href={`/${locale}/account/wishlist`}
-                className="relative p-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
-                aria-label={isAr ? "المفضلات" : "Wishlist"}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </Link>
+              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-destructive hover:bg-destructive/5" asChild>
+                <Link href={`/${locale}/account/wishlist`} aria-label={isAr ? "المفضلات" : "Wishlist"}>
+                  <IconHeart size={22} stroke={1.5} />
+                </Link>
+              </Button>
 
               {/* Cart */}
               <CartButton locale={locale} />
 
-              {/* Account */}
-              {user ? (
-                <Link
-                  href={`/${locale}/account/profile`}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
-                  aria-label={isAr ? "الحساب" : "Account"}
-                >
-                  <div className="w-8 h-8 rounded-full bg-nss-primary/10 flex items-center justify-center text-nss-primary font-bold text-xs">
-                    {userDisplayName?.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="hidden lg:block text-xs font-medium max-w-[100px] truncate">
-                    {userDisplayName}
-                  </span>
-                </Link>
-              ) : (
-                <Link
-                  href={`/${locale}/login`}
-                  className="p-2 rounded-lg text-nss-text-secondary hover:bg-nss-surface transition-colors min-h-0 min-w-0"
-                  aria-label={isAr ? "تسجيل الدخول" : "Login"}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </Link>
-              )}
+              <div className="h-6 w-px bg-border/40 mx-1 hidden sm:block" />
+
+              {/* Account / Login */}
+              <AccountButton locale={locale} user={user} />
             </div>
           </div>
         </div>
 
         {/* ── Category Nav Bar ── */}
-        <div className="border-t border-nss-border bg-nss-card">
+        <div className="border-t border-border/40 bg-muted/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-6 overflow-x-auto scrollbar-none py-2 text-sm">
-              <Link href={`/${locale}/products`} className="whitespace-nowrap font-medium text-nss-primary hover:text-nss-accent transition-colors min-h-0 min-w-0">
-                {isAr ? "جميع المنتجات" : "All Products"}
+            <div className="flex items-center gap-8 overflow-x-auto scrollbar-none py-3 text-[13px] font-semibold">
+              <Link href={`/${locale}/products`} className="whitespace-nowrap text-primary hover:opacity-80 transition-opacity flex items-center gap-1.5 uppercase tracking-wide">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                {isAr ? "الكل" : "Shop All"}
               </Link>
-              <Link href={`/${locale}/products?sort=new`} className="whitespace-nowrap text-nss-text-secondary hover:text-nss-accent transition-colors min-h-0 min-w-0">
+              <Link href={`/${locale}/products?sort=new`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all flex items-center gap-1.5">
                 {isAr ? "وصل حديثاً" : "New Arrivals"}
               </Link>
-              <Link href={`/${locale}/products?sale=true`} className="whitespace-nowrap text-nss-accent font-semibold hover:text-nss-primary transition-colors min-h-0 min-w-0">
-                {isAr ? "تخفيضات 🔥" : "Sale 🔥"}
+              <Link href={`/${locale}/products?sale=true`} className="whitespace-nowrap text-accent hover:opacity-80 transition-opacity flex items-center gap-1.5">
+                {isAr ? "تخفيضات" : "Sale"}
+                <span className="text-[10px] bg-accent/10 px-1.5 rounded-full">🔥</span>
               </Link>
-              <Link href={`/${locale}/category/building-construction`} className="whitespace-nowrap text-nss-text-secondary hover:text-nss-accent transition-colors min-h-0 min-w-0">
-                {isAr ? "البناء والتركيب" : "Building & Construction"}
+              <div className="h-4 w-px bg-border/40 hidden sm:block" />
+              <Link href={`/${locale}/category/building-construction`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all">
+                {isAr ? "البناء" : "Building"}
               </Link>
-              <Link href={`/${locale}/category/dolls-accessories`} className="whitespace-nowrap text-nss-text-secondary hover:text-nss-accent transition-colors min-h-0 min-w-0">
-                {isAr ? "دمى وإكسسوارات" : "Dolls & Accessories"}
+              <Link href={`/${locale}/category/dolls-accessories`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all">
+                {isAr ? "الدمى" : "Dolls"}
               </Link>
-              <Link href={`/${locale}/category/outdoor-sports`} className="whitespace-nowrap text-nss-text-secondary hover:text-nss-accent transition-colors min-h-0 min-w-0">
-                {isAr ? "ألعاب خارجية" : "Outdoor & Sports"}
+              <Link href={`/${locale}/category/outdoor-sports`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all">
+                {isAr ? "خارجي" : "Outdoor"}
               </Link>
-              <Link href={`/${locale}/brand/lego`} className="whitespace-nowrap text-nss-text-secondary hover:text-nss-accent transition-colors min-h-0 min-w-0">
+              <div className="h-4 w-px bg-border/40 hidden sm:block" />
+              <Link href={`/${locale}/brand/lego`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all uppercase tracking-tighter opacity-80 hover:opacity-100 italic">
                 LEGO
               </Link>
-              <Link href={`/${locale}/brand/barbie`} className="whitespace-nowrap text-nss-text-secondary hover:text-nss-accent transition-colors min-h-0 min-w-0">
+              <Link href={`/${locale}/brand/barbie`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all uppercase tracking-tighter opacity-80 hover:opacity-100 italic">
                 Barbie
               </Link>
             </div>
@@ -152,3 +141,5 @@ export default async function Header({ locale, user }: HeaderProps) {
     </header>
   );
 }
+
+import { cn } from "@nss/ui/lib/utils";

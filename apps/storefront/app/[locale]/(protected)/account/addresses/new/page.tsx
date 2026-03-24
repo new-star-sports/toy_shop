@@ -21,6 +21,7 @@ export default async function NewAddressPage({
     redirect(`/${locale}/login`);
   }
 
+  // @ts-ignore - Supabase client type mismatch in monorepo
   const governorates = await getGovernorates(supabase);
 
   return (

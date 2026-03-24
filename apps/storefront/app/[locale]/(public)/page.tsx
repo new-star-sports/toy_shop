@@ -7,7 +7,14 @@ import { FlashSaleBanner } from "../../_components/flash-sale-banner";
 import { getActiveFlashSale } from "@/lib/marketing";
 import { getBlogs, type Blog } from "@nss/db/queries";
 import { format } from "date-fns";
-import { ChevronRight, FileText } from "lucide-react";
+import { 
+  IconSparkles, 
+  IconArrowRight, 
+  IconCircleCheck, 
+  IconStar,
+  IconChevronRight,
+  IconFileText
+} from "@tabler/icons-react";
 
 type Params = Promise<{ locale: string }>;
 
@@ -50,72 +57,99 @@ export default async function HomePage({ params }: { params: Params }) {
         />
       )}
       {/* ── Section 02: Hero Banner ── */}
-      <section id="hero" className="relative bg-gradient-to-br from-nss-primary to-nss-primary/90 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
-          {heroBanners && heroBanners.length > 0 ? (
-            <div className="max-w-2xl space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                {isAr ? heroBanners[0].title_ar : heroBanners[0].title_en}
-              </h1>
-              <p className="text-lg sm:text-xl text-white/80">
-                {isAr ? heroBanners[0].subtitle_ar : heroBanners[0].subtitle_en}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href={heroBanners[0].cta_link || `/${locale}/products`}
-                  className="inline-flex items-center px-6 py-3 bg-nss-accent text-white font-semibold rounded-full hover:bg-nss-accent/90 transition-all hover:scale-105 shadow-lg shadow-nss-accent/25 min-h-0 min-w-0"
-                >
-                  {isAr ? heroBanners[0].cta_text_ar : heroBanners[0].cta_text_en}
-                  <svg className="w-4 h-4 ms-2 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-                {heroBanners[0].cta2_text_en && (
+      <section id="hero" className="relative pt-6 pb-12 sm:pt-10 sm:pb-20 overflow-hidden bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-[40px] bg-gradient-to-br from-primary to-primary/90 overflow-hidden shadow-2xl shadow-primary/20 min-h-[500px] flex items-center">
+            {/* Background Decorative Elements */}
+            <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+              <div className="absolute top-[-10%] right-[-10%] w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] animate-pulse-slow" />
+              <div className="absolute bottom-[10%] left-[20%] w-[60%] h-[60%] border-[40px] border-white/5 rounded-full rotate-12" />
+            </div>
+
+            <div className="relative z-10 w-full grid lg:grid-cols-2 gap-12 p-8 sm:p-16 items-center">
+              <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest shadow-sm">
+                  <IconSparkles size={14} className="text-accent" />
+                  {isAr ? "ألعاب أصلية 100%" : "100% Genuine Toys"}
+                </div>
+                
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tighter">
+                  {heroBanners && heroBanners.length > 0 
+                    ? (isAr ? heroBanners[0].title_ar : heroBanners[0].title_en)
+                    : (isAr ? "اكتشف عالم الألعاب السحري" : "Discover the Magic of Play")
+                  }
+                </h1>
+                
+                <p className="text-lg sm:text-xl text-white/80 max-w-lg leading-relaxed font-medium">
+                  {heroBanners && heroBanners.length > 0
+                    ? (isAr ? heroBanners[0].subtitle_ar : heroBanners[0].subtitle_en)
+                    : (isAr ? "وجهتك الأولى لأفضل الألعاب والماركات العالمية في الكويت" : "Your premier destination for the best toys and global brands in Kuwait")
+                  }
+                </p>
+                
+                <div className="flex flex-wrap gap-4 pt-4">
                   <Link
-                    href={heroBanners[0].cta2_link || `/${locale}/products`}
-                    className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-semibold rounded-full border border-white/20 hover:bg-white/20 transition-all min-h-0 min-w-0"
+                    href={heroBanners && heroBanners[0]?.cta_link ? heroBanners[0].cta_link : `/${locale}/products`}
+                    className="h-14 px-10 bg-accent text-white font-black rounded-full hover:bg-accent/90 transition-all hover:scale-105 shadow-xl shadow-accent/25 flex items-center gap-2 group"
                   >
-                    {isAr ? heroBanners[0].cta2_text_ar : heroBanners[0].cta2_text_en}
+                    {heroBanners && heroBanners[0]?.cta_text_en ? (isAr ? heroBanners[0].cta_text_ar : heroBanners[0].cta_text_en) : (isAr ? "تسوق الآن" : "Shop Now")}
+                    <IconArrowRight size={20} className="group-hover:translate-x-1 transition-transform rtl:rotate-180" />
                   </Link>
-                )}
+                  <Link
+                    href={`/${locale}/products?sort=new`}
+                    className="h-14 px-10 bg-white/10 text-white font-bold rounded-full border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all flex items-center justify-center shadow-lg"
+                  >
+                    {isAr ? "وصل حديثاً" : "New Arrivals"}
+                  </Link>
+                </div>
+
+                <div className="flex items-center gap-6 pt-4">
+                  <div className="flex -space-x-3 rtl:space-x-reverse">
+                    {[1,2,3,4].map(i => (
+                      <div key={i} className="w-10 h-10 rounded-full border-2 border-primary bg-muted/20 flex items-center justify-center text-[10px] font-bold text-white backdrop-blur-sm">
+                        {String.fromCharCode(64 + i)}
+                      </div>
+                    ))}
+                    <div className="w-10 h-10 rounded-full border-2 border-primary bg-accent flex items-center justify-center text-[10px] font-bold text-white shadow-lg">
+                      +1k
+                    </div>
+                  </div>
+                  <div className="text-xs text-white/60 font-medium">
+                    <span className="text-white font-bold block">10,000+ Happy Kids</span>
+                    Trusting our toys
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden lg:flex justify-end animate-in fade-in zoom-in duration-1000 delay-200">
+                <div className="relative w-full max-w-md aspect-square rounded-[60px] bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group shadow-2xl">
+                    <div className="absolute inset-4 rounded-[45px] border border-white/5 animate-pulse-slow" />
+                    <span className="text-[180px] group-hover:scale-110 transition-transform duration-700 drop-shadow-2xl">🧸</span>
+                    
+                    {/* Floating Indicators */}
+                    <div className="absolute -top-4 -right-4 bg-white p-4 rounded-3xl shadow-2xl animate-bounce-slow flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-success/10 text-success flex items-center justify-center">
+                            <IconCircleCheck size={20} />
+                        </div>
+                        <div className="text-start">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase block">Delivery</span>
+                            <span className="text-sm font-bold text-primary">Free Shipping</span>
+                        </div>
+                    </div>
+
+                    <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-3xl shadow-2xl animate-float flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-accent/10 text-accent flex items-center justify-center">
+                            <IconStar size={20} fill="currentColor" />
+                        </div>
+                        <div className="text-start">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase block">Rating</span>
+                            <span className="text-sm font-bold text-primary">4.9 / 5.0</span>
+                        </div>
+                    </div>
+                </div>
               </div>
             </div>
-          ) : (
-            <div className="max-w-2xl space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                {isAr
-                  ? "مرحباً بكم في نيو ستار سبورتس"
-                  : "Welcome to NewStarSports"}
-              </h1>
-              <p className="text-lg sm:text-xl text-white/80">
-                {isAr
-                  ? "وجهتك للألعاب في الكويت — تسوق أحدث المنتجات الأصلية والمرخصة"
-                  : "Kuwait's home for toys — Shop the latest genuine, licensed products"}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href={`/${locale}/products`}
-                  className="inline-flex items-center px-6 py-3 bg-nss-accent text-white font-semibold rounded-full hover:bg-nss-accent/90 transition-all hover:scale-105 shadow-lg shadow-nss-accent/25 min-h-0 min-w-0"
-                >
-                  {isAr ? "تسوق الآن" : "Shop Now"}
-                  <svg className="w-4 h-4 ms-2 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-                <Link
-                  href={`/${locale}/products?sort=new`}
-                  className="inline-flex items-center px-6 py-3 bg-white/10 text-white font-semibold rounded-full border border-white/20 hover:bg-white/20 transition-all min-h-0 min-w-0"
-                >
-                  {isAr ? "وصل حديثاً" : "New Arrivals"}
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-        {/* Decorative */}
-        <div className="absolute top-0 right-0 rtl:left-0 rtl:right-auto w-1/2 h-full opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-l rtl:bg-gradient-to-r from-transparent to-nss-primary" />
-          <div className="w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,107,43,0.3)_0%,transparent_70%)]" />
+          </div>
         </div>
       </section>
 
@@ -557,7 +591,7 @@ export default async function HomePage({ params }: { params: Params }) {
                 className="text-nss-primary font-bold text-sm hover:underline flex items-center gap-1"
               >
                 {isAr ? "عرض كل المقالات" : "View All Articles"}
-                <ChevronRight className={`h-4 w-4 ${isAr ? 'rotate-180' : ''}`} />
+                <IconChevronRight className={`h-4 w-4 ${isAr ? 'rotate-180' : ''}`} stroke={1.5} />
               </Link>
             </div>
 
@@ -573,7 +607,7 @@ export default async function HomePage({ params }: { params: Params }) {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-nss-text-secondary/20">
-                        <FileText className="h-10 w-10" />
+                        <IconFileText className="h-10 w-10" stroke={1.5} />
                       </div>
                     )}
                   </Link>
@@ -594,7 +628,7 @@ export default async function HomePage({ params }: { params: Params }) {
                       className="inline-flex items-center text-xs font-bold text-nss-primary gap-1"
                     >
                       {isAr ? "اقرأ المزيد" : "Read More"}
-                      <ChevronRight className={`h-3 w-3 ${isAr ? 'rotate-180' : ''}`} />
+                      <IconChevronRight className={`h-3 w-3 ${isAr ? 'rotate-180' : ''}`} stroke={1.5} />
                     </Link>
                   </div>
                 </article>

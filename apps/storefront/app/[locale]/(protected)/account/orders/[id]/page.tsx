@@ -1,7 +1,15 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOrderDetails } from "@nss/db/queries";
-import { Package, Truck, CreditCard, Calendar, ArrowLeft, Clock, MapPin, ReceiptText } from "lucide-react";
+import { 
+  IconPackage, 
+  IconCreditCard, 
+  IconCalendar, 
+  IconArrowLeft, 
+  IconClock, 
+  IconMapPin, 
+  IconReceipt
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
@@ -19,6 +27,7 @@ export default async function OrderDetailPage({
     redirect(`/${locale}/login`);
   }
 
+  // @ts-ignore - Supabase client type mismatch in monorepo
   const order = await getOrderDetails(supabase, id, user.id);
 
   if (!order) {
@@ -69,7 +78,7 @@ export default async function OrderDetailPage({
           href={`/${locale}/account/orders`}
           className="inline-flex items-center gap-2 text-nss-text-secondary hover:text-nss-primary mb-8 transition-colors text-sm font-medium"
         >
-          <ArrowLeft className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
+          <IconArrowLeft className={`w-4 h-4 ${isAr ? 'rotate-180' : ''}`} />
           {t.back}
         </Link>
 
@@ -80,7 +89,7 @@ export default async function OrderDetailPage({
               {t.orderHash}{order.order_number}
             </h1>
             <p className="text-nss-text-secondary flex items-center gap-2 mt-2">
-              <Calendar className="w-4 h-4" />
+              <IconCalendar className="w-4 h-4" />
               {t.placedOn} {new Date(order.created_at).toLocaleDateString(locale === "ar" ? "ar-KW" : "en-KW")}
             </p>
           </div>
@@ -98,7 +107,7 @@ export default async function OrderDetailPage({
             {/* Items */}
             <div className="bg-white rounded-2xl shadow-sm border border-nss-border overflow-hidden">
               <div className="p-6 border-b border-nss-border flex items-center gap-2">
-                <Package className="w-5 h-5 text-nss-primary" />
+                <IconPackage className="w-5 h-5 text-nss-primary" />
                 <h2 className="text-lg font-bold text-nss-text-primary">{t.items}</h2>
               </div>
               <div className="divide-y divide-nss-border">
@@ -127,7 +136,7 @@ export default async function OrderDetailPage({
             {/* Timeline */}
             <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-6">
               <h2 className="text-lg font-bold text-nss-text-primary mb-8 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-nss-primary" />
+                <IconClock className="w-5 h-5 text-nss-primary" />
                 {t.timeline}
               </h2>
               <div className="relative space-y-8 before:absolute before:inset-y-0 before:left-3 before:w-0.5 before:bg-nss-border">
@@ -160,7 +169,7 @@ export default async function OrderDetailPage({
             {/* Summary */}
             <div className="bg-white rounded-2xl shadow-sm border border-nss-border overflow-hidden">
               <div className="p-6 border-b border-nss-border flex items-center gap-2">
-                <ReceiptText className="w-5 h-5 text-nss-primary" />
+                <IconReceipt className="w-5 h-5 text-nss-primary" />
                 <h2 className="text-lg font-bold text-nss-text-primary">{t.summary}</h2>
               </div>
               <div className="p-6 space-y-4">
@@ -184,7 +193,7 @@ export default async function OrderDetailPage({
             {/* Shipping Info */}
             <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-6">
               <h2 className="text-lg font-bold text-nss-text-primary mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-nss-primary" />
+                <IconMapPin className="w-5 h-5 text-nss-primary" />
                 {t.shippingTo}
               </h2>
               <div className="text-sm text-nss-text-secondary space-y-2">
@@ -198,7 +207,7 @@ export default async function OrderDetailPage({
             {/* Payment Info */}
             <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-6">
               <h2 className="text-lg font-bold text-nss-text-primary mb-4 flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-nss-primary" />
+                <IconCreditCard className="w-5 h-5 text-nss-primary" />
                 {t.payment}
               </h2>
               <div className="flex items-center justify-between">

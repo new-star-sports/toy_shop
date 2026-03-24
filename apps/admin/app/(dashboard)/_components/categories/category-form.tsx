@@ -32,11 +32,12 @@ import type { Category } from "@nss/db/types"
 interface CategoryFormProps {
   initialData?: Category | null
   categories: Category[]
+  onSuccess?: () => void
 }
 
 type CategoryFormValues = z.infer<typeof categorySchema>
 
-export function CategoryForm({ initialData, categories }: CategoryFormProps) {
+export function CategoryForm({ initialData, categories, onSuccess }: CategoryFormProps) {
   const router = useRouter()
   
   const form = useForm<CategoryFormValues>({
@@ -75,7 +76,11 @@ export function CategoryForm({ initialData, categories }: CategoryFormProps) {
 
     if (result.success) {
       toast.success(initialData ? "Category updated" : "Category created")
-      router.push("/categories")
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push("/categories")
+      }
     } else {
       toast.error(result.error || "Something went wrong")
     }

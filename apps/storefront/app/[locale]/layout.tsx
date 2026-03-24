@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Sans_Arabic, IBM_Plex_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
@@ -8,25 +8,14 @@ import { CartDrawer } from "./_components/cart/cart-drawer";
 import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/i18n";
 
-const ibmPlexSans = IBM_Plex_Sans({
+const geistSans = Geist({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-ibm-plex-sans",
-  display: "swap",
+  variable: "--font-geist-sans",
 });
 
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-ibm-plex-arabic",
-  display: "swap",
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-ibm-plex-mono",
-  display: "swap",
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -58,10 +47,10 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${ibmPlexSans.variable} ${ibmPlexArabic.variable} ${ibmPlexMono.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-nss-surface font-sans antialiased flex flex-col pb-16 sm:pb-0">
+      <body className="min-h-screen bg-background font-sans antialiased flex flex-col pb-16 sm:pb-0 selection:bg-primary/10 selection:text-primary">
         <Header locale={locale as Locale} user={user} />
         <main className="flex-1">{children}</main>
         <Footer locale={locale as Locale} />

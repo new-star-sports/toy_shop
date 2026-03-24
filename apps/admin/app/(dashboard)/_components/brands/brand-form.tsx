@@ -24,11 +24,12 @@ import type { Brand } from "@nss/db/types"
 
 interface BrandFormProps {
   initialData?: Brand | null
+  onSuccess?: () => void
 }
 
 type BrandFormValues = z.infer<typeof brandSchema>
 
-export function BrandForm({ initialData }: BrandFormProps) {
+export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
   const router = useRouter()
   
   const form = useForm<BrandFormValues>({
@@ -64,7 +65,11 @@ export function BrandForm({ initialData }: BrandFormProps) {
 
     if (result.success) {
       toast.success(initialData ? "Brand updated" : "Brand created")
-      router.push("/brands")
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push("/brands")
+      }
     } else {
       toast.error(result.error || "Something went wrong")
     }

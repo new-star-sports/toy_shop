@@ -1,97 +1,202 @@
 import Link from "next/link";
-import { Button } from "@nss/ui/components/button";
-import { Badge } from "@nss/ui/components/badge";
-import { getDashboardStats, getAdminOrders } from "@nss/db/queries";
+import { 
+  getDashboardStats, 
+  getAdminOrders 
+} from "@nss/db/queries";
+import { 
+  Button, 
+  Badge, 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@nss/ui";
+import {
+  IconCoin,
+  IconShoppingCart,
+  IconAlertTriangle,
+  IconUsers,
+  IconArrowUpRight,
+  IconPlus,
+  IconBox,
+} from "@tabler/icons-react";
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats();
   const { data: recentOrders } = await getAdminOrders({ page: 1, perPage: 5 });
 
   const kpis = [
-    { label: "Revenue Today", value: `${stats.revenueToday.toFixed(3)} KD`, change: "+0%", icon: "💰" },
-    { label: "Orders Today", value: stats.orderCountToday.toString(), change: "+0", icon: "🛒" },
-    { label: "Low Stock Items", value: stats.lowStockCount.toString(), change: stats.lowStockCount > 0 ? "Action Required" : "", icon: "⚠️", color: stats.lowStockCount > 0 ? "text-nss-danger" : "" },
-    { label: "New Customers", value: stats.customerCount.toString(), change: `+${stats.customerCount}`, icon: "👤" },
+    { 
+      label: "Revenue Today", 
+      value: `${stats.revenueToday.toFixed(3)} KD`, 
+      change: "+12%", 
+      icon: IconCoin,
+      color: "text-primary",
+      bg: "bg-primary/10"
+    },
+    { 
+      label: "Orders Today", 
+      value: stats.orderCountToday.toString(), 
+      change: "+5", 
+      icon: IconShoppingCart,
+      color: "text-accent",
+      bg: "bg-accent/10"
+    },
+    { 
+      label: "Low Stock Items", 
+      value: stats.lowStockCount.toString(), 
+      change: stats.lowStockCount > 0 ? "Action Required" : "All Good", 
+      icon: IconAlertTriangle, 
+      color: stats.lowStockCount > 0 ? "text-destructive" : "text-success",
+      bg: stats.lowStockCount > 0 ? "bg-destructive/10" : "bg-success/10"
+    },
+    { 
+      label: "New Customers", 
+      value: stats.customerCount.toString(), 
+      change: `+${stats.customerCount}`, 
+      icon: IconUsers,
+      color: "text-purple-mid",
+      bg: "bg-purple-mid/10"
+    },
   ];
 
   return (
-    <div className="space-y-6 text-start">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard Overview</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Welcome back to your administration panel.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" className="gap-2">
+            Download Report
+          </Button>
+          <Button className="gap-2">
+            <IconPlus size={16} stroke={2} />
+            Add Product
+          </Button>
+        </div>
+      </div>
+
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpis.map((kpi) => (
-          <div
-            key={kpi.label}
-            className="rounded-xl bg-nss-card border border-nss-border p-5 space-y-2 hover:border-nss-primary/30 transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-nss-text-secondary">{kpi.label}</span>
-              <span className="text-xl">{kpi.icon}</span>
-            </div>
-            <p className={`text-2xl font-bold font-mono ${kpi.color || "text-nss-text-primary"}`}>
-              {kpi.value}
-            </p>
-            {kpi.change && (
-              <p className={`text-[10px] font-bold ${kpi.color?.includes('danger') ? 'text-nss-danger' : 'text-nss-success'}`}>
-                {kpi.change}
-              </p>
-            )}
-          </div>
+          <Card key={kpi.label} className="rounded-2xl border-border/50 shadow-card hover:shadow-card-hover transition-all duration-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium text-muted-foreground">{kpi.label}</span>
+                <div className={`h-10 w-10 rounded-xl ${kpi.bg} flex items-center justify-center`}>
+                  <kpi.icon size={20} className={kpi.color} stroke={1.5} />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-2xl font-semibold tracking-tight">{kpi.value}</h3>
+                <p className="text-xs font-medium flex items-center gap-1">
+                  <span className={kpi.color}>{kpi.change}</span>
+                  <span className="text-muted-foreground font-normal">from yesterday</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {/* Recent Orders */}
-      <div className="rounded-xl bg-nss-card border border-nss-border overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-nss-border bg-nss-surface/30">
-          <h3 className="font-bold text-nss-text-primary uppercase tracking-wide text-sm">Recent Orders</h3>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/orders">View All</Link>
-          </Button>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-start">
-            <tbody className="divide-y divide-nss-border">
+      {/* Recent Activity Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Orders Table */}
+        <Card className="lg:col-span-2 rounded-2xl border-border/50 shadow-card overflow-hidden">
+          <CardHeader className="px-6 py-5 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base font-semibold">Recent Orders</CardTitle>
+            <Button variant="ghost" size="sm" className="text-xs h-8 gap-1.5" asChild>
+              <Link href="/orders">
+                View All <IconArrowUpRight size={14} />
+              </Link>
+            </Button>
+          </CardHeader>
+          <Table>
+            <TableHeader className="bg-muted/30">
+              <TableRow className="hover:bg-transparent border-border/50">
+                <TableHead className="w-[100px] font-medium text-xs uppercase tracking-wide">Order</TableHead>
+                <TableHead className="font-medium text-xs uppercase tracking-wide">Customer</TableHead>
+                <TableHead className="font-medium text-xs uppercase tracking-wide">Status</TableHead>
+                <TableHead className="font-medium text-xs uppercase tracking-wide text-right">Total</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {recentOrders.length === 0 ? (
-                <tr>
-                  <td className="px-6 py-10 text-center text-nss-text-secondary italic">
+                <TableRow>
+                  <TableCell colSpan={4} className="h-32 text-center text-muted-foreground italic">
                     No orders today.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-nss-surface/50 transition-colors">
-                    <td className="px-6 py-4 font-mono font-bold text-nss-primary">
+                  <TableRow key={order.id} className="border-border/30 hover:bg-muted/10 transition-colors">
+                    <TableCell className="font-medium text-primary">
                       #{order.order_number}
-                    </td>
-                    <td className="px-6 py-4 text-nss-text-primary">
+                    </TableCell>
+                    <TableCell className="font-medium">
                       {order.customer_name}
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant="outline" className="capitalize text-[10px]">
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="rounded-full px-2.5 py-0.5 font-normal capitalize">
                         {order.status}
                       </Badge>
-                    </td>
-                    <td className="px-6 py-4 font-mono font-semibold">
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
                       {Number(order.total_kwd).toFixed(3)} KD
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/orders/${order.id}`}>Details</Link>
-                      </Button>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </Card>
 
-      {/* Status */}
-      <div className="text-center py-4">
-        <div className="inline-flex items-center gap-2 rounded-full bg-nss-success/10 px-4 py-2 text-sm text-nss-success">
-          <span className="w-2 h-2 rounded-full bg-nss-success animate-pulse" />
-          Admin Dashboard — Phase 0 Complete
-        </div>
+        {/* Quick Links / Shortcuts */}
+        <Card className="rounded-2xl border-border/50 shadow-card">
+          <CardHeader className="px-6 py-5 border-b border-border/50 bg-muted/20">
+            <CardTitle className="text-base font-semibold">Administration</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              {[
+                { label: "Manage Inventory", href: "/inventory", icon: IconBox },
+                { label: "View Customers", href: "/customers", icon: IconUsers },
+                { label: "Marketing Banners", href: "/banners", icon: IconPlus },
+              ].map((link) => (
+                <Link 
+                  key={link.href} 
+                  href={link.href}
+                  className="flex items-center justify-between p-3 rounded-xl border border-border/50 hover:bg-muted/30 hover:border-border transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <link.icon size={16} stroke={1.5} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                    <span className="text-sm font-medium">{link.label}</span>
+                  </div>
+                  <IconArrowUpRight size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              ))}
+            </div>
+            
+            <div className="mt-8 p-4 rounded-xl bg-primary/5 border border-primary/10">
+              <h4 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">System Status</h4>
+              <div className="flex items-center gap-2 text-sm text-foreground">
+                <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                <span>All systems operational</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

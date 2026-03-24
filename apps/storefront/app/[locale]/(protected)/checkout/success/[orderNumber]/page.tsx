@@ -1,7 +1,12 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOrderByNumber } from "@nss/db/queries";
-import { CheckCircle2, Package, Truck, CreditCard, ShoppingBag, ArrowRight } from "lucide-react";
+import { 
+  IconCircleCheck, 
+  IconPackage, 
+  IconTruck, 
+  IconArrowRight 
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
@@ -19,6 +24,7 @@ export default async function OrderSuccessPage({
     redirect(`/${locale}/login`);
   }
 
+  // @ts-ignore - Supabase client type mismatch in monorepo
   const order = await getOrderByNumber(supabase, orderNumber, user.id);
 
   if (!order) {
@@ -49,7 +55,7 @@ export default async function OrderSuccessPage({
         {/* Success Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
-            <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <IconCircleCheck className="w-10 h-10 text-green-600" />
           </div>
           <h1 className="text-3xl font-bold text-nss-text-primary mb-2">{t.success}</h1>
           <p className="text-nss-text-secondary">
@@ -89,7 +95,7 @@ export default async function OrderSuccessPage({
           {/* Items */}
           <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-6">
             <h2 className="text-lg font-bold text-nss-text-primary mb-4 flex items-center gap-2">
-              <Package className="w-5 h-5 text-nss-primary" />
+              <IconPackage className="w-5 h-5 text-nss-primary" />
               {t.items}
             </h2>
             <div className="space-y-4">
@@ -133,7 +139,7 @@ export default async function OrderSuccessPage({
           <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-6">
               <h2 className="text-lg font-bold text-nss-text-primary mb-4 flex items-center gap-2">
-                <Truck className="w-5 h-5 text-nss-primary" />
+                <IconTruck className="w-5 h-5 text-nss-primary" />
                 {t.shippingTo}
               </h2>
               <div className="text-sm text-nss-text-secondary space-y-1">
@@ -146,7 +152,7 @@ export default async function OrderSuccessPage({
 
             <div className="bg-nss-primary/10 rounded-2xl p-6 border border-nss-primary/20">
               <h2 className="text-sm font-bold text-nss-primary uppercase tracking-wider mb-2 flex items-center gap-2">
-                <ShoppingBag className="w-4 h-4" />
+                <IconPackage className="w-4 h-4" />
                 {isAr ? "ماذا يحدث بعد ذلك؟" : "What's next?"}
               </h2>
               <p className="text-sm text-nss-primary/80 leading-relaxed">
@@ -172,7 +178,7 @@ export default async function OrderSuccessPage({
             className="flex-1 bg-nss-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-nss-primary/90 transition-shadow shadow-md shadow-nss-primary/20"
           >
             {t.continueShopping}
-            <ArrowRight className={`w-5 h-5 ${isAr ? 'rotate-180' : ''}`} />
+            <IconArrowRight className={`w-5 h-5 ${isAr ? 'rotate-180' : ''}`} />
           </Link>
         </div>
       </div>

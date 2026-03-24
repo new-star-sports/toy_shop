@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 const SUPPORTED_LOCALES = ["en", "ar"] as const;
-const DEFAULT_LOCALE = "ar"; // Arabic is the default for Kuwait
+const DEFAULT_LOCALE = "en"; // English is now the default
 
 /** Protected routes that require authentication */
 const PROTECTED_PATHS = [

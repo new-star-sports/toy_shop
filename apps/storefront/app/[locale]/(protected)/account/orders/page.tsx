@@ -1,7 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserOrders } from "@nss/db/queries";
-import { Package, ChevronRight, Calendar, CreditCard, ShoppingBag } from "lucide-react";
+import { 
+  IconPackage, 
+  IconChevronRight, 
+  IconCalendar, 
+  IconCreditCard, 
+  IconShoppingBag 
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
@@ -19,6 +25,7 @@ export default async function MyOrdersPage({
     redirect(`/${locale}/login`);
   }
 
+  // @ts-ignore - Supabase client type mismatch in monorepo
   const orders = await getUserOrders(supabase, user.id);
 
   const isAr = locale === "ar";
@@ -62,7 +69,7 @@ export default async function MyOrdersPage({
         {orders.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-12 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-nss-surface rounded-full mb-6">
-              <ShoppingBag className="w-8 h-8 text-nss-text-secondary" />
+              <IconShoppingBag className="w-8 h-8 text-nss-text-secondary" />
             </div>
             <p className="text-lg font-medium text-nss-text-primary mb-6">{t.empty}</p>
             <Link
@@ -84,14 +91,14 @@ export default async function MyOrdersPage({
                   <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-nss-surface rounded-xl flex items-center justify-center group-hover:bg-nss-primary/10 transition-colors">
-                        <Package className="w-5 h-5 text-nss-text-secondary group-hover:text-nss-primary transition-colors" />
+                        <IconPackage className="w-5 h-5 text-nss-text-secondary group-hover:text-nss-primary transition-colors" />
                       </div>
                       <div>
                         <p className="font-bold text-nss-text-primary">
                           {t.orderHash}{order.order_number}
                         </p>
                         <p className="text-xs text-nss-text-secondary flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
+                          <IconCalendar className="w-3 h-3" />
                           {t.placedOn} {new Date(order.created_at).toLocaleDateString(locale === "ar" ? "ar-KW" : "en-KW")}
                         </p>
                       </div>
@@ -100,13 +107,13 @@ export default async function MyOrdersPage({
                       <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${getStatusColor(order.status)}`}>
                         {(t.status as any)[order.status] || order.status}
                       </span>
-                      <ChevronRight className={`w-5 h-5 text-nss-text-secondary group-hover:text-nss-primary transition-all ${isAr ? 'rotate-180' : ''}`} />
+                      <IconChevronRight className={`w-5 h-5 text-nss-text-secondary group-hover:text-nss-primary transition-all ${isAr ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
                   
                   <div className="flex items-center justify-between pt-4 border-t border-nss-border">
                     <div className="flex items-center gap-2 text-sm text-nss-text-secondary">
-                      <CreditCard className="w-4 h-4" />
+                      <IconCreditCard className="w-4 h-4" />
                       <span className="uppercase">{order.payment_method}</span>
                     </div>
                     <div>

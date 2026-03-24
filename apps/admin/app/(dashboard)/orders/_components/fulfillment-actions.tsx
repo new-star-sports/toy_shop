@@ -4,7 +4,13 @@ import { useState } from "react"
 import { Button } from "@nss/ui/components/button"
 import { updateOrderStatusAction, updateTrackingAction } from "../_actions"
 import type { OrderStatus } from "@nss/db/types"
-import { CheckCircle2, Truck, XCircle, PackageCheck, ReceiptText } from "lucide-react"
+import { 
+  IconCircleCheck, 
+  IconTruck, 
+  IconCircleX, 
+  IconPackage, 
+  IconFileDescription 
+} from "@tabler/icons-react"
 
 interface FulfillmentActionsProps {
   orderId: string
@@ -30,9 +36,9 @@ export function FulfillmentActions({ orderId, currentStatus }: FulfillmentAction
         <Button 
           disabled={loading} 
           onClick={() => handleStatusUpdate("confirmed", "Order confirmed by admin")}
-          className="gap-2 bg-green-600 hover:bg-green-700"
+          className="gap-2 bg-success hover:bg-success/90 rounded-full"
         >
-          <CheckCircle2 size={16} />
+          <IconCircleCheck size={16} stroke={2} />
           Confirm Order
         </Button>
       )}
@@ -41,9 +47,9 @@ export function FulfillmentActions({ orderId, currentStatus }: FulfillmentAction
         <Button 
           disabled={loading} 
           onClick={() => handleStatusUpdate("processing", "Order is being packed")}
-          className="gap-2 bg-blue-600 hover:bg-blue-700"
+          className="gap-2 bg-primary hover:bg-primary/90 rounded-full"
         >
-          <PackageCheck size={16} />
+          <IconPackage size={16} stroke={2} />
           Start Processing
         </Button>
       )}
@@ -52,9 +58,9 @@ export function FulfillmentActions({ orderId, currentStatus }: FulfillmentAction
         <Button 
           disabled={loading} 
           onClick={() => handleStatusUpdate("shipped", "Order dispatched with courier")}
-          className="gap-2 bg-purple-600 hover:bg-purple-700"
+          className="gap-2 bg-indigo-600 hover:bg-indigo-700 rounded-full"
         >
-          <Truck size={16} />
+          <IconTruck size={16} stroke={2} />
           Mark as Shipped
         </Button>
       )}
@@ -63,9 +69,9 @@ export function FulfillmentActions({ orderId, currentStatus }: FulfillmentAction
         <Button 
           disabled={loading} 
           onClick={() => handleStatusUpdate("delivered", "Order delivered to customer")}
-          className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+          className="gap-2 bg-success hover:bg-success/90 rounded-full"
         >
-          <CheckCircle2 size={16} />
+          <IconCircleCheck size={16} stroke={2} />
           Mark as Delivered
         </Button>
       )}
@@ -78,15 +84,15 @@ export function FulfillmentActions({ orderId, currentStatus }: FulfillmentAction
             const reason = prompt("Enter cancellation reason:")
             if (reason) handleStatusUpdate("cancelled", reason)
           }}
-          className="gap-2 text-nss-danger hover:bg-nss-danger/10"
+          className="gap-2 text-destructive border-destructive/20 hover:bg-destructive/10 rounded-full"
         >
-          <XCircle size={16} />
+          <IconCircleX size={16} stroke={2} />
           Cancel Order
         </Button>
       )}
       
-      <Button variant="outline" className="gap-2">
-        <ReceiptText size={16} />
+      <Button variant="outline" className="gap-2 rounded-full border-border/50">
+        <IconFileDescription size={16} stroke={1.5} />
         Invoice
       </Button>
     </div>

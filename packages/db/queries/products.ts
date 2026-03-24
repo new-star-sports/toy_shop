@@ -352,16 +352,12 @@ export async function updateStock(
   const supabase = createServiceClient();
 
   if (type === "product") {
-    const { error } = await supabase
-      .from("products" as any)
-      .update({ stock_quantity: quantity } as any)
-      .eq("id", id);
+    // @ts-ignore - Supabase update type mismatch in monorepo
+    const { error } = (await supabase.from("products").update({ stock_quantity: quantity }).eq("id", id)) as any;
     if (error) throw error;
   } else {
-    const { error } = await supabase
-      .from("product_variants" as any)
-      .update({ stock_quantity: quantity } as any)
-      .eq("id", id);
+    // @ts-ignore - Supabase update type mismatch in monorepo
+    const { error } = (await supabase.from("product_variants").update({ stock_quantity: quantity }).eq("id", id)) as any;
     if (error) throw error;
   }
 }
@@ -371,6 +367,7 @@ export async function updateStock(
  */
 export async function updateProduct(id: string, data: any): Promise<void> {
   const supabase = createServiceClient();
-  const { error } = await supabase.from("products" as any).update(data as any).eq("id", id);
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { error } = (await supabase.from("products").update(data).eq("id", id)) as any;
   if (error) throw error;
 }

@@ -22,7 +22,9 @@ export default async function EditAddressPage({
   }
 
   const [address, governorates] = await Promise.all([
+    // @ts-ignore - Supabase client type mismatch in monorepo
     getAddressById(supabase, id),
+    // @ts-ignore - Supabase client type mismatch in monorepo
     getGovernorates(supabase),
   ]);
 

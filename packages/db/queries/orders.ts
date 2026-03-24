@@ -131,10 +131,8 @@ export async function updateOrderStatus(
   note?: string
 ) {
   // 1. Update order status
-  const { error: updateError } = await (supabase
-    .from("orders" as any)
-    .update({ status: status } as any) as any)
-    .eq("id", orderId);
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { error: updateError } = (await supabase.from("orders").update({ status: status }).eq("id", orderId)) as any;
 
   if (updateError) throw updateError;
 

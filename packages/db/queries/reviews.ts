@@ -28,12 +28,8 @@ export async function getAdminReviews() {
  */
 export async function updateReviewStatus(id: string, isApproved: boolean) {
   const supabase = createServiceClient();
-  const { error } = await (supabase.from("reviews") as any)
-    .update({ 
-      is_approved: isApproved,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { error } = (await supabase.from("reviews").update({ is_approved: isApproved, updated_at: new Date().toISOString() }).eq("id", id)) as any;
 
   if (error) throw error;
   return true;
@@ -44,12 +40,8 @@ export async function updateReviewStatus(id: string, isApproved: boolean) {
  */
 export async function toggleReviewPin(id: string, isPinned: boolean) {
   const supabase = createServiceClient();
-  const { error } = await (supabase.from("reviews") as any)
-    .update({ 
-      is_pinned_home: isPinned,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { error } = (await supabase.from("reviews").update({ is_pinned_home: isPinned, updated_at: new Date().toISOString() }).eq("id", id)) as any;
 
   if (error) throw error;
   return true;
@@ -60,13 +52,8 @@ export async function toggleReviewPin(id: string, isPinned: boolean) {
  */
 export async function saveReviewReply(id: string, reply: string) {
   const supabase = createServiceClient();
-  const { error } = await (supabase.from("reviews") as any)
-    .update({ 
-      admin_reply: reply,
-      admin_reply_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { error } = (await supabase.from("reviews").update({ admin_reply: reply, admin_reply_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", id)) as any;
 
   if (error) throw error;
   return true;

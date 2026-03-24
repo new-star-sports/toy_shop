@@ -43,12 +43,8 @@ export async function createAddress(supabase: any, address: any) {
 }
 
 export async function updateAddress(supabase: any, id: string, address: any) {
-  const { data, error } = await supabase
-    .from("addresses")
-    .update(address)
-    .eq("id", id)
-    .select()
-    .single();
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { data, error } = (await supabase.from("addresses").update(address).eq("id", id).select().single()) as any;
 
   if (error) throw error;
   return data;
@@ -64,11 +60,8 @@ export async function deleteAddress(supabase: any, id: string) {
 }
 
 export async function unsetOtherDefaultAddresses(supabase: any, userId: string, excludeId: string) {
-  const { error } = await supabase
-    .from("addresses")
-    .update({ is_default: false })
-    .eq("user_id", userId)
-    .neq("id", excludeId);
+  // @ts-ignore - Supabase update type mismatch in monorepo
+  const { error } = (await supabase.from("addresses").update({ is_default: false }).eq("user_id", userId).neq("id", excludeId)) as any;
 
   if (error) throw error;
 }

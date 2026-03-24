@@ -20,6 +20,37 @@ export type CouponType = 'percentage' | 'fixed_kwd';
 export type LoyaltyAction = 'earned_purchase' | 'earned_review' | 'earned_birthday' | 'redeemed' | 'expired' | 'adjusted';
 
 // ── Table Row Types ──────────────────────────────────────────────────────────
+export interface BlogCategory {
+  id: string;
+  name_en: string;
+  name_ar: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Blog {
+  id: string;
+  slug: string;
+  title_en: string;
+  title_ar: string;
+  excerpt_en: string | null;
+  excerpt_ar: string | null;
+  content_en: string;
+  content_ar: string;
+  image_url: string | null;
+  category_id: string | null;
+  author_id: string | null;
+  is_published: boolean;
+  published_at: string | null;
+  display_order: number;
+  meta_title_en: string | null;
+  meta_title_ar: string | null;
+  meta_description_en: string | null;
+  meta_description_ar: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Profile {
   id: string;
@@ -366,6 +397,8 @@ export interface Database {
       settings: { Row: Setting; Insert: Partial<Setting>; Update: Partial<Setting> };
       wishlist_items: { Row: WishlistItem; Insert: Partial<WishlistItem>; Update: Partial<WishlistItem> };
       coupons: { Row: Coupon; Insert: Partial<Coupon>; Update: Partial<Coupon> };
+      blog_categories: { Row: BlogCategory; Insert: Partial<BlogCategory>; Update: Partial<BlogCategory> };
+      blogs: { Row: Blog; Insert: Partial<Blog>; Update: Partial<Blog> };
     };
     Functions: {
       decrement_stock: {

@@ -5,7 +5,11 @@
   "description": "NewStarSports — Kuwait Toy Shop E-Commerce Platform",
   "scripts": {
     "dev": "turbo dev",
+    "dev:admin": "turbo dev --filter=@nss/admin",
+    "dev:storefront": "turbo dev --filter=@nss/storefront",
+    "dev:api": "turbo dev --filter=@nss/api",
     "build": "turbo build",
+
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "clean": "turbo clean && rm -rf node_modules",
