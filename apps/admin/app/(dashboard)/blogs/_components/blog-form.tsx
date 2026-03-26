@@ -6,7 +6,7 @@ import * as z from "zod"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Loader2, Save, Trash2, Globe, ImageIcon, Layout } from "lucide-react"
+import { Loader2, Save, Trash2, ImageIcon, Layout } from "lucide-react"
 
 import { Button } from "@nss/ui/components/button"
 import { Input } from "@nss/ui/components/input"
@@ -14,11 +14,11 @@ import { Label } from "@nss/ui/components/label"
 import { Textarea } from "@nss/ui/components/textarea"
 import { Switch } from "@nss/ui/components/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@nss/ui/components/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@nss/ui/components/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@nss/ui/components/card"
 
 import { Blog, BlogCategory } from "@nss/db/queries"
 import { saveBlogAction, deleteBlogAction } from "../_actions"
+import { translateToArabic } from "../../_lib/translate"
 
 const blogSchema = z.object({
   title_en: z.string().min(5, "English title is too short"),
@@ -64,8 +64,16 @@ export function BlogForm({ initialData, categories }: BlogFormProps) {
   const onSubmit = async (values: BlogFormValues) => {
     setIsSubmitting(true)
     try {
-      const result = await saveBlogAction({
+      // Automate Arabic translations
+      const translatedData = {
         ...values,
+        title_ar: await translateToArabic(values.title_en),
+        excerpt_ar: values.excerpt_en ? await translateToArabic(values.excerpt_en) : values.title_ar,
+        content_ar: await translateToArabic(values.content_en),
+      }
+
+      const result = await saveBlogAction({
+        ...translatedData,
         id: initialData?.id,
         published_at: values.is_published && !initialData?.published_at ? new Date().toISOString() : initialData?.published_at
       } as any)
@@ -136,20 +144,9 @@ export function BlogForm({ initialData, categories }: BlogFormProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content Areas */}
         <div className="lg:col-span-2 space-y-6">
-          <Tabs defaultValue="english" className="w-full">
-            <TabsList className="bg-nss-surface p-1 border border-nss-border">
-              <TabsTrigger value="english" className="gap-2">
-                <Globe className="h-4 w-4" /> English Content
-              </TabsTrigger>
-              <TabsTrigger value="arabic" className="gap-2">
-                <Globe className="h-4 w-4" /> Arabic Content
-              </TabsTrigger>
-            </TabsList>
-            
-            <div className="mt-6 space-y-6">
-              <TabsContent value="english" className="space-y-6">
+          <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label>English Title</Label>
+                  <Label>Article Title</Label>
                   <Input 
                     {...form.register("title_en")} 
                     onChange={onTitleChange}
@@ -159,7 +156,7 @@ export function BlogForm({ initialData, categories }: BlogFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>English Excerpt</Label>
+                  <Label>Excerpt</Label>
                   <Textarea 
                     {...form.register("excerpt_en")} 
                     placeholder="Short summary for the blog listing card..." 
@@ -168,7 +165,7 @@ export function BlogForm({ initialData, categories }: BlogFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>English Content (Markdown/HTML Support)</Label>
+                  <Label>Content (Markdown/HTML Support)</Label>
                   <Textarea 
                     {...form.register("content_en")} 
                     placeholder="Main article content..." 
@@ -176,43 +173,7 @@ export function BlogForm({ initialData, categories }: BlogFormProps) {
                   />
                   {form.formState.errors.content_en && <p className="text-xs text-red-500">{form.formState.errors.content_en.message}</p>}
                 </div>
-              </TabsContent>
-
-              <TabsContent value="arabic" className="space-y-6">
-                <div className="space-y-2">
-                  <Label className="text-right block">العنوان بالعربي</Label>
-                  <Input 
-                    {...form.register("title_ar")} 
-                    dir="rtl" 
-                    className="text-right" 
-                    placeholder="أفضل ١٠ ألعاب تعليمية للأطفال..." 
-                  />
-                  {form.formState.errors.title_ar && <p className="text-xs text-red-500 text-right">{form.formState.errors.title_ar.message}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-right block">مقتطف قصير</Label>
-                  <Textarea 
-                    {...form.register("excerpt_ar")} 
-                    dir="rtl" 
-                    className="text-right h-20" 
-                    placeholder="ملخص قصير للمقال..." 
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-right block">المحتوى</Label>
-                  <Textarea 
-                    {...form.register("content_ar")} 
-                    dir="rtl" 
-                    className="text-right min-h-[400px] font-mono text-sm leading-relaxed" 
-                    placeholder="محتوى المقال الكامل..." 
-                  />
-                  {form.formState.errors.content_ar && <p className="text-xs text-red-500 text-right">{form.formState.errors.content_ar.message}</p>}
-                </div>
-              </TabsContent>
-            </div>
-          </Tabs>
+          </div>
         </div>
 
         {/* Sidebar Settings */}

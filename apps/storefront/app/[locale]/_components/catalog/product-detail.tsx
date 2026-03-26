@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ProductGallery } from "./product-gallery";
 import { VariantSelector } from "./variant-selector";
 import { Breadcrumbs } from "./breadcrumbs";
@@ -233,4 +234,4 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
   );
 }
 
-import Link from "next/link";
+

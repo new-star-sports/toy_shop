@@ -112,6 +112,6 @@ export function canAccessRoute(role: Role, route: string): boolean {
     .sort((a, b) => b.length - a.length) // Longest match first
     .find((r) => route.startsWith(r));
 
-  if (!matchedRoute) return true; // Unknown route — allow by default
+  if (!matchedRoute) return false; // Unknown route — deny by default
   return hasPermission(role, routePermissionMap[matchedRoute]!);
 }

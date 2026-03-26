@@ -250,6 +250,7 @@ export async function getAdminProducts(options?: {
   status?: Product["status"];
   categorySlug?: string;
   search?: string;
+  stockFilter?: "low" | "out";
 }): Promise<{ data: ProductWithRelations[]; count: number }> {
   const supabase = createServiceClient();
   const page = options?.page ?? 1;
@@ -280,6 +281,12 @@ export async function getAdminProducts(options?: {
 
   if (options?.search) {
     query = query.or(`name_en.ilike.%${options.search}%,name_ar.ilike.%${options.search}%,sku.ilike.%${options.search}%`);
+  }
+
+  if (options?.stockFilter === "out") {
+    query = query.eq("stock_quantity", 0);
+  } else if (options?.stockFilter === "low") {
+    query = query.gt("stock_quantity", 0).lte("stock_quantity", 5);
   }
 
   const { data, count, error } = await query;

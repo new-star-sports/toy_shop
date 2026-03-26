@@ -2,7 +2,9 @@ import { getAdminCustomers } from "@nss/db/queries";
 import { Button } from "@nss/ui/components/button";
 import { Input } from "@nss/ui/components/input";
 import { Badge } from "@nss/ui/components/badge";
+import { Card, CardContent } from "@nss/ui";
 import Link from "next/link";
+import { IconSearch, IconEye } from "@tabler/icons-react";
 
 export default async function CustomersPage({
   searchParams,
@@ -20,91 +22,123 @@ export default async function CustomersPage({
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-nss-text-primary">Customers</h1>
-          <p className="text-sm text-nss-text-secondary">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Customers</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
             Manage and view your customer base ({count} total)
           </p>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-nss-card p-4 rounded-xl border border-nss-border">
-        <div className="flex-1">
-          <Input
-            placeholder="Search by name, phone..."
-            defaultValue={query}
-            className="max-w-md"
-          />
-        </div>
-      </div>
+      {/* Search */}
+      <Card className="rounded-2xl border-border/50">
+        <CardContent className="p-3 sm:p-4">
+          <div className="relative w-full sm:max-w-md">
+            <IconSearch size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" stroke={1.5} />
+            <Input
+              placeholder="Search by name, phone, email..."
+              defaultValue={query}
+              className="pl-10 rounded-xl h-10 w-full"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Table */}
-      <div className="bg-nss-card rounded-xl border border-nss-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-start">
-            <thead className="bg-nss-surface text-nss-text-secondary border-b border-nss-border">
-              <tr>
-                <th className="px-6 py-3 font-semibold text-start">Customer</th>
-                <th className="px-6 py-3 font-semibold text-start">Contact</th>
-                <th className="px-6 py-3 font-semibold text-start">Joined</th>
-                <th className="px-6 py-3 font-semibold text-start">Orders</th>
-                <th className="px-6 py-3 font-semibold text-start">Total Spent</th>
-                <th className="px-6 py-3 font-semibold text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-nss-border">
-              {customers.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-nss-text-secondary">
-                    No customers found matching your criteria.
-                  </td>
-                </tr>
-              ) : (
-                customers.map((c) => (
-                  <tr key={c.id} className="hover:bg-nss-surface/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-nss-primary/10 flex items-center justify-center text-nss-primary font-bold">
-                          {c.full_name?.charAt(0) || "U"}
-                        </div>
-                        <div>
-                          <p className="font-medium text-nss-text-primary">
-                            {c.full_name || "Guest User"}
-                          </p>
-                          <p className="text-[10px] text-nss-text-secondary font-mono">
-                            {c.id.slice(0, 8)}...
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-nss-text-primary">{c.email || "—"}</p>
-                      <p className="text-xs text-nss-text-secondary">{c.phone || "—"}</p>
-                    </td>
-                    <td className="px-6 py-4 text-nss-text-secondary">
-                      {new Date(c.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <Badge variant="outline">{c.total_orders}</Badge>
-                    </td>
-                    <td className="px-6 py-4 font-mono">
-                      {c.total_spent_kwd.toFixed(3)} KD
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/customers/${c.id}`}>View Details</Link>
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {customers.length === 0 ? (
+        <div className="p-12 text-center text-muted-foreground italic text-sm rounded-2xl border border-dashed border-border/60">
+          No customers found matching your criteria.
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Desktop Table */}
+          <Card className="hidden md:block rounded-2xl border-border/50 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-start">
+                <thead className="bg-muted/30 text-muted-foreground border-b border-border">
+                  <tr>
+                    <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Customer</th>
+                    <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Contact</th>
+                    <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Joined</th>
+                    <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Orders</th>
+                    <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Total Spent</th>
+                    <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/30">
+                  {customers.map((c) => (
+                    <tr key={c.id} className="hover:bg-muted/5 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                            {c.full_name?.charAt(0) || "U"}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-foreground">{c.full_name || "Guest User"}</p>
+                            <p className="text-[10px] text-muted-foreground font-mono">{c.id.slice(0, 8)}...</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-foreground text-sm">{c.email || "—"}</p>
+                        <p className="text-xs text-muted-foreground">{c.phone || "—"}</p>
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground text-sm">
+                        {new Date(c.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Badge variant="outline" className="font-bold">{c.total_orders}</Badge>
+                      </td>
+                      <td className="px-6 py-4 font-mono font-bold text-sm">
+                        {c.total_spent_kwd.toFixed(3)} KD
+                      </td>
+                      <td className="px-6 py-4 text-end">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" asChild>
+                          <Link href={`/customers/${c.id}`}>
+                            <IconEye size={18} stroke={1.5} />
+                          </Link>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Mobile card list */}
+          <div className="md:hidden space-y-3">
+            {customers.map((c) => (
+              <Card key={c.id} className="rounded-2xl border-border/40 overflow-hidden bg-card">
+                <div className="p-4 flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                    {c.full_name?.charAt(0) || "U"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground text-sm truncate">{c.full_name || "Guest User"}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{c.email || c.phone || "No contact"}</p>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[11px] text-muted-foreground">
+                        {c.total_orders} order{c.total_orders !== 1 ? "s" : ""}
+                      </span>
+                      <span className="text-[11px] font-bold text-foreground">
+                        {c.total_spent_kwd.toFixed(3)} KD
+                      </span>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full shrink-0" asChild>
+                    <Link href={`/customers/${c.id}`}>
+                      <IconEye size={18} stroke={1.5} />
+                    </Link>
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

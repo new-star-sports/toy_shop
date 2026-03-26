@@ -30,7 +30,7 @@ export function CategorySheetForm({ mode, category, categories, trigger }: Categ
           {trigger}
         </div>
       ) : (
-        <Button onClick={() => setOpen(true)} className="gap-2">
+        <Button onClick={() => setOpen(true)} className="flex items-center gap-2">
           {mode === "create" ? (
             <>
               <IconPlus size={16} stroke={2} />

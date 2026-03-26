@@ -11,23 +11,21 @@ export async function updateOrderStatusAction(orderId: string, status: OrderStat
   const supabase = createServiceClient()
 
   // 1. Update order
-  // @ts-ignore
-  const { error: updateError } = await supabase
-    .from("orders")
-    .update({ status } as any)
+  const { error: updateError } = await (supabase.from("orders") as any)
+    .update({ status })
     .eq("id", orderId)
+
 
   if (updateError) return { success: false, error: updateError.message }
 
   // 2. Add timeline event
-  // @ts-ignore
-  const { error: timelineError } = await supabase
-    .from("order_timeline")
+  const { error: timelineError } = await (supabase.from("order_timeline") as any)
     .insert({
       order_id: orderId,
       status,
       note: note || `Order status updated to ${status}`,
-    } as any)
+    })
+
 
   if (timelineError) console.error("Timeline error:", timelineError)
 
@@ -42,11 +40,10 @@ export async function updateOrderStatusAction(orderId: string, status: OrderStat
 export async function updateTrackingAction(orderId: string, data: { tracking_number?: string, courier_name?: string }) {
   const supabase = createServiceClient()
 
-  // @ts-ignore
-  const { error } = await supabase
-    .from("orders")
-    .update(data as any)
+  const { error } = await (supabase.from("orders") as any)
+    .update(data)
     .eq("id", orderId)
+
 
   if (error) return { success: false, error: error.message }
 

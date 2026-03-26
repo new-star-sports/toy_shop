@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { bannerSchema, type Banner } from "@nss/validators/banner"
 import { createBanner, updateBanner } from "../../banners/_actions"
 import { useRouter } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@nss/ui/components/tabs"
+
 import { Button } from "@nss/ui/components/button"
 import { Card } from "@nss/ui/components/card"
 import { Input } from "@nss/ui/components/input"
@@ -15,6 +15,7 @@ import { Badge } from "@nss/ui/components/badge"
 import { Switch } from "@nss/ui/components/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@nss/ui/components/select"
 import { toast } from "sonner"
+import { translateToArabic } from "../../_lib/translate"
 
 interface BannerFormProps {
   initialData?: any
@@ -40,8 +41,15 @@ export function BannerForm({ initialData }: BannerFormProps) {
   const bannerType = form.watch("banner_type")
 
   const onSubmit = async (data: any) => {
-    const bannerData = data as Banner
     try {
+      // Automate Arabic translations
+      const bannerData = {
+        ...data,
+        title_ar: await translateToArabic(data.title_en),
+        subtitle_ar: data.subtitle_en ? await translateToArabic(data.subtitle_en) : data.title_ar,
+        cta_text_ar: data.cta_text_en ? await translateToArabic(data.cta_text_en) : "",
+      } as Banner
+
       if (initialData?.id) {
         const result = await updateBanner(initialData.id, bannerData)
         if (result.success) {
@@ -95,28 +103,16 @@ export function BannerForm({ initialData }: BannerFormProps) {
           <Card className="p-6 space-y-6">
             <h3 className="font-semibold text-nss-text-primary">Content</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title_en">Title (English)</Label>
+                  <Label htmlFor="title_en">Title</Label>
                   <Input id="title_en" {...form.register("title_en")} placeholder="Main heading" />
                   {form.formState.errors.title_en && <p className="text-xs text-nss-danger">{(form.formState.errors.title_en as any).message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="subtitle_en">Subtitle (English)</Label>
+                  <Label htmlFor="subtitle_en">Subtitle</Label>
                   <Textarea id="subtitle_en" {...form.register("subtitle_en")} placeholder="Optional description" />
-                </div>
-              </div>
-
-              <div className="space-y-4" dir="rtl">
-                <div className="space-y-2">
-                  <Label htmlFor="title_ar" className="font-arabic">العنوان (بالعربية)</Label>
-                  <Input id="title_ar" className="font-arabic" {...form.register("title_ar")} placeholder="العنوان الرئيسي" />
-                  {form.formState.errors.title_ar && <p className="text-xs text-nss-danger">{(form.formState.errors.title_ar as any).message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="subtitle_ar" className="font-arabic">العنوان الفرعي</Label>
-                  <Textarea id="subtitle_ar" className="font-arabic" {...form.register("subtitle_ar")} placeholder="وصف اختياري" />
                 </div>
               </div>
             </div>
@@ -124,21 +120,15 @@ export function BannerForm({ initialData }: BannerFormProps) {
 
           <Card className="p-6 space-y-6">
             <h3 className="font-semibold text-nss-text-primary">Call to Action</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cta_text_en">Button Text (English)</Label>
+                  <Label htmlFor="cta_text_en">Button Text</Label>
                   <Input id="cta_text_en" {...form.register("cta_text_en")} placeholder="e.g. Shop Now" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cta_link">Link URL</Label>
                   <Input id="cta_link" {...form.register("cta_link")} placeholder="/products/category-slug" />
-                </div>
-              </div>
-              <div className="space-y-4" dir="rtl">
-                <div className="space-y-2">
-                  <Label htmlFor="cta_text_ar" className="font-arabic">نص الزر (عربي)</Label>
-                  <Input id="cta_text_ar" className="font-arabic" {...form.register("cta_text_ar")} placeholder="تسوق الآن" />
                 </div>
               </div>
             </div>

@@ -11,8 +11,15 @@ import {
 } from "@nss/ui/components/table"
 import { Badge } from "@nss/ui/components/badge"
 import { Button } from "@nss/ui/components/button"
-import { Switch } from "@nss/ui/components/switch"
-import { Check, X, MessageSquare, Trash2, Star, Home, Pin } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@nss/ui/components/dropdown-menu"
+
+import { Check, X, MessageSquare, Trash2, Star, Home, Pin, MoreHorizontal } from "lucide-react"
 import { 
   approveReviewAction, 
   rejectReviewAction, 
@@ -144,59 +151,39 @@ export function ReviewList({ initialReviews }: ReviewListProps) {
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-1.5">
-                    {!review.is_approved ? (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-green-600 hover:bg-green-50"
-                        onClick={() => handleApprove(review.id)}
-                        title="Approve"
-                      >
-                        <Check className="h-4 w-4" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
                       </Button>
-                    ) : (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-amber-600 hover:bg-amber-50"
-                        onClick={() => handleReject(review.id)}
-                        title="Unapprove"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                    
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className={`h-8 w-8 ${review.is_pinned_home ? "text-nss-primary bg-nss-primary/5" : "text-gray-400"}`}
-                      onClick={() => handleTogglePin(review.id, !review.is_pinned_home)}
-                      title={review.is_pinned_home ? "Unpin from home" : "Pin to home"}
-                    >
-                      <Home className="h-4 w-4" />
-                    </Button>
-
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-blue-600 hover:bg-blue-50"
-                      onClick={() => setReplyReview(review)}
-                      title="Reply"
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                    </Button>
-
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-red-500 hover:bg-red-50"
-                      onClick={() => handleDelete(review.id)}
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      {!review.is_approved ? (
+                        <DropdownMenuItem onClick={() => handleApprove(review.id)} className="text-green-600">
+                          <Check className="h-4 w-4 mr-2" />
+                          Approve
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem onClick={() => handleReject(review.id)} className="text-amber-600">
+                          <X className="h-4 w-4 mr-2" />
+                          Unapprove
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={() => handleTogglePin(review.id, !review.is_pinned_home)}>
+                        <Home className="h-4 w-4 mr-2" />
+                        {review.is_pinned_home ? "Unpin from Home" : "Pin to Home"}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setReplyReview(review)}>
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Reply
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleDelete(review.id)} className="text-red-500">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))

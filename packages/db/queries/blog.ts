@@ -42,7 +42,12 @@ export async function getBlogs(options?: { publishedOnly?: boolean }) {
   const { data, error } = await query
 
   if (error) {
-    console.error("Error fetching blogs:", error)
+    console.error("Error fetching blogs:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    })
     return []
   }
 
@@ -58,7 +63,12 @@ export async function getBlogBySlug(slug: string) {
     .single()
 
   if (error) {
-    console.error("Error fetching blog by slug:", error)
+    console.error("Error fetching blog by slug:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    })
     return null
   }
 
@@ -74,7 +84,12 @@ export async function getBlogById(id: string) {
     .single()
 
   if (error) {
-    console.error("Error fetching blog by id:", error)
+    console.error("Error fetching blog by id:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    })
     return null
   }
 
@@ -89,7 +104,12 @@ export async function getBlogCategories() {
     .order("name_en")
 
   if (error) {
-    console.error("Error fetching blog categories:", error)
+    console.error("Error fetching blog categories:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    })
     return []
   }
 

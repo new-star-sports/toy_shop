@@ -20,13 +20,7 @@ export default async function EditProductPage({
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-10">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-nss-text-primary">Edit Product</h1>
-        <p className="text-sm text-nss-text-secondary">
-          Update your product details, inventory, and safety compliance.
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <ProductForm 
         initialData={product} 
         categories={categories} 

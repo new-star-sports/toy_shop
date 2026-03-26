@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { createServiceClient } from "@nss/db/client"
-import { bannerSchema, type Banner } from "@nss/validators/banner"
+import { type Banner } from "@nss/validators/banner"
 
 /**
  * Fetch all banners

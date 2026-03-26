@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ["@nss/ui"],
+    optimizePackageImports: ["@nss/ui", "@tabler/icons-react"],
   },
 };
 

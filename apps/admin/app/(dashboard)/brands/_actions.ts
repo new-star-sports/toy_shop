@@ -10,15 +10,15 @@ export async function upsertBrandAction(data: Partial<Brand>) {
   const isNew = !data.id
   
   if (isNew) {
-    const { error } = await supabase
-      .from("brands")
+    const { error } = await (supabase.from("brands") as any)
       .insert([data as any])
+
     if (error) return { success: false, error: error.message }
   } else {
-    const { error } = await supabase
-      .from("brands")
+    const { error } = await (supabase.from("brands") as any)
       .update(data as any)
       .eq("id", data.id)
+
     if (error) return { success: false, error: error.message }
   }
 
@@ -31,20 +31,20 @@ export async function deleteBrandAction(id: string) {
   const supabase = createServiceClient()
   
   // Check for products first
-  const { data: products } = await supabase
-    .from("products")
+  const { data: products } = await (supabase.from("products") as any)
     .select("id")
     .eq("brand_id", id)
     .limit(1)
+
 
   if (products && products.length > 0) {
     return { success: false, error: "Cannot delete brand with associated products." }
   }
 
-  const { error } = await supabase
-    .from("brands")
+  const { error } = await (supabase.from("brands") as any)
     .delete()
     .eq("id", id)
+
 
   if (error) return { success: false, error: error.message }
 

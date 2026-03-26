@@ -15,7 +15,7 @@ export default async function NewCategoryPage() {
             <ArrowLeft size={16} />
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold text-nss-text-primary">New Category</h1>
+        <h1 className="text-2xl font-bold text-foreground">New Category</h1>
       </div>
 
       <CategoryForm categories={categories} />

@@ -25,14 +25,14 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-3 bg-nss-danger/10 border border-nss-danger/20 text-nss-danger text-sm rounded-lg">
+        <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm rounded-lg font-medium">
           {error}
         </div>
       )}
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="text-sm font-semibold text-foreground">Email</Label>
         <Input
           id="email"
           name="email"
@@ -40,10 +40,11 @@ export function LoginForm() {
           placeholder="admin@newstarsports.com"
           required
           disabled={loading}
+          className="h-11 bg-background border-border text-foreground placeholder:text-foreground/40"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-sm font-semibold text-foreground">Password</Label>
         <Input
           id="password"
           name="password"
@@ -51,9 +52,10 @@ export function LoginForm() {
           placeholder="••••••••"
           required
           disabled={loading}
+          className="h-11 bg-background border-border text-foreground placeholder:text-foreground/40"
         />
       </div>
-      <Button type="submit" className="w-full" size="lg" disabled={loading}>
+      <Button type="submit" className="w-full h-11 text-sm font-semibold" size="lg" disabled={loading}>
         {loading ? "Signing In..." : "Sign In"}
       </Button>
     </form>

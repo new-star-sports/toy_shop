@@ -32,7 +32,7 @@ export default async function EditBrandPage({
             <ArrowLeft size={16} />
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold text-nss-text-primary">Edit Brand</h1>
+        <h1 className="text-2xl font-bold text-foreground">Edit Brand</h1>
       </div>
 
       <BrandForm initialData={brand as any} />

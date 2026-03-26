@@ -9,6 +9,7 @@ import { Label } from "@nss/ui/components/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@nss/ui/components/card"
 import { toast } from "sonner"
 import { saveStoreInfoAction } from "../_actions"
+import { translateToArabic } from "../../_lib/translate"
 import { useState } from "react"
 import { Loader2, Save } from "lucide-react"
 
@@ -54,7 +55,15 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
 
   async function onSubmit(values: StoreInfoSettings) {
     setIsSubmitting(true)
-    const result = await saveStoreInfoAction(values)
+    
+    // Automate Arabic translations
+    const translatedData = {
+      ...values,
+      store_name_ar: await translateToArabic(values.store_name_en),
+      tagline_ar: values.tagline_en ? await translateToArabic(values.tagline_en) : values.store_name_en,
+    }
+
+    const result = await saveStoreInfoAction(translatedData as StoreInfoSettings)
     setIsSubmitting(false)
 
     if (result.success) {
@@ -73,24 +82,15 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="store_name_en">Store Name (English)</Label>
+                <Label htmlFor="store_name_en">Store Name</Label>
                 <Input id="store_name_en" {...form.register("store_name_en")} />
                 {form.formState.errors.store_name_en && <p className="text-xs text-red-500">{form.formState.errors.store_name_en.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="store_name_ar">Store Name (Arabic)</Label>
-                <Input id="store_name_ar" {...form.register("store_name_ar")} className="text-right" dir="rtl" />
-                {form.formState.errors.store_name_ar && <p className="text-xs text-red-500">{form.formState.errors.store_name_ar.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="tagline_en">Tagline (English)</Label>
+                <Label htmlFor="tagline_en">Tagline</Label>
                 <Input id="tagline_en" {...form.register("tagline_en")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="tagline_ar">Tagline (Arabic)</Label>
-                <Input id="tagline_ar" {...form.register("tagline_ar")} className="text-right" dir="rtl" />
               </div>
             </div>
 

@@ -10,15 +10,15 @@ export async function upsertCategoryAction(data: Partial<Category>) {
   const isNew = !data.id
   
   if (isNew) {
-    const { error } = await supabase
-      .from("categories")
+    const { error } = await (supabase.from("categories") as any)
       .insert([data as any])
+
     if (error) return { success: false, error: error.message }
   } else {
-    const { error } = await supabase
-      .from("categories")
+    const { error } = await (supabase.from("categories") as any)
       .update(data as any)
       .eq("id", data.id)
+
     if (error) return { success: false, error: error.message }
   }
 
@@ -31,20 +31,23 @@ export async function deleteCategoryAction(id: string) {
   const supabase = createServiceClient()
   
   // Check for children or products first (or let DB handles it via FK)
-  const { data: products } = await supabase
-    .from("products")
+  const { data: products, error: checkError } = await (supabase
+    .from("products") as any)
     .select("id")
     .eq("category_id", id)
     .limit(1)
+
+  if (checkError) console.error("Check error:", checkError)
 
   if (products && products.length > 0) {
     return { success: false, error: "Cannot delete category with associated products." }
   }
 
-  const { error } = await supabase
-    .from("categories")
+
+  const { error } = await (supabase.from("categories") as any)
     .delete()
     .eq("id", id)
+
 
   if (error) return { success: false, error: error.message }
 

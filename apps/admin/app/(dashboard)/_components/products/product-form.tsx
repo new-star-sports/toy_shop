@@ -1,21 +1,54 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { productSchema, type Product } from "@nss/validators/product"
 import { createProduct, updateProduct } from "../../products/_actions"
 import { useRouter } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@nss/ui/components/tabs"
 import { Button } from "@nss/ui/components/button"
 import { Card } from "@nss/ui/components/card"
 import { Input } from "@nss/ui/components/input"
 import { Label } from "@nss/ui/components/label"
 import { Textarea } from "@nss/ui/components/textarea"
-import { Badge } from "@nss/ui/components/badge"
 import { Switch } from "@nss/ui/components/switch"
-import { Plus, Trash2, Image as ImageIcon, X, UploadCloud } from "lucide-react"
+import { cn } from "@nss/ui/lib/utils"
+import { 
+  Plus, 
+  Trash2, 
+  UploadCloud, 
+  ChevronRight, 
+  ChevronLeft,
+  Package,
+  CircleDollarSign,
+  Settings2,
+  ShieldCheck,
+  Globe
+} from "lucide-react"
+import { translateToArabic } from "../../_lib/translate"
 import type { Category, Brand } from "@nss/db/types"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@nss/ui/components/select"
+import { 
+  Form,
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormMessage 
+} from "@nss/ui/components/form"
+
+const slugify = (text: string) => 
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 interface ProductFormProps {
   initialData?: any
@@ -24,7 +57,7 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ initialData, categories = [], brands = [] }: ProductFormProps) {
-  const [activeTab, setActiveTab] = useState("basic")
+  const [currentStep, setCurrentStep] = useState(0)
   const router = useRouter()
 
   const form = useForm<Product>({
@@ -42,12 +75,46 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
       tax_status: "taxable",
       track_inventory: true,
       out_of_stock_behaviour: "show_out_of_stock",
+      category_ids: initialData?.category_ids || (initialData?.category_id ? [initialData.category_id] : []),
+      brand_id: initialData?.brand_id || "",
+      short_description_en: initialData?.short_description_en || "",
+      short_description_ar: initialData?.short_description_ar || "",
+      description_en: initialData?.description_en || "",
+      description_ar: initialData?.description_ar || "",
+      sku: initialData?.sku || "",
+      kucas_certificate: initialData?.kucas_certificate || "",
+      safety_warnings_en: initialData?.safety_warnings_en || "",
+      safety_warnings_ar: initialData?.safety_warnings_ar || "",
+      country_of_origin: initialData?.country_of_origin || "",
+      materials_en: initialData?.materials_en || "",
+      materials_ar: initialData?.materials_ar || "",
+      manufacturer_name: initialData?.manufacturer_name || "",
+      seo_title_en: initialData?.seo_title_en || "",
+      seo_title_ar: initialData?.seo_title_ar || "",
+      seo_description_en: initialData?.seo_description_en || "",
+      seo_description_ar: initialData?.seo_description_ar || "",
+      hs_code_6: initialData?.hs_code_6 || "000000",
+      gcc_tariff_12: initialData?.gcc_tariff_12 || "000000000000",
       ...initialData,
     },
   })
 
+  const watchAll = form.watch()
+
+  // Track if fields have been manually modified
+  const modifiedRefs = useRef<Record<string, boolean>>({
+    slug: initialData ? !!initialData.slug : false,
+  })
+
+  useEffect(() => {
+    // Also auto-generate slug from English name
+    if (watchAll.name_en && !modifiedRefs.current["slug"]) {
+      form.setValue("slug", slugify(watchAll.name_en), { shouldValidate: true })
+    }
+  }, [watchAll.name_en, form])
+
   // Mock media state for preview
-  const [images, setImages] = useState<string[]>([])
+  const [images, setImages] = useState<string[]>(initialData?.images || [])
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -61,19 +128,73 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
     setImages(prev => prev.filter((_, i) => i !== index))
   }
 
-  // Variants management
-  const [variants, setVariants] = useState<any[]>([])
-  const addVariant = () => {
-    setVariants(prev => [...prev, { id: Math.random().toString(), name_en: "", sku: "", price: 0, stock: 0 }])
+  // Variants management (State maintained but UI simplified for this refactor phase)
+  const [variants] = useState<any[]>(initialData?.variants || [])
+
+  const steps = [
+    { 
+        title: "Details", 
+        description: "Identity & Status", 
+        icon: <Package size={18} />,
+        fields: ["name_en", "name_ar", "slug", "category_ids", "status", "description_en", "description_ar", "short_description_en", "short_description_ar"] 
+    },
+    { 
+        title: "Pricing", 
+        description: "Visuals & Economy", 
+        icon: <CircleDollarSign size={18} />,
+        fields: ["price_kwd", "tax_status", "cost_price_kwd", "compare_at_price_kwd"] 
+    },
+    { 
+        title: "Stock", 
+        description: "Inventory & Options", 
+        icon: <Settings2 size={18} />,
+        fields: ["sku", "stock_quantity", "track_inventory", "out_of_stock_behaviour"] 
+    },
+    { 
+        title: "Safety", 
+        description: "Compliance & Shipping", 
+        icon: <ShieldCheck size={18} />,
+        fields: ["min_age", "weight_grams", "length_cm", "width_cm", "height_cm", "safety_warnings_en", "safety_warnings_ar", "country_of_origin", "materials_en", "materials_ar", "manufacturer_name"] 
+    },
+    {
+        title: "Advanced",
+        description: "SEO & Customs",
+        icon: <Globe size={18} />,
+        fields: ["seo_title_en", "seo_title_ar", "seo_description_en", "seo_description_ar", "hs_code_6", "gcc_tariff_12"]
+    }
+  ]
+
+  const nextStep = async () => {
+    const fieldsToValidate = steps[currentStep].fields as any[]
+    const isValid = await form.trigger(fieldsToValidate)
+    
+    if (isValid) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
   }
-  const removeVariant = (id: string) => {
-    setVariants(prev => prev.filter(v => v.id !== id))
+
+  const prevStep = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 0))
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const onSubmit = async (data: Product) => {
     try {
+      // Automate Arabic translations in background
+      const translatedData = {
+        ...data,
+        name_ar: await translateToArabic(data.name_en),
+        short_description_ar: data.short_description_en ? await translateToArabic(data.short_description_en) : data.name_ar,
+        description_ar: await translateToArabic(data.description_en),
+        safety_warnings_ar: data.safety_warnings_en ? await translateToArabic(data.safety_warnings_en) : "N/A",
+        materials_ar: data.materials_en ? await translateToArabic(data.materials_en) : "N/A",
+        seo_title_ar: data.seo_title_en ? await translateToArabic(data.seo_title_en) : data.name_ar,
+        seo_description_ar: data.seo_description_en ? await translateToArabic(data.seo_description_en) : data.name_ar,
+      }
+
       if (initialData?.id) {
-        const result = await updateProduct(initialData.id, data, images, variants)
+        const result = await updateProduct(initialData.id, translatedData as Product, images, variants)
         if (result.success) {
           router.push("/products")
           router.refresh()
@@ -81,7 +202,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
           alert("Error updating product: " + result.error)
         }
       } else {
-        const result = await createProduct(data, images, variants)
+        const result = await createProduct(translatedData as Product, images, variants)
         if (result.success) {
           router.push("/products")
           router.refresh()
@@ -96,713 +217,655 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-20">
-      <div className="flex items-center justify-between sticky top-0 z-10 bg-nss-surface/80 backdrop-blur-md py-4 border-b border-nss-border">
+    <div className="space-y-8 pb-20 max-w-7xl mx-auto px-4 sm:px-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-0 z-30 bg-background py-6 border-b border-border/40 -mx-4 sm:-mx-6 px-4 sm:px-6" style={{ isolation: 'isolate' }}>
         <div>
-          <h2 className="text-xl font-bold text-nss-text-primary">
-            {initialData ? "Edit Product" : "New Product"}
+          <h2 className="text-3xl font-black tracking-tight text-foreground">
+            {initialData ? "Refine Product" : "Launch New Product"}
           </h2>
           <div className="flex items-center gap-2 mt-1">
-             <Badge variant="outline" className="capitalize">
-               {form.watch("status")}
-             </Badge>
-             {form.formState.isDirty && (
-               <span className="text-xs text-nss-accent animate-pulse">• Unsaved Changes</span>
-             )}
+            <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                Step {currentStep + 1} of {steps.length}
+            </span>
+            <span className="text-sm text-muted-foreground font-medium">/ {steps[currentStep].title}</span>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" type="button" onClick={() => window.history.back()}>
-            Cancel
+          <Button variant="ghost" type="button" onClick={() => router.push("/products")} className="rounded-xl font-bold text-muted-foreground hover:text-foreground">
+            Discard & Exit
           </Button>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Saving..." : "Save Product"}
-          </Button>
+          {currentStep === steps.length - 1 ? (
+            <Button 
+                type="button" 
+                onClick={form.handleSubmit(onSubmit)} 
+                loading={form.formState.isSubmitting} 
+                className="rounded-2xl px-10 py-6 bg-primary text-white hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 text-base font-bold flex items-center justify-center min-w-[180px]"
+            >
+              {initialData ? "Apply Changes" : "Publish to Store"}
+            </Button>
+          ) : (
+            <Button 
+                type="button" 
+                onClick={nextStep} 
+                className="rounded-2xl px-10 py-6 bg-foreground text-background hover:opacity-90 transition-all hover:scale-[1.02] active:scale-95 text-base font-bold flex items-center justify-center gap-2 min-w-[180px]"
+            >
+              <div className="flex items-center justify-center w-full gap-2">
+                <span>Continue</span>
+                <ChevronRight size={20} className="shrink-0" />
+              </div>
+            </Button>
+          )}
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="overflow-x-auto pb-2">
-          <TabsList className="w-max bg-transparent h-auto p-0 flex gap-1">
-            {[
-              { id: "basic", label: "Basic Info" },
-              { id: "media", label: "Media" },
-              { id: "pricing", label: "Pricing" },
-              { id: "inventory", label: "Inventory" },
-              { id: "variants", label: "Variants" },
-              { id: "organisation", label: "Organisation" },
-              { id: "safety", label: "Safety & Legal" },
-              { id: "shipping", label: "Shipping" },
-              { id: "seo", label: "SEO" },
-              { id: "customs", label: "Customs" },
-            ].map((tab) => (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                className="data-[state=active]:bg-nss-primary data-[state=active]:text-white rounded-full px-6 py-2 bg-white border border-nss-border"
+      {/* Step Tracker */}
+      <Card className="rounded-[2.5rem] border-border/40 shadow-sm bg-card relative group">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 opacity-50" />
+        <div className="flex items-center justify-between relative max-w-5xl mx-auto overflow-x-auto no-scrollbar py-10 px-4 sm:px-8">
+          {steps.map((step, idx) => (
+            <div key={idx} className="flex flex-col items-center gap-4 relative z-10 flex-1 min-w-[100px]">
+              <button 
+                type="button"
+                onClick={() => idx < currentStep && setCurrentStep(idx)}
+                className={cn(
+                  "h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-500 relative group/step",
+                  idx < currentStep ? "bg-primary text-white scale-90 opacity-60" :
+                  idx === currentStep ? "bg-primary text-white shadow-2xl shadow-primary/40 scale-110" :
+                  "bg-muted/30 text-muted-foreground border-2 border-border/40"
+                )}
               >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+                {idx < currentStep ? (
+                    <span className="font-black text-xl">✓</span>
+                ) : (
+                    <div className="flex flex-col items-center">
+                        {step.icon}
+                        <span className="text-[10px] font-black mt-0.5">{idx + 1}</span>
+                    </div>
+                )}
+              </button>
+              
+              <div className="text-center">
+                <p className={cn(
+                    "text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 whitespace-nowrap", 
+                    idx <= currentStep ? "text-primary" : "text-muted-foreground/50"
+                )}>
+                  {step.title}
+                </p>
+              </div>
 
-        <div className="mt-6">
-          {/* Tab 1: Basic Information */}
-          <TabsContent value="basic" className="space-y-6">
-            <Card className="p-6">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* English Section */}
-                  <div className="space-y-4 border-e border-nss-border pe-8">
-                    <h3 className="font-semibold text-nss-text-primary flex items-center gap-2">
-                       <span className="text-xl">🇬🇧</span> English Details
-                    </h3>
+              {idx < steps.length - 1 && (
+                <div className={cn(
+                  "hidden sm:block absolute top-7 left-[calc(50%+2rem)] w-[calc(100%-4rem)] h-[3px] rounded-full transition-all duration-700",
+                  idx < currentStep ? "bg-primary/40" : "bg-border/20"
+                )}>
+                    <div className={cn(
+                        "h-full bg-primary rounded-full transition-all duration-1000 ease-out",
+                        idx < currentStep ? "w-full" : "w-0"
+                    )} />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Form {...form}>
+      <form className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+        {/* Step 1: Details */}
+        {currentStep === 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            <div className="lg:col-span-3 space-y-8">
+              <Card className="p-8 sm:p-12 rounded-[3.5rem] border-border/40 shadow-xl shadow-primary/5 transition-all outline outline-1 outline-transparent hover:outline-primary/10">
+                <div className="space-y-12">
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-4 border-b border-border/40 pb-6 relative">
+                      <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center text-3xl shadow-inner">📦</div>
+                      <div>
+                        <h3 className="font-black text-xl uppercase tracking-wider text-foreground">Basic Identity</h3>
+                        <p className="text-xs text-muted-foreground font-medium">Core information about the product</p>
+                      </div>
+                      <div className="absolute -bottom-[2px] left-0 w-24 h-[3px] bg-primary rounded-full" />
+                    </div>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="name_en">Product Name</Label>
+                    <div className="space-y-4">
+                      <Label htmlFor="name_en" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">Product Name</Label>
                       <Input
                         id="name_en"
                         {...form.register("name_en")}
-                        placeholder="e.g. Remote Control Racing Car"
+                        placeholder="e.g. Master RC Racing Drone X-1"
+                        className="h-16 rounded-[1.25rem] bg-muted/10 border-border/40 focus:bg-background transition-all font-bold text-lg px-6"
                       />
                       {form.formState.errors.name_en && (
-                        <p className="text-xs text-nss-danger">{form.formState.errors.name_en.message}</p>
+                          <p className="text-xs text-destructive font-bold ms-2 mt-1">{form.formState.errors.name_en.message}</p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="short_description_en">Short Description (SEO)</Label>
-                      <Input
-                        id="short_description_en"
-                        {...form.register("short_description_en")}
-                        placeholder="Brief summary for list views"
-                      />
-                      <p className="text-[10px] text-nss-text-secondary text-end">
-                        {form.watch("short_description_en")?.length || 0}/160
-                      </p>
+                    <div className="space-y-4">
+                        <Label htmlFor="slug" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">Smart Permalink (Slug)</Label>
+                        <div className="flex items-center gap-0 group p-1 bg-muted/10 rounded-[1.25rem] border border-border/40 transition-all focus-within:ring-4 ring-primary/10 overflow-hidden">
+                        <span className="text-xs text-muted-foreground/60 ps-5 font-bold tracking-tight shrink-0">/product/</span>
+                        <Input
+                            id="slug"
+                            {...form.register("slug", {
+                                onChange: () => { modifiedRefs.current["slug"] = true }
+                            })}
+                            className="bg-transparent border-none focus-visible:ring-0 h-12 font-mono text-sm text-primary font-bold"
+                        />
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="description_en">Detailed Description</Label>
+                    <div className="space-y-4">
+                      <Label htmlFor="description_en" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">Detailed Description</Label>
                       <Textarea
                         id="description_en"
-                        className="min-h-[200px]"
+                        className="min-h-[300px] rounded-[1.5rem] bg-muted/10 border-border/40 focus:bg-background transition-all resize-none px-6 py-4 font-medium leading-relaxed"
                         {...form.register("description_en")}
-                        placeholder="Full product story and specifications..."
+                        placeholder="Deep dive into features, materials, and benefits..."
                       />
-                    </div>
-                  </div>
-
-                  {/* Arabic Section */}
-                  <div className="space-y-4" dir="rtl">
-                    <h3 className="font-semibold text-nss-text-primary flex items-center gap-2 font-arabic">
-                       <span className="text-xl">🇰🇼</span> التفاصيل بالعربية
-                    </h3>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="name_ar" className="font-arabic">اسم المنتج</Label>
-                      <Input
-                        id="name_ar"
-                        className="font-arabic"
-                        {...form.register("name_ar")}
-                        placeholder="مثال: سيارة سباق بالتحكم عن بعد"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="short_description_ar" className="font-arabic">وصف قصير</Label>
-                      <Input
-                        id="short_description_ar"
-                        className="font-arabic"
-                        {...form.register("short_description_ar")}
-                        placeholder="ملخص موجز للمنتج"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="description_ar" className="font-arabic">وصف تفصيلي</Label>
-                      <Textarea
-                        id="description_ar"
-                        className="min-h-[200px] font-arabic"
-                        {...form.register("description_ar")}
-                        placeholder="قصة المنتج الكاملة والمواصفات..."
-                      />
-                    </div>
-                  </div>
-               </div>
-
-               <div className="mt-8 pt-8 border-t border-nss-border">
-                  <div className="max-w-md space-y-2">
-                    <Label htmlFor="slug">URL Slug</Label>
-                    <div className="flex items-center gap-2 group">
-                      <span className="text-sm text-nss-text-secondary">/products/</span>
-                      <Input
-                        id="slug"
-                        {...form.register("slug")}
-                        className="bg-nss-surface"
-                      />
-                    </div>
-                  </div>
-               </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="pricing">
-            <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="price_kwd">Regular Price (KWD)</Label>
-                    <div className="relative">
-                      <Input
-                        id="price_kwd"
-                        type="number"
-                        step="0.001"
-                        {...form.register("price_kwd", { valueAsNumber: true })}
-                        className="ps-10"
-                      />
-                      <span className="absolute start-3 top-1/2 -translate-y-1/2 text-nss-text-secondary text-xs">KD</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="compare_at_price_kwd">Compare-at Price (Strike-through)</Label>
-                    <div className="relative">
-                      <Input
-                        id="compare_at_price_kwd"
-                        type="number"
-                        step="0.001"
-                        {...form.register("compare_at_price_kwd", { valueAsNumber: true })}
-                        className="ps-10"
-                      />
-                      <span className="absolute start-3 top-1/2 -translate-y-1/2 text-nss-text-secondary text-xs">KD</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cost_price_kwd">Cost Price (Private)</Label>
-                    <div className="relative">
-                      <Input
-                        id="cost_price_kwd"
-                        type="number"
-                        step="0.001"
-                        {...form.register("cost_price_kwd", { valueAsNumber: true })}
-                        className="ps-10"
-                      />
-                      <span className="absolute start-3 top-1/2 -translate-y-1/2 text-nss-text-secondary text-xs">KD</span>
                     </div>
                   </div>
                 </div>
+              </Card>
+            </div>
 
-                <div className="space-y-6 bg-nss-surface p-6 rounded-xl border border-nss-border">
-                  <h3 className="font-semibold text-nss-text-primary">Flash Sale & Tax</h3>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Include in Flash Sale</Label>
-                      <p className="text-xs text-nss-text-secondary">Show this product in flash sale sections</p>
-                    </div>
-                    <input
-                      type="checkbox"
-                      className="h-5 w-5 rounded border-nss-border text-nss-primary"
-                      {...form.register("include_in_flash_sale")}
+            <div className="lg:col-span-1 space-y-8">
+              <Card className="p-8 rounded-[2.5rem] border-border/40 shadow-xl bg-card sticky top-36">
+                <div className="space-y-8">
+                  <div className="space-y-3">
+                    <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Visibility Status</Label>
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="h-14 rounded-2xl bg-muted/20 border-border/40 px-5 text-sm font-bold transition-all focus:bg-background focus:ring-4 ring-primary/10">
+                                <SelectValue placeholder="Select Status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="rounded-2xl border-border/40 shadow-2xl">
+                              <SelectItem value="draft" className="rounded-xl font-bold py-3">📁 Draft</SelectItem>
+                              <SelectItem value="published" className="rounded-xl font-bold py-3">🚀 Published</SelectItem>
+                              <SelectItem value="archived" className="rounded-xl font-bold py-3">📦 Archived</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
 
-                  {form.watch("include_in_flash_sale") && (
-                    <div className="space-y-2 animate-in slide-in-from-top-2">
-                      <Label htmlFor="flash_sale_discount_percent">Discount Percentage (%)</Label>
-                      <Input
-                        id="flash_sale_discount_percent"
-                        type="number"
-                        {...form.register("flash_sale_discount_percent", { valueAsNumber: true })}
-                      />
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="tax_status">Tax Status</Label>
-                    <select
-                      id="tax_status"
-                      className="w-full h-10 px-3 py-2 rounded-md border border-nss-border bg-nss-card text-sm"
-                      {...form.register("tax_status")}
-                    >
-                      <option value="taxable">Taxable</option>
-                      <option value="tax_exempt">Tax Exempt</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-          
-          {/* Tab 4: Inventory */}
-          <TabsContent value="inventory" className="space-y-6">
-            <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-nss-text-primary">Stock Control</h3>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="sku">SKU (Stock Keeping Unit)</Label>
-                    <Input
-                      id="sku"
-                      {...form.register("sku")}
-                      placeholder="e.g. TOY-RC-001"
-                    />
-                    {form.formState.errors.sku && (
-                      <p className="text-xs text-nss-danger">{form.formState.errors.sku.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="barcode">Barcode (EAN/UPC)</Label>
-                    <Input
-                      id="barcode"
-                      {...form.register("barcode")}
-                      placeholder="e.g. 501234567890"
+                  <div className="space-y-3 pt-2">
+                    <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Primary Category</Label>
+                    <FormField
+                      control={form.control}
+                      name="category_ids"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Select 
+                            onValueChange={(val) => field.onChange([val])} 
+                            defaultValue={field.value?.[0]}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="h-14 rounded-2xl bg-muted/20 border-border/40 px-5 text-sm font-bold transition-all focus:bg-background focus:ring-4 ring-primary/10">
+                                <SelectValue placeholder="Select Category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="rounded-2xl border-border/40 shadow-2xl max-h-[300px]">
+                              {categories.map((cat) => (
+                                <SelectItem key={cat.id} value={cat.id} className="rounded-xl font-bold py-3">{cat.name_en}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-nss-border">
-                    <div className="space-y-0.5">
-                      <Label>Track Inventory</Label>
-                      <p className="text-xs text-nss-text-secondary">Automatically decrement stock on orders</p>
-                    </div>
-                    <Switch
-                      checked={form.watch("track_inventory")}
-                      onCheckedChange={(checked) => form.setValue("track_inventory", checked)}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-nss-text-primary">Quantities & Alerts</h3>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="stock_quantity">Current Stock Quantity</Label>
-                    <Input
-                      id="stock_quantity"
-                      type="number"
-                      {...form.register("stock_quantity", { valueAsNumber: true })}
-                      disabled={!form.watch("track_inventory")}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="low_stock_threshold">Low Stock Threshold</Label>
-                    <Input
-                      id="low_stock_threshold"
-                      type="number"
-                      {...form.register("low_stock_threshold", { valueAsNumber: true })}
-                      disabled={!form.watch("track_inventory")}
-                    />
-                    <p className="text-[10px] text-nss-text-secondary">Admin alert fires when stock drops below this</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="out_of_stock_behaviour">Out-of-Stock Behaviour</Label>
-                    <select
-                      id="out_of_stock_behaviour"
-                      className="w-full h-10 px-3 py-2 rounded-md border border-nss-border bg-nss-card text-sm"
-                      {...form.register("out_of_stock_behaviour")}
-                    >
-                      <option value="show_out_of_stock">Show as Out of Stock</option>
-                      <option value="hide">Hide from Storefront</option>
-                      <option value="continue_selling">Continue Selling (Backorders)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* Tab 6: Organisation */}
-          <TabsContent value="organisation">
-            <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="category_id">Primary Category</Label>
-                    <select
-                      id="category_id"
-                      className="w-full h-10 px-3 py-2 rounded-md border border-nss-border bg-nss-card text-sm"
-                      {...form.register("category_id" as any)}
-                    >
-                      <option value="">Select a category</option>
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name_en} / {cat.name_ar}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="brand_id">Brand</Label>
-                    <select
-                      id="brand_id"
-                      className="w-full h-10 px-3 py-2 rounded-md border border-nss-border bg-nss-card text-sm"
-                      {...form.register("brand_id" as any)}
-                    >
-                      <option value="">Select a brand</option>
-                      {brands.map((brand) => (
-                        <option key={brand.id} value={brand.id}>
-                          {brand.name_en}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <h3 className="font-semibold text-nss-text-primary">Flags & Visibility</h3>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>New Arrival</Label>
-                      <p className="text-xs text-nss-text-secondary">Show "New" badge on storefront</p>
-                    </div>
-                    <Switch
-                      checked={form.watch("is_new_arrival")}
-                      onCheckedChange={(checked) => form.setValue("is_new_arrival", checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Homepage Featured</Label>
-                      <p className="text-xs text-nss-text-secondary">Display in featured sections on home</p>
-                    </div>
-                    <Switch
-                      checked={form.watch("is_homepage_featured")}
-                      onCheckedChange={(checked) => form.setValue("is_homepage_featured", checked)}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Best Seller Override</Label>
-                      <p className="text-xs text-nss-text-secondary">Force "Best Seller" badge</p>
-                    </div>
-                    <Switch
-                      checked={form.watch("is_best_seller_override")}
-                      onCheckedChange={(checked) => form.setValue("is_best_seller_override", checked)}
+                  <div className="space-y-3 pt-2">
+                    <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Brand</Label>
+                    <FormField
+                      control={form.control}
+                      name="brand_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="h-14 rounded-2xl bg-muted/20 border-border/40 px-5 text-sm font-bold transition-all focus:bg-background focus:ring-4 ring-primary/10">
+                                <SelectValue placeholder="Select Brand" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="rounded-2xl border-border/40 shadow-2xl max-h-[300px]">
+                              {brands.map((brand) => (
+                                <SelectItem key={brand.id} value={brand.id} className="rounded-xl font-bold py-3">{brand.name_en}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
                 </div>
-              </div>
-            </Card>
-          </TabsContent>
+              </Card>
+            </div>
+          </div>
+        )}
 
-          {/* Tab 7: Safety & Legal */}
-          <TabsContent value="safety">
-            <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-nss-text-primary">Age & Origin</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="min_age">Min Age (Years)</Label>
-                      <Input
-                        id="min_age"
-                        type="number"
-                        {...form.register("min_age", { valueAsNumber: true })}
-                      />
+        {/* Step 2: Pricing & Media */}
+        {currentStep === 1 && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="lg:col-span-3 space-y-8">
+              <Card className="p-8 sm:p-12 rounded-[3.5rem] border-border/40 shadow-xl overflow-hidden relative">
+                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 border-b border-border/40 pb-8">
+                    <div>
+                        <h3 className="text-3xl font-black text-foreground tracking-tight">Visual Assets</h3>
+                        <p className="text-muted-foreground font-medium mt-1">Images are the first thing users see.</p>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="max_age">Max Age (Optional)</Label>
-                      <Input
-                        id="max_age"
-                        type="number"
-                        {...form.register("max_age", { valueAsNumber: true })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="country_of_origin">Country of Origin</Label>
-                    <Input id="country_of_origin" {...form.register("country_of_origin")} placeholder="e.g. Germany" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="manufacturer_name">Manufacturer Name</Label>
-                    <Input id="manufacturer_name" {...form.register("manufacturer_name")} />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-nss-text-primary">Kuwait Compliance (KUCAS)</h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="kucas_certificate">KUCAS Certificate Number</Label>
-                    <Input id="kucas_certificate" {...form.register("kucas_certificate")} placeholder="Required for import" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="kucas_expiry">KUCAS Expiry Date</Label>
-                    <Input id="kucas_expiry" type="date" {...form.register("kucas_expiry")} />
-                  </div>
-
-                  <div className="pt-4 border-t border-nss-border">
-                    <div className="flex items-center justify-between mb-2">
-                      <Label>Battery Required</Label>
-                      <Switch
-                        checked={form.watch("battery_required")}
-                        onCheckedChange={(checked) => form.setValue("battery_required", checked)}
-                      />
-                    </div>
-                    {form.watch("battery_required") && (
-                      <div className="grid grid-cols-2 gap-4 animate-in fade-in">
-                        <Input id="battery_type" {...form.register("battery_type")} placeholder="Type (e.g. AA)" />
-                        <div className="flex items-center gap-2">
-                          <input type="checkbox" {...form.register("battery_included")} />
-                          <span className="text-xs">Included</span>
+                    <Label htmlFor="img-upload" className="cursor-pointer group">
+                        <div className="bg-primary text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
+                            <UploadCloud size={20} />
+                            Upload Images
                         </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* Tab 8: Shipping */}
-          <TabsContent value="shipping">
-            <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-nss-text-primary">Package Dimensions</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="weight_grams">Weight (Grams)</Label>
-                      <Input
-                        id="weight_grams"
-                        type="number"
-                        {...form.register("weight_grams", { valueAsNumber: true })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="length_cm">Length (cm)</Label>
-                      <Input
-                        id="length_cm"
-                        type="number"
-                        step="0.1"
-                        {...form.register("length_cm", { valueAsNumber: true })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="width_cm">Width (cm)</Label>
-                      <Input
-                        id="width_cm"
-                        type="number"
-                        step="0.1"
-                        {...form.register("width_cm", { valueAsNumber: true })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="height_cm">Height (cm)</Label>
-                      <Input
-                        id="height_cm"
-                        type="number"
-                        step="0.1"
-                        {...form.register("height_cm", { valueAsNumber: true })}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                   <h3 className="font-semibold text-nss-text-primary">Handling</h3>
-                   <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Requires Special Handling</Label>
-                      <p className="text-xs text-nss-text-secondary">e.g. Fragile, oversized, or hazardous</p>
-                    </div>
-                    <Switch
-                      checked={form.watch("requires_special_handling")}
-                      onCheckedChange={(checked) => form.setValue("requires_special_handling", checked)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* Tab 9: SEO */}
-          <TabsContent value="seo">
-            <Card className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <div className="space-y-4">
-                    <h3 className="font-semibold text-nss-text-primary">English SEO</h3>
-                    <div className="space-y-2">
-                      <Label htmlFor="seo_title_en">SEO Title</Label>
-                      <Input id="seo_title_en" {...form.register("seo_title_en")} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="seo_description_en">SEO Description</Label>
-                      <Textarea id="seo_description_en" {...form.register("seo_description_en")} />
-                    </div>
+                        <input id="img-upload" type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" />
+                    </Label>
                  </div>
-                 <div className="space-y-4" dir="rtl">
-                    <h3 className="font-semibold text-nss-text-primary font-arabic">SEO بالعربية</h3>
-                    <div className="space-y-2">
-                      <Label htmlFor="seo_title_ar" className="font-arabic">عنوان SEO</Label>
-                      <Input id="seo_title_ar" className="font-arabic" {...form.register("seo_title_ar")} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="seo_description_ar" className="font-arabic">وصف SEO</Label>
-                      <Textarea id="seo_description_ar" className="font-arabic" {...form.register("seo_description_ar")} />
-                    </div>
-                 </div>
-              </div>
-              <div className="space-y-2 max-w-xl">
-                 <Label htmlFor="canonical_url">Canonical URL</Label>
-                 <Input id="canonical_url" {...form.register("canonical_url")} placeholder="https://..." />
-              </div>
-            </Card>
-          </TabsContent>
 
-          {/* Tab 2: Media */}
-          <TabsContent value="media">
-            <Card className="p-6">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                   <h3 className="font-semibold text-nss-text-primary">Product Gallery</h3>
-                   <Label htmlFor="image-upload" className="cursor-pointer">
-                      <div className="flex items-center gap-2 bg-nss-primary text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
-                         <UploadCloud size={16} />
-                         Upload Images
-                      </div>
-                      <input id="image-upload" type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
-                   </Label>
-                </div>
-
-                {images.length === 0 ? (
-                  <div className="text-center py-20 border-2 border-dashed border-nss-border rounded-xl bg-nss-surface">
-                     <ImageIcon size={48} className="mx-auto text-nss-text-secondary mb-4 opacity-20" />
-                     <p className="text-nss-text-secondary">No images uploaded yet.</p>
-                     <p className="text-xs text-nss-text-secondary mt-1">Recommended size: 1000x1000px</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 animate-in fade-in">
-                     {images.map((img, i) => (
-                       <div key={i} className="group relative aspect-square rounded-xl overflow-hidden border border-nss-border bg-white shadow-sm hover:shadow-md transition-all">
-                          <img src={img} alt="" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                             <Button
-                               type="button"
-                               variant="destructive"
-                               size="icon"
-                               className="h-8 w-8 rounded-full"
-                               onClick={() => removeImage(i)}
-                             >
-                               <X size={14} />
-                             </Button>
-                          </div>
-                          {i === 0 && (
-                            <div className="absolute top-2 start-2 bg-nss-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
-                               PRIMARY
-                            </div>
-                          )}
-                       </div>
-                     ))}
-                  </div>
-                )}
-              </div>
-            </Card>
-          </TabsContent>
-
-          {/* Tab 5: Variants */}
-          <TabsContent value="variants">
-            <Card className="p-6">
-               <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="font-semibold text-nss-text-primary">Product Variants</h3>
-                    <p className="text-xs text-nss-text-secondary">Manage sizes, colours, or multi-packs</p>
-                  </div>
-                  <Button type="button" onClick={addVariant} className="gap-2">
-                     <Plus size={16} />
-                     Add Variant
-                  </Button>
-               </div>
-
-               {variants.length === 0 ? (
-                 <div className="text-center py-12 bg-nss-surface rounded-xl border border-nss-border italic text-nss-text-secondary">
-                    This product has no variants (Simple Product)
-                 </div>
-               ) : (
-                 <div className="space-y-4">
-                    {variants.map((variant) => (
-                      <div key={variant.id} className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 rounded-xl border border-nss-border bg-white animate-in slide-in-from-left-2 shadow-sm">
-                         <div className="space-y-1">
-                            <Label className="text-[10px] uppercase text-nss-text-secondary">Name (e.g. Red / Large)</Label>
-                            <Input placeholder="Variant name" className="h-9" />
-                         </div>
-                         <div className="space-y-1">
-                            <Label className="text-[10px] uppercase text-nss-text-secondary">SKU</Label>
-                            <Input placeholder="SKU" className="h-9" />
-                         </div>
-                         <div className="space-y-1">
-                            <Label className="text-[10px] uppercase text-nss-text-secondary">Price (KWD)</Label>
-                            <Input type="number" step="0.001" placeholder="0.000" className="h-9" />
-                         </div>
-                         <div className="space-y-1">
-                            <Label className="text-[10px] uppercase text-nss-text-secondary">Stock</Label>
-                            <Input type="number" placeholder="0" className="h-9" />
-                         </div>
-                         <div className="flex items-end justify-end">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              className="text-nss-danger hover:bg-nss-danger/10 h-9 px-3"
-                              onClick={() => removeVariant(variant.id)}
-                            >
-                               <Trash2 size={16} />
-                            </Button>
-                         </div>
+                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
+                    {images.map((url, idx) => (
+                      <div key={idx} className={cn(
+                          "group relative aspect-square rounded-[2rem] overflow-hidden border-2 transition-all duration-500",
+                          idx === 0 ? "border-primary shadow-2xl shadow-primary/10 md:col-span-2 md:row-span-2" : "border-border/40 bg-muted/10"
+                      )}>
+                        <img src={url} alt="Product" className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="absolute top-4 right-4 h-10 w-10 rounded-2xl bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
+                        >
+                          <Trash2 size={18} />
+                        </button>
                       </div>
                     ))}
-                 </div>
-               )}
-            </Card>
-          </TabsContent>
-
-          {/* Tab 10: Customs */}
-          <TabsContent value="customs">
-            <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="hs_code_6">HS Code (6 digits)</Label>
-                      <Input id="hs_code_6" {...form.register("hs_code_6")} maxLength={6} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="gcc_tariff_12">GCC Tariff Code (12 digits)</Label>
-                      <Input id="gcc_tariff_12" {...form.register("gcc_tariff_12")} maxLength={12} />
-                    </div>
-                 </div>
-                 <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>Import Licence Required</Label>
-                        <p className="text-xs text-nss-text-secondary">Required for certain toy categories in Kuwait</p>
-                      </div>
-                      <Switch
-                        checked={form.watch("import_licence_required")}
-                        onCheckedChange={(checked) => form.setValue("import_licence_required", checked)}
-                      />
-                    </div>
-                    {form.watch("import_licence_required") && (
-                      <div className="space-y-2 animate-in fade-in">
-                        <Label htmlFor="import_licence_number">Licence Number</Label>
-                        <Input id="import_licence_number" {...form.register("import_licence_number")} />
-                      </div>
+                    {images.length < 10 && (
+                        <label className="aspect-square rounded-[2.5rem] border-4 border-dashed border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group">
+                            <Plus size={32} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                            <input type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" />
+                        </label>
                     )}
                  </div>
-              </div>
-            </Card>
-          </TabsContent>
-        </div>
-      </Tabs>
-    </form>
+              </Card>
+
+              <Card className="p-8 sm:p-12 rounded-[3.5rem] border-border/40 shadow-xl overflow-hidden">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-3xl font-black text-foreground tracking-tight">Pricing Strategy</h3>
+                            <p className="text-muted-foreground font-medium mt-1">Set your selling price and analyze profit.</p>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="space-y-4">
+                                <Label htmlFor="price_kwd" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">Retail Price (KD)</Label>
+                                <div className="relative group">
+                                    <Input
+                                        id="price_kwd"
+                                        type="number"
+                                        step="0.001"
+                                        {...form.register("price_kwd", { valueAsNumber: true })}
+                                        className="h-20 ps-6 rounded-[1.5rem] bg-muted/10 border-border/40 focus:bg-background transition-all font-black text-3xl"
+                                    />
+                                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-primary font-black">KD</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <Label htmlFor="cost_price_kwd" className="text-xs font-black uppercase tracking-widest text-muted-foreground ms-2">Unit Cost</Label>
+                                    <Input
+                                        id="cost_price_kwd"
+                                        type="number"
+                                        step="0.001"
+                                        {...form.register("cost_price_kwd", { valueAsNumber: true })}
+                                        className="h-16 rounded-2xl bg-muted/10"
+                                    />
+                                </div>
+                                <div className="space-y-4">
+                                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ms-2">Tax Status</Label>
+                                    <FormField
+                                      control={form.control}
+                                      name="tax_status"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                              <SelectTrigger className="h-16 w-full rounded-2xl bg-muted/10 px-4 font-bold">
+                                                <SelectValue placeholder="Tax Status" />
+                                              </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="rounded-2xl border-border/40 shadow-2xl">
+                                              <SelectItem value="taxable" className="rounded-xl font-bold py-3">Taxable</SelectItem>
+                                              <SelectItem value="tax_exempt" className="rounded-xl font-bold py-3">Exempt</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </FormItem>
+                                      )}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-emerald-500 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+                        <div className="relative z-10 space-y-6">
+                            <h4 className="text-[10px] font-black uppercase tracking-widest opacity-80">Economic Intelligence</h4>
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Estimated Margin</span>
+                                <p className="text-5xl font-black">
+                                    {(() => {
+                                         const p = form.watch("price_kwd");
+                                         const c = form.watch("cost_price_kwd");
+                                         if (p && typeof p === 'number' && typeof c === 'number' && p > 0) {
+                                             return (((p - c) / p) * 100).toFixed(1) + "%";
+                                         }
+                                         return "0.0%";
+                                     })()}
+                                </p>
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Net Profit</span>
+                                <p className="text-3xl font-black">
+                                    {(() => {
+                                         const p = form.watch("price_kwd");
+                                         const c = form.watch("cost_price_kwd");
+                                         if (typeof p === 'number' && typeof c === 'number') {
+                                             return (p - c).toFixed(3) + " KD";
+                                         }
+                                         return "0.000 KD";
+                                     })()}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-1 space-y-8">
+                <Card className="p-8 rounded-[2.5rem] border-border/40 shadow-xl bg-card sticky top-36">
+                    <div className="flex items-center gap-3 mb-6">
+                        <CircleDollarSign size={20} className="text-primary" />
+                        <h4 className="text-xs font-black uppercase tracking-widest">Promotion</h4>
+                    </div>
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 mb-6 shadow-inner" onClick={() => form.setValue("include_in_flash_sale", !form.watch("include_in_flash_sale"))}>
+                        <div>
+                            <p className="text-xs font-black uppercase">Flash Sale</p>
+                            <p className="text-[10px] text-muted-foreground font-medium">Seasonal opt-in</p>
+                        </div>
+                        <Switch checked={form.watch("include_in_flash_sale")} onCheckedChange={(c) => form.setValue("include_in_flash_sale", c)} />
+                    </div>
+                    {form.watch("include_in_flash_sale") && (
+                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
+                            <Label className="text-[10px] font-black uppercase ms-1">Discount %</Label>
+                            <Input type="number" {...form.register("flash_sale_discount_percent", { valueAsNumber: true })} className="h-12 rounded-xl" />
+                        </div>
+                    )}
+                </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Stock */}
+        {currentStep === 2 && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="lg:col-span-3 space-y-8">
+              <Card className="p-8 sm:p-12 rounded-[3.5rem] border-border/40 shadow-xl">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                    <div className="space-y-8">
+                        <div>
+                            <h3 className="text-3xl font-black text-foreground tracking-tight">Inventory Logistics</h3>
+                            <p className="text-muted-foreground font-medium mt-1">Precise tracking prevents overselling.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Product SKU</Label>
+                            <Input {...form.register("sku")} className="h-16 rounded-2xl bg-muted/10 font-mono font-bold px-6" placeholder="TOY-001" />
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Barcode</Label>
+                            <Input {...form.register("barcode")} className="h-14 rounded-2xl bg-muted/10 font-mono px-6" />
+                        </div>
+                    </div>
+                    <div className="space-y-8">
+                        <div className="p-8 rounded-[2rem] bg-amber-500/5 border border-amber-500/10 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h4 className="font-black text-amber-900 uppercase text-sm">Stock Tracking</h4>
+                                <Switch checked={form.watch("track_inventory")} onCheckedChange={(c) => form.setValue("track_inventory", c)} />
+                            </div>
+                            <div className={cn("grid grid-cols-2 gap-4 transition-opacity", !form.watch("track_inventory") && "opacity-30 pointer-events-none")}>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-amber-900/40 uppercase ms-1">Available</Label>
+                                    <Input type="number" {...form.register("stock_quantity", { valueAsNumber: true })} className="h-14 rounded-xl bg-white border-amber-500/20 text-center font-black text-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black text-amber-900/40 uppercase ms-1">Threshold</Label>
+                                    <Input type="number" {...form.register("low_stock_threshold", { valueAsNumber: true })} className="h-14 rounded-xl bg-white border-amber-500/20 text-center font-bold" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-[10px] font-black uppercase text-muted-foreground ms-2">Out of Stock behavior</Label>
+                            <FormField
+                              control={form.control}
+                              name="out_of_stock_behaviour"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="h-14 w-full rounded-2xl bg-muted/10 px-6 font-bold">
+                                        <SelectValue placeholder="Behaviour" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="rounded-2xl border-border/40 shadow-2xl">
+                                      <SelectItem value="show_out_of_stock" className="rounded-xl font-bold py-3">⚠️ Show Out of Stock</SelectItem>
+                                      <SelectItem value="hide" className="rounded-xl font-bold py-3">👻 Hide</SelectItem>
+                                      <SelectItem value="continue_selling" className="rounded-xl font-bold py-3">🔄 Allow Backorders</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </FormItem>
+                              )}
+                            />
+                        </div>
+                    </div>
+                 </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Safety & Shipping */}
+        {currentStep === 3 && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="lg:col-span-3 space-y-8">
+              <Card className="p-8 sm:p-12 rounded-[3.5rem] border-border/40 shadow-xl">
+                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
+                    <div className="space-y-10">
+                        <div>
+                            <h3 className="text-3xl font-black text-foreground tracking-tight">Compliance & Returns</h3>
+                            <p className="text-muted-foreground font-medium mt-1">Mandatory safety and policy disclosures.</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Min Age</Label>
+                                <Input type="number" {...form.register("min_age", { valueAsNumber: true })} className="h-14 rounded-2xl bg-muted/10 font-bold" />
+                            </div>
+                            <div className="space-y-4">
+                                <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Country of Origin</Label>
+                                <Input {...form.register("country_of_origin")} className="h-14 rounded-2xl bg-muted/10 font-bold" placeholder="Germany" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Manufacturer Name</Label>
+                            <Input {...form.register("manufacturer_name")} className="h-14 rounded-2xl bg-muted/10 font-bold" />
+                        </div>
+
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Safety Warnings</Label>
+                            <Textarea {...form.register("safety_warnings_en")} className="min-h-[120px] rounded-2xl bg-muted/10" placeholder="Small parts warning..." />
+                            {form.formState.errors.safety_warnings_en && (
+                                <p className="text-xs text-destructive font-bold ms-2 mt-1">{form.formState.errors.safety_warnings_en?.message}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-10">
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-2xl font-black text-foreground tracking-tight">Package Dimensions</h3>
+                                <p className="text-muted-foreground font-medium mt-1">Weight and size for logistics.</p>
+                            </div>
+                            <div className="space-y-4">
+                                <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Weight (Grams)</Label>
+                                <Input type="number" {...form.register("weight_grams", { valueAsNumber: true })} className="h-16 rounded-2xl bg-muted/10 font-black text-2xl" />
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <Input {...form.register("length_cm", { valueAsNumber: true })} placeholder="L" className="h-14 rounded-xl text-center font-bold" />
+                                <Input {...form.register("width_cm", { valueAsNumber: true })} placeholder="W" className="h-14 rounded-xl text-center font-bold" />
+                                <Input {...form.register("height_cm", { valueAsNumber: true })} placeholder="H" className="h-14 rounded-xl text-center font-bold" />
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">Materials</Label>
+                            <Input {...form.register("materials_en")} className="h-14 rounded-2xl bg-muted/10 font-bold" placeholder="Wood, Non-toxic paint" />
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-[10px] font-black uppercase text-muted-foreground ms-2">Return Eligibility</Label>
+                            <FormField
+                              control={form.control}
+                              name="return_eligibility"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="h-14 w-full rounded-2xl bg-muted/10 px-6 font-bold">
+                                        <SelectValue placeholder="Eligibility" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="rounded-2xl border-border/40 shadow-2xl">
+                                      <SelectItem value="eligible" className="rounded-xl font-bold py-3">✅ Eligible</SelectItem>
+                                      <SelectItem value="not_eligible" className="rounded-xl font-bold py-3">🚫 Non-Returnable</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </FormItem>
+                              )}
+                            />
+                        </div>
+                    </div>
+                 </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Advanced */}
+        {currentStep === 4 && (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="lg:col-span-3 space-y-8">
+              <Card className="p-8 sm:p-12 rounded-[3.5rem] border-border/40 shadow-xl">
+                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
+                    <div className="space-y-10">
+                        <div>
+                            <h3 className="text-3xl font-black text-foreground tracking-tight">KUCAS & Customs</h3>
+                            <p className="text-muted-foreground font-medium mt-1">Kuwait mandatory import codes.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">KUCAS Certificate</Label>
+                            <Input {...form.register("kucas_certificate")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" placeholder="CERT-12345" />
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-xs font-black uppercase text-muted-foreground ms-2">KUCAS Expiry</Label>
+                            <Input type="datetime-local" {...form.register("kucas_expiry")} className="h-14 rounded-2xl bg-muted/10 font-bold" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                                <Label className="text-xs font-black uppercase text-muted-foreground ms-2">HS Code (6 digits)</Label>
+                                <Input {...form.register("hs_code_6")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" maxLength={6} placeholder="950300" />
+                            </div>
+                            <div className="space-y-4">
+                                <Label className="text-xs font-black uppercase text-muted-foreground ms-2">GCC Tariff (12 digits)</Label>
+                                <Input {...form.register("gcc_tariff_12")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" maxLength={12} placeholder="950300400010" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-10">
+                        <div>
+                            <h3 className="text-2xl font-black text-foreground tracking-tight">Search Optimization</h3>
+                            <p className="text-muted-foreground font-medium mt-1">SEO meta tags for English and Arabic.</p>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="space-y-4 border-l-4 border-primary/20 ps-6">
+                                <Label className="text-[10px] font-black uppercase opacity-60">SEO Title</Label>
+                                <Input {...form.register("seo_title_en")} placeholder="SEO Title" className="h-12 rounded-xl" />
+                            </div>
+                            <div className="space-y-4 border-l-4 border-primary/20 ps-6">
+                                <Label className="text-[10px] font-black uppercase opacity-60">Search Meta Description</Label>
+                                <Textarea {...form.register("seo_description_en")} placeholder="Search Meta Description" className="min-h-[100px] rounded-xl" />
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+              </Card>
+            </div>
+          </div>
+        )}
+      </form>
+      </Form>
+
+      {/* Footer Navigation */}
+      <div className="flex items-center justify-between pt-12 border-t border-border/40">
+          <Button 
+            type="button" 
+            variant="ghost" 
+            onClick={prevStep} 
+            disabled={currentStep === 0}
+            className={cn("h-14 px-8 rounded-2xl font-black uppercase tracking-widest gap-2", currentStep === 0 && "opacity-0")}
+          >
+            <ChevronLeft size={20} /> Previous
+          </Button>
+
+          <div className="hidden sm:flex gap-2">
+              {steps.map((_, i) => (
+                  <div key={i} className={cn(
+                      "h-1.5 rounded-full transition-all duration-500",
+                      i === currentStep ? "w-10 bg-primary shadow-lg shadow-primary/20" : i < currentStep ? "w-4 bg-primary/40" : "w-4 bg-muted/30"
+                  )} />
+              ))}
+          </div>
+
+          {currentStep < steps.length - 1 ? (
+              <Button 
+                type="button" 
+                onClick={nextStep} 
+                className="h-14 px-12 rounded-2xl bg-foreground text-background font-black uppercase tracking-widest gap-2 shadow-2xl shadow-foreground/10 transition-all hover:scale-105 flex items-center justify-center min-w-[180px]"
+              >
+                <span>Next Step</span> <ChevronRight size={20} />
+              </Button>
+          ) : (
+              <Button 
+                type="button" 
+                onClick={form.handleSubmit(onSubmit)} 
+                loading={form.formState.isSubmitting}
+                className="h-14 px-12 rounded-2xl bg-emerald-500 text-white font-black uppercase tracking-widest gap-2 shadow-2xl shadow-emerald-500/20 transition-all hover:scale-105 flex items-center justify-center min-w-[180px]"
+              >
+                Done & Launch
+              </Button>
+          )}
+      </div>
+    </div>
   )
 }

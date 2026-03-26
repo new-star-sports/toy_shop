@@ -12,7 +12,7 @@ export default async function NewBrandPage() {
             <ArrowLeft size={16} />
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold text-nss-text-primary">New Brand</h1>
+        <h1 className="text-2xl font-bold text-foreground">New Brand</h1>
       </div>
 
       <BrandForm />

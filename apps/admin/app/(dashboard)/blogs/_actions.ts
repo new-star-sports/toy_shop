@@ -1,4 +1,4 @@
-"use strict"
+"use server"
 
 import { revalidatePath } from "next/cache"
 import { createServiceClient } from "@nss/db"

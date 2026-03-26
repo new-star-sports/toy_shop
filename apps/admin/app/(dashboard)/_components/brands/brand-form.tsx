@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -21,6 +22,7 @@ import { useRouter } from "next/navigation"
 import { upsertBrandAction } from "../../brands/_actions"
 import { toast } from "sonner"
 import type { Brand } from "@nss/db/types"
+import { translateToArabic } from "../../_lib/translate"
 
 interface BrandFormProps {
   initialData?: Brand | null
@@ -28,6 +30,14 @@ interface BrandFormProps {
 }
 
 type BrandFormValues = z.infer<typeof brandSchema>
+
+const slugify = (text: string) => 
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
   const router = useRouter()
@@ -57,10 +67,29 @@ export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
     },
   })
 
+  const watchAll = form.watch()
+  const nameEn = watchAll.name_en
+  
+  // Track if slug has been manually modified
+  const isSlugModified = useRef(initialData ? !!initialData.slug : false)
+
+  // Auto-generate slug
+  useEffect(() => {
+    if (nameEn && !isSlugModified.current) {
+      form.setValue("slug", slugify(nameEn), { shouldValidate: true })
+    }
+  }, [nameEn, form])
+
   async function onSubmit(values: BrandFormValues) {
+    // Automate Arabic translations in background
+    const translatedNameAr = await translateToArabic(values.name_en)
+    const translatedDescAr = values.description_en ? await translateToArabic(values.description_en) : values.name_ar
+
     const result = await upsertBrandAction({
       ...initialData,
       ...values,
+      name_ar: translatedNameAr,
+      description_ar: translatedDescAr,
     } as Partial<Brand>)
 
     if (result.success) {
@@ -78,28 +107,15 @@ export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-2xl">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="name_en"
             render={({ field }: { field: any }) => (
               <FormItem>
-                <FormLabel>Name (English)</FormLabel>
+                <FormLabel>Brand Name</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="e.g. LEGO" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="name_ar"
-            render={({ field }: { field: any }) => (
-              <FormItem>
-                <FormLabel>Name (Arabic)</FormLabel>
-                <FormControl>
-                   <Input {...field} dir="rtl" placeholder="ليغو" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,7 +130,14 @@ export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
             <FormItem>
               <FormLabel>Slug</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="lego" />
+                <Input 
+                  {...field} 
+                  placeholder="lego" 
+                  onChange={(e) => {
+                    isSlugModified.current = true
+                    field.onChange(e)
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -136,28 +159,15 @@ export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="description_en"
             render={({ field }: { field: any }) => (
               <FormItem>
-                <FormLabel>Description (English)</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description_ar"
-            render={({ field }: { field: any }) => (
-              <FormItem>
-                <FormLabel>Description (Arabic)</FormLabel>
-                <FormControl>
-                  <Textarea {...field} dir="rtl" />
+                  <Textarea {...field} placeholder="Describe this brand..." />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -222,9 +232,10 @@ export function BrandForm({ initialData, onSuccess }: BrandFormProps) {
         </div>
 
         <div className="flex gap-4">
-          <Button type="submit">
+          <Button type="submit" loading={form.formState.isSubmitting}>
             {initialData ? "Update Brand" : "Create Brand"}
           </Button>
+
           <Button type="button" variant="outline" onClick={() => router.push("/brands")}>
             Cancel
           </Button>

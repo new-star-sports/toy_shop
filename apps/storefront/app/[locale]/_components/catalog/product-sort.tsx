@@ -1,7 +1,13 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowUpDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@nss/ui/components/select";
 import type { Locale } from "@/lib/i18n";
 
 export function ProductSort({ locale }: { locale: Locale }) {
@@ -29,20 +35,18 @@ export function ProductSort({ locale }: { locale: Locale }) {
       <span className="text-sm text-nss-text-secondary hidden sm:inline">
         {isAr ? "ترتيب حسب:" : "Sort by:"}
       </span>
-      <div className="relative">
-        <select
-          value={currentSort}
-          onChange={(e) => handleSortChange(e.target.value)}
-          className="appearance-none bg-white border border-nss-border rounded-xl px-4 py-2 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-nss-primary/10 transition-all cursor-pointer hover:border-nss-primary/30"
-        >
+      <Select value={currentSort} onValueChange={handleSortChange}>
+        <SelectTrigger className="w-[180px] rounded-xl border-nss-border bg-white text-sm font-medium hover:border-nss-primary/30 focus:ring-2 focus:ring-nss-primary/10">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="w-[180px]">
           {sortOptions.map((option) => (
-            <option key={option.value} value={option.value}>
+            <SelectItem key={option.value} value={option.value}>
               {isAr ? option.label_ar : option.label_en}
-            </option>
+            </SelectItem>
           ))}
-        </select>
-        <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-nss-text-secondary pointer-events-none" />
-      </div>
+        </SelectContent>
+      </Select>
     </div>
   );
 }

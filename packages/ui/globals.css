@@ -132,4 +132,9 @@
     direction: ltr;
     unicode-bidi: embed;
   }
+
+  /* Ensure Radix portaled content (selects, dropdowns, popovers) always renders above everything */
+  [data-radix-popper-content-wrapper] {
+    z-index: 9999 !important;
+  }
 }

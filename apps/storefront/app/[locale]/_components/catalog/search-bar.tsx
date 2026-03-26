@@ -25,16 +25,16 @@ export function SearchBar({ locale }: { locale: Locale }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={isAr ? "ابحث عن ألعاب..." : "Search for toys..."}
-        className="w-full h-11 pl-12 pr-12 rtl:pr-12 rtl:pl-12 rounded-2xl border-2 border-nss-border/50 bg-nss-surface text-sm font-medium focus:outline-none focus:ring-4 focus:ring-nss-primary/10 focus:border-nss-primary transition-all duration-300 group-hover:border-nss-primary/30"
+        className="w-full h-11 pl-4 pr-12 rtl:pl-12 rtl:pr-4 rounded-2xl border-2 border-border/50 bg-muted/30 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-300 group-hover:border-primary/30"
       />
-      <div className="absolute left-4 rtl:right-4 rtl:left-auto top-1/2 -translate-y-1/2 text-nss-text-secondary group-focus-within:text-nss-primary transition-colors">
+      <div className="absolute left-4 rtl:right-4 rtl:left-auto top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
         <SearchIcon className="h-5 w-5" />
       </div>
       {query && (
         <button
           type="button"
           onClick={() => setQuery("")}
-          className="absolute right-4 rtl:left-4 rtl:right-auto top-1/2 -translate-y-1/2 text-nss-text-secondary hover:text-nss-primary transition-colors"
+          className="absolute right-4 rtl:left-4 rtl:right-auto top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
         >
           <X className="h-4 w-4" />
         </button>

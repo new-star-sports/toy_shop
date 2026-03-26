@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { getAdminBanners } from "@nss/db/queries";
 import { Button } from "@nss/ui/components/button";
+import { Card, CardContent } from "@nss/ui";
 import { BannerTypeBadge } from "../_components/banners/type-badge";
 import { ToggleBannerStatus } from "../_components/banners/toggle-status";
-import { DeleteBannerButton } from "../_components/banners/delete-button";
+import { BannerActionsMenu } from "../_components/banners/actions-menu";
 import type { Banner } from "@nss/db/types";
+import { IconPlus, IconPhoto } from "@tabler/icons-react";
 
 export default async function BannersPage({
   searchParams,
@@ -13,114 +15,112 @@ export default async function BannersPage({
 }) {
   const params = await searchParams;
   const typeSelection = params.type || "all";
-  const activeStatus = params.active === "true" ? true : params.active === "false" ? false : undefined;
+  const activeStatus =
+    params.active === "true" ? true : params.active === "false" ? false : undefined;
 
   const banners = await getAdminBanners({
     type: typeSelection,
     isActive: activeStatus,
   });
 
+  const types = ["all", "hero", "announcement", "editorial", "split_promo"];
+  const activeFilters = ["all", "active", "inactive"];
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-nss-text-primary">Banners</h1>
-          <p className="text-sm text-nss-text-secondary">
-            Manage your store's promotional banners and announcements ({banners.length} total)
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Banners</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Manage promotional banners and announcements ({banners.length} total)
           </p>
         </div>
-        <Button asChild>
-          <Link href="/banners/new">
-            <span className="me-2">+</span> Add Banner
+        <Button asChild className="w-full sm:w-auto rounded-full px-5 bg-primary text-white shadow-lg shadow-primary/20">
+          <Link href="/banners/new" className="flex flex-row items-center justify-center gap-2">
+            <IconPlus size={16} stroke={3} />
+            <span className="font-bold">Add Banner</span>
           </Link>
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-nss-card p-4 rounded-xl border border-nss-border">
-        <div className="flex flex-wrap gap-2">
-          {["all", "hero", "announcement", "editorial", "split_promo"].map((t) => (
-            <Button
-              key={t}
-              variant={typeSelection === t ? "default" : "outline"}
-              size="sm"
-              className="capitalize"
-              asChild
-            >
-              <Link href={`?type=${t}${activeStatus !== undefined ? `&active=${activeStatus}` : ""}`}>
-                {t.replace("_", " ")}
-              </Link>
-            </Button>
-          ))}
-        </div>
-        <div className="border-s border-nss-border mx-2 hidden sm:block h-8" />
-        <div className="flex gap-2">
-          {["all", "active", "inactive"].map((s) => {
-            const isActive = s === "active" ? "true" : s === "inactive" ? "false" : "all";
-            const currentActive = params.active || "all";
-            return (
+      <Card className="rounded-2xl border-border/50">
+        <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
+          {/* Type filters */}
+          <div className="flex flex-wrap gap-2">
+            {types.map((t) => (
               <Button
-                key={s}
-                variant={currentActive === isActive ? "default" : "outline"}
+                key={t}
+                variant={typeSelection === t ? "default" : "outline"}
                 size="sm"
-                className="capitalize"
+                className="capitalize rounded-xl text-xs font-bold h-8"
                 asChild
               >
-                <Link href={`?active=${isActive}${typeSelection !== "all" ? `&type=${typeSelection}` : ""}`}>
-                  {s}
+                <Link href={`?type=${t}${activeStatus !== undefined ? `&active=${activeStatus}` : ""}`}>
+                  {t.replace("_", " ")}
                 </Link>
               </Button>
-            );
-          })}
-        </div>
-      </div>
+            ))}
+          </div>
+          {/* Active status filters */}
+          <div className="flex gap-2">
+            {activeFilters.map((s) => {
+              const isActiveVal = s === "active" ? "true" : s === "inactive" ? "false" : "all";
+              const currentActive = params.active || "all";
+              return (
+                <Button
+                  key={s}
+                  variant={currentActive === isActiveVal ? "default" : "outline"}
+                  size="sm"
+                  className="capitalize rounded-xl text-xs font-bold h-8"
+                  asChild
+                >
+                  <Link href={`?active=${isActiveVal}${typeSelection !== "all" ? `&type=${typeSelection}` : ""}`}>
+                    {s}
+                  </Link>
+                </Button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Table */}
-      <div className="bg-nss-card rounded-xl border border-nss-border overflow-hidden">
+      {/* Desktop Table */}
+      <Card className="hidden md:block rounded-2xl border-border/50 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-start">
-            <thead className="bg-nss-surface text-nss-text-secondary border-b border-nss-border">
+            <thead className="bg-muted/30 text-muted-foreground border-b border-border">
               <tr>
-                <th className="px-6 py-3 font-semibold text-start">Banner</th>
-                <th className="px-6 py-3 font-semibold text-start">Type</th>
-                <th className="px-6 py-3 font-semibold text-start">Schedule</th>
-                <th className="px-6 py-3 font-semibold text-start">Status</th>
-                <th className="px-6 py-3 font-semibold text-end">Actions</th>
+                <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Banner</th>
+                <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Type</th>
+                <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Schedule</th>
+                <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-start">Status</th>
+                <th className="px-6 py-3 font-bold text-[11px] uppercase tracking-widest text-end">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-nss-border">
+            <tbody className="divide-y divide-border/30">
               {banners.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-nss-text-secondary">
+                  <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground italic text-sm">
                     No banners found matching your criteria.
                   </td>
                 </tr>
               ) : (
                 banners.map((banner: Banner) => (
-                  <tr key={banner.id} className="hover:bg-nss-surface/50 transition-colors">
+                  <tr key={banner.id} className="hover:bg-muted/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-16 h-10 rounded bg-nss-surface flex items-center justify-center overflow-hidden border border-nss-border">
+                        <div className="w-16 h-10 rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden border border-border/30 shrink-0">
                           {banner.image_desktop_url ? (
-                            <img
-                              src={banner.image_desktop_url}
-                              alt={banner.title_en}
-                              className="w-full h-full object-cover"
-                            />
+                            <img src={banner.image_desktop_url} alt={banner.title_en} className="w-full h-full object-cover" />
                           ) : (
-                            <div 
-                              className="w-full h-full" 
-                              style={{ backgroundColor: banner.bg_color || '#e5e7eb' }}
-                            />
+                            <div className="w-full h-full" style={{ backgroundColor: banner.bg_color || "#e5e7eb" }} />
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-nss-text-primary line-clamp-1">
-                            {banner.title_en}
-                          </p>
-                          <p className="text-xs text-nss-text-secondary line-clamp-1">
-                            {banner.title_ar}
-                          </p>
+                          <p className="font-semibold text-foreground line-clamp-1">{banner.title_en}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-1">{banner.title_ar}</p>
                         </div>
                       </div>
                     </td>
@@ -129,24 +129,19 @@ export default async function BannersPage({
                     </td>
                     <td className="px-6 py-4">
                       {banner.schedule_start ? (
-                        <div className="text-xs space-y-1">
-                          <p><span className="text-nss-text-secondary">Start:</span> {new Date(banner.schedule_start).toLocaleDateString()}</p>
-                          {banner.schedule_end && (
-                            <p><span className="text-nss-text-secondary">End:</span> {new Date(banner.schedule_end).toLocaleDateString()}</p>
-                          )}
+                        <div className="text-xs space-y-0.5">
+                          <p><span className="text-muted-foreground">Start: </span>{new Date(banner.schedule_start).toLocaleDateString()}</p>
+                          {banner.schedule_end && <p><span className="text-muted-foreground">End: </span>{new Date(banner.schedule_end).toLocaleDateString()}</p>}
                         </div>
                       ) : (
-                        <span className="text-nss-text-secondary text-xs italic italic">No schedule</span>
+                        <span className="text-muted-foreground text-xs italic">No schedule</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <ToggleBannerStatus id={banner.id} isActive={banner.is_active} />
                     </td>
-                    <td className="px-6 py-4 text-end space-x-2">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/banners/${banner.id}`}>Edit</Link>
-                      </Button>
-                      <DeleteBannerButton id={banner.id} />
+                    <td className="px-6 py-4 text-end">
+                      <BannerActionsMenu id={banner.id} />
                     </td>
                   </tr>
                 ))
@@ -154,6 +149,48 @@ export default async function BannersPage({
             </tbody>
           </table>
         </div>
+      </Card>
+
+      {/* Mobile cards */}
+      <div className="md:hidden space-y-3">
+        {banners.length === 0 ? (
+          <div className="p-12 text-center text-muted-foreground italic text-sm rounded-2xl border border-dashed border-border/60">
+            No banners found.
+          </div>
+        ) : banners.map((banner: Banner) => (
+          <Card key={banner.id} className="rounded-2xl border-border/40 overflow-hidden bg-card">
+            <div className="flex items-start gap-0">
+              {/* Banner preview strip */}
+              <div className="w-2 self-stretch shrink-0 rounded-l-2xl" style={{ backgroundColor: banner.bg_color || "#e5e7eb" }} />
+              <div className="flex-1 p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-16 h-10 rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden border border-border/30 shrink-0">
+                    {banner.image_desktop_url ? (
+                      <img src={banner.image_desktop_url} alt={banner.title_en} className="w-full h-full object-cover" />
+                    ) : (
+                      <IconPhoto size={18} className="text-muted-foreground/40" stroke={1.5} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground text-sm line-clamp-1">{banner.title_en}</p>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <BannerTypeBadge type={banner.banner_type as any} />
+                      {banner.schedule_start && (
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(banner.schedule_start).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                  <div className="flex items-center justify-between pt-3 border-t border-border/30">
+                  <ToggleBannerStatus id={banner.id} isActive={banner.is_active} />
+                  <BannerActionsMenu id={banner.id} />
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
     </div>
   );

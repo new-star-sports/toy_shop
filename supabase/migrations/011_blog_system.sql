@@ -61,11 +61,11 @@ WITH CHECK (auth.jwt() ->> 'email' IN ('admin@newstarsports.com', 'duraimurugan8
 -- Functions for updated_at
 CREATE TRIGGER set_blog_categories_updated_at
 BEFORE UPDATE ON blog_categories
-FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
 
 CREATE TRIGGER set_blogs_updated_at
 BEFORE UPDATE ON blogs
-FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_blogs_slug ON blogs(slug);

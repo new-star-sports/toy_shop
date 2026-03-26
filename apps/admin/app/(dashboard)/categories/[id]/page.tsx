@@ -35,7 +35,7 @@ export default async function EditCategoryPage({
             <ArrowLeft size={16} />
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold text-nss-text-primary">Edit Category</h1>
+        <h1 className="text-2xl font-bold text-foreground">Edit Category</h1>
       </div>
 
       <CategoryForm initialData={category as any} categories={categories} />

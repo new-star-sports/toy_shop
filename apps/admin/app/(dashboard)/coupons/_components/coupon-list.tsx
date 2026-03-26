@@ -5,7 +5,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@nss/ui/components/badge"
 import { Button } from "@nss/ui/components/button"
 import { Switch } from "@nss/ui/components/switch"
-import { Edit2, Trash2, Ticket, Users, Calendar } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@nss/ui/components/dropdown-menu"
+import { IconEdit, IconTrash, IconTicket, IconUsers, IconCalendar, IconDotsVertical } from "@tabler/icons-react"
 import Link from "next/link"
 import { toggleCouponStatus, removeCoupon } from "../_actions"
 import { toast } from "sonner"
@@ -41,10 +48,10 @@ export function CouponList({ initialCoupons }: CouponListProps) {
   }
 
   return (
-    <div className="rounded-xl border border-nss-border bg-nss-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent border-nss-border">
+          <TableRow className="hover:bg-transparent border-border">
             <TableHead className="w-[200px]">Code</TableHead>
             <TableHead>Type & Value</TableHead>
             <TableHead>Usage</TableHead>
@@ -56,16 +63,16 @@ export function CouponList({ initialCoupons }: CouponListProps) {
         <TableBody>
           {coupons.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="h-32 text-center text-nss-text-secondary">
+              <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
                 No coupons found. Create your first one to start promoting!
               </TableCell>
             </TableRow>
           ) : (
             coupons.map((coupon) => (
-              <TableRow key={coupon.id} className="border-nss-border hover:bg-nss-surface/50">
+              <TableRow key={coupon.id} className="border-border hover:bg-muted/50">
                 <TableCell className="font-bold">
                   <div className="flex items-center gap-2">
-                    <Ticket className="h-4 w-4 text-nss-primary" />
+                    <IconTicket className="h-4 w-4 text-primary" />
                     {coupon.code}
                   </div>
                 </TableCell>
@@ -74,20 +81,20 @@ export function CouponList({ initialCoupons }: CouponListProps) {
                     <span className="font-medium">
                       {coupon.coupon_type === "percentage" ? `${coupon.value}% OFF` : `${coupon.value} KWD OFF`}
                     </span>
-                    <span className="text-xs text-nss-text-secondary font-mono ltr-nums">
+                    <span className="text-xs text-muted-foreground font-mono ltr-nums">
                       Min order: {coupon.min_order_value_kwd ? `${coupon.min_order_value_kwd} KWD` : 'None'}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5 text-xs text-nss-text-secondary">
-                      <Users className="h-3 w-3" />
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <IconUsers className="h-3 w-3" />
                       {coupon.used_count} / {coupon.max_uses_total || '∞'}
                     </div>
                     {coupon.expires_at && (
-                      <div className="flex items-center gap-1.5 text-xs text-nss-text-secondary">
-                        <Calendar className="h-3 w-3" />
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <IconCalendar className="h-3 w-3" />
                         Expires: {format(new Date(coupon.expires_at), "MMM d, yyyy")}
                       </div>
                     )}
@@ -105,21 +112,26 @@ export function CouponList({ initialCoupons }: CouponListProps) {
                   />
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Link href={`/coupons/${coupon.id}`}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-nss-primary">
-                        <Edit2 className="h-4 w-4" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <IconDotsVertical className="h-4 w-4" />
                       </Button>
-                    </Link>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 hover:text-red-500"
-                      onClick={() => handleDelete(coupon.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/coupons/${coupon.id}`}>
+                          <IconEdit className="h-4 w-4 mr-2" />
+                          Edit
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleDelete(coupon.id)} className="text-red-500">
+                        <IconTrash className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))

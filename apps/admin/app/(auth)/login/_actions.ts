@@ -4,6 +4,13 @@ import { createServerClient } from "@nss/db/client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+export async function signOutAction() {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
 export async function signInAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
