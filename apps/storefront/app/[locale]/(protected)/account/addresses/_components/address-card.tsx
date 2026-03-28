@@ -1,9 +1,9 @@
 "use client";
 
 import { removeAddress, setDefaultAddress } from "@/app/_actions/address";
-import { Button } from "@nss/ui/components/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@nss/ui/components/card";
-import { Badge } from "@nss/ui/components/badge";
+import { Button } from "@/components/ui";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { MapPin, Phone, User, Trash2, Edit2, Star } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { useTransition } from "react";

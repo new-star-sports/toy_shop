@@ -19,7 +19,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@nss/ui";
+} from "@/components/ui";
 import { IconLogout } from "@tabler/icons-react";
 import { signOutAction } from "../../(auth)/login/_actions";
 import type { AdminUser } from "./dashboard-shell";
@@ -74,7 +74,7 @@ export function UserMenu({ user }: { user: AdminUser }) {
             <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               disabled={isPending}
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 startTransition(async () => {
                   await signOutAction();

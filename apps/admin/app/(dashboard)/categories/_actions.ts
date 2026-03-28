@@ -5,7 +5,14 @@ import { createServiceClient } from "@nss/db/client"
 import type { Category } from "@nss/db/types"
 
 export async function upsertCategoryAction(data: Partial<Category>) {
+  console.log('=== DATABASE DEBUG START ===');
+  console.log('Environment variables:');
+  console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'NOT SET');
+  console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SET' : 'NOT SET');
+  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  
   const supabase = createServiceClient()
+  console.log('Database client created successfully');
   
   const isNew = !data.id
   

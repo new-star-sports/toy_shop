@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { register } from "@/app/_actions/auth";
-import { Button } from "@nss/ui/components/button";
-import { Input } from "@nss/ui/components/input";
-import { Label } from "@nss/ui/components/label";
-import { Checkbox } from "@nss/ui/components/checkbox";
-import { Card, CardContent } from "@nss/ui/components/card";
-import { Alert, AlertDescription } from "@nss/ui/components/alert";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
+import { Checkbox } from "@/components/ui";
+import { Card, CardContent } from "@/components/ui";
+import { Alert, AlertDescription } from "@/components/ui";
 import type { Locale } from "@/lib/i18n";
 
 export function RegisterForm({ locale }: { locale: Locale }) {

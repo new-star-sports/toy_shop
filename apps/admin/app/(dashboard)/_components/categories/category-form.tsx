@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { cn } from "@nss/ui/lib/utils"
+import { cn } from "@/lib/utils"
 import { categorySchema } from "@nss/validators/product"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   Form,
   FormControl,
@@ -15,34 +16,30 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@nss/ui/components/form"
-import { Input } from "@nss/ui/components/input"
-import { Textarea } from "@nss/ui/components/textarea"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@nss/ui/components/popover"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@nss/ui/components/command"
+} from "@/components/ui/form"
+import { FieldGroup } from "@/components/ui/field-group"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Check, ChevronsUpDown } from "lucide-react"
-import { Switch } from "@nss/ui/components/switch"
+import { Switch } from "@/components/ui/switch"
 import { useRouter } from "next/navigation"
 import { upsertCategoryAction } from "../../categories/_actions"
 import { toast } from "sonner"
+import { FileUpload } from "@/components/ui/file-upload"
 import type { Category } from "@nss/db/types"
 import { translateToArabic } from "../../_lib/translate"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface CategoryFormProps {
-  initialData?: Category | null
-  categories: Category[]
-  onSuccess?: () => void
+  initialData?: Category | null;
+  categories?: Category[];
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 const categoryFormSchema = categorySchema.extend({
@@ -61,8 +58,11 @@ const slugify = (text: string) =>
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-export function CategoryForm({ initialData, categories, onSuccess }: CategoryFormProps) {
+export function CategoryForm({ initialData, categories, onSuccess, onCancel }: CategoryFormProps) {
   const router = useRouter()
+  
+  // Image upload state
+  const [categoryImage, setCategoryImage] = useState<string>(initialData?.image_url || "")
   
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categoryFormSchema) as any,
@@ -92,6 +92,21 @@ export function CategoryForm({ initialData, categories, onSuccess }: CategoryFor
     },
   })
   
+  // Debug image loading
+  useEffect(() => {
+    console.log("CategoryForm initialData:", initialData)
+    console.log("image_url from initialData:", initialData?.image_url)
+    console.log("categoryImage state:", categoryImage)
+  }, [initialData, categoryImage])
+  
+  // Sync image preview with form field
+  useEffect(() => {
+    const imageUrl = form.watch("image_url")
+    if (imageUrl !== categoryImage) {
+      setCategoryImage(imageUrl || "")
+    }
+  }, [form.watch("image_url")])
+  
   const watchAll = form.watch()
   const nameEn = watchAll.name_en
   
@@ -106,15 +121,17 @@ export function CategoryForm({ initialData, categories, onSuccess }: CategoryFor
   }, [nameEn, form])
 
   async function onSubmit(values: CategoryFormValues) {
-    // Automate Arabic translations in background
-    const translatedNameAr = values.name_ar || await translateToArabic(values.name_en)
-    const translatedDescAr = values.description_ar || (values.description_en ? await translateToArabic(values.description_en) : values.name_ar)
+    // Automate Arabic translations in background - matching product form pattern
+    const translatedData = {
+      ...values,
+      name_ar: values.name_ar || await translateToArabic(values.name_en),
+      description_ar: values.description_ar || (values.description_en ? await translateToArabic(values.description_en) : await translateToArabic(values.name_en)),
+    }
 
     const result = await upsertCategoryAction({
       ...initialData,
-      ...values,
-      name_ar: translatedNameAr,
-      description_ar: translatedDescAr,
+      ...translatedData,
+      image_url: categoryImage, // Ensure image URL is included
       parent_id: values.parent_id === "null" ? null : values.parent_id,
     } as Partial<Category>)
 
@@ -133,114 +150,129 @@ export function CategoryForm({ initialData, categories, onSuccess }: CategoryFor
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-2xl">
-        <div className="grid grid-cols-1 gap-4">
+        <FieldGroup>
           <FormField
             control={form.control}
             name="name_en"
             render={({ field }: { field: any }) => (
               <FormItem>
-                <FormLabel>Category Name</FormLabel>
+                <FormLabel>Category Name (English)</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. Action Figures" />
+                  <Input 
+                    {...field} 
+                    placeholder="e.g. Action Figures" 
+                    maxLength={200}
+                  />
                 </FormControl>
+                <FormDescription>
+                  Category name (max 200 characters). {field.value?.length || 0}/200 characters used
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
 
-        <FormField
-          control={form.control}
-          name="slug"
-          render={({ field }: { field: any }) => (
+          <FormField
+            control={form.control}
+            name="name_ar"
+            render={({ field }: { field: any }) => (
               <FormItem>
-                <FormLabel>Slug</FormLabel>
+                <FormLabel>Category Name (Arabic)</FormLabel>
                 <FormControl>
                   <Input 
                     {...field} 
-                    placeholder="toys" 
-                    onChange={(e) => {
-                      isSlugModified.current = true
-                      field.onChange(e)
-                    }}
+                    placeholder="مثلاً: ألعاب الحركة" 
+                    maxLength={200}
                   />
                 </FormControl>
-                <FormDescription>The unique URL identifier.</FormDescription>
+                <FormDescription>
+                  Arabic category name (optional - will be auto-translated if empty)
+                </FormDescription>
                 <FormMessage />
               </FormItem>
-          )}
-        />
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="parent_id"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Parent Category</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }: { field: any }) => (
+                <FormItem>
+                  <FormLabel>Slug</FormLabel>
                   <FormControl>
+                    <Input 
+                      {...field} 
+                      placeholder="toys" 
+                      onChange={(e) => {
+                        isSlugModified.current = true
+                        field.onChange(e)
+                      }}
+                    />
+                  </FormControl>
+                  <FormDescription>The unique URL identifier.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="parent_id"
+            render={({ field }: { field: any }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Parent Category</FormLabel>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <FormControl>
                     <Button
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-full justify-between font-normal",
+                        "w-full justify-between font-normal items-center",
                         !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value === "null" || !field.value
                         ? "None (Root)"
-                        : categories.find(
+                        : categories?.find(
                             (category) => category.id === field.value
                           )?.name_en}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder="Search category..." />
-                    <CommandList>
-                      <CommandEmpty>No category found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem
-                          value="null"
-                          onSelect={() => {
-                            form.setValue("parent_id", "null")
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              field.value === "null" || !field.value ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          None (Root)
-                        </CommandItem>
-                        {categories
-                          .filter(c => c.id !== initialData?.id)
-                          .map((category) => (
-                            <CommandItem
-                              key={category.id}
-                              value={category.name_en}
-                              onSelect={() => {
-                                form.setValue("parent_id", category.id)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  category.id === field.value ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              {category.name_en}
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 z-popover">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      form.setValue("parent_id", "null")
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        field.value === "null" || !field.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    None (Root)
+                  </DropdownMenuItem>
+                  {categories?.filter(c => c.id !== initialData?.id).map((category) => (
+                      <DropdownMenuItem
+                        key={category.id}
+                        onClick={() => {
+                          form.setValue("parent_id", category.id)
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            category.id === field.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {category.name_en}
+                      </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <FormDescription>
                 Select a parent category if this is a sub-category.
               </FormDescription>
@@ -248,79 +280,236 @@ export function CategoryForm({ initialData, categories, onSuccess }: CategoryFor
             </FormItem>
           )}
         />
+        </FieldGroup>
 
-        <div className="grid grid-cols-1 gap-4">
+        <FieldGroup>
           <FormField
             control={form.control}
             name="description_en"
             render={({ field }: { field: any }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>Description (English)</FormLabel>
                 <FormControl>
-                  <Textarea {...field} placeholder="Describe this category..." />
+                  <Textarea 
+                    {...field} 
+                    placeholder="Describe this category..." 
+                    maxLength={500}
+                    rows={4}
+                  />
                 </FormControl>
+                <FormDescription>
+                  Brief description of the category (max 500 characters).
+                  {field.value?.length || 0}/500 characters used
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
 
-        <div className="flex flex-col gap-6 p-4 border rounded-lg bg-nss-surface/30">
           <FormField
             control={form.control}
-            name="is_homepage_pinned"
+            name="description_ar"
             render={({ field }: { field: any }) => (
-              <FormItem className="flex items-center justify-between">
-                <div>
-                  <FormLabel>Pin to Homepage</FormLabel>
-                  <FormDescription>Show this category in the homepage grid.</FormDescription>
-                </div>
+              <FormItem>
+                <FormLabel>Description (Arabic)</FormLabel>
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                  <Textarea 
+                    {...field} 
+                    placeholder="صف هذه الفئة..." 
+                    maxLength={500}
+                    rows={4}
                   />
                 </FormControl>
+                <FormDescription>
+                  Arabic description (optional - will be auto-translated if empty)
+                </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
+        </FieldGroup>
 
-          {form.watch("is_homepage_pinned") && (
-            <FormField
-              control={form.control}
-              name="homepage_order"
-              render={({ field }: { field: any }) => (
-                <FormItem>
-                  <FormLabel>Display Order</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} onChange={e => field.onChange(+e.target.value)} />
+        {/* Image Upload Section */}
+        <FieldGroup>
+          <FormField
+            control={form.control}
+            name="image_url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category Image</FormLabel>
+                <FormControl>
+                  <FileUpload
+                    value={field.value || undefined}
+                    onChange={field.onChange}
+                    bucket="categories"
+                    maxSize={5 * 1024 * 1024} // 5MB
+                    allowedTypes={['jpeg', 'jpg', 'png', 'webp']}
+                    disabled={form.formState.isSubmitting}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Upload a category image. Recommended size: 400x400px. Max file size: 5MB.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </FieldGroup>
+
+        <FieldGroup>
+          <Card>
+            <CardHeader>
+              <CardTitle>Parent Category</CardTitle>
+              <CardDescription>Choose a parent category or leave as root.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="parent_id"
+                render={({ field }: { field: any }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Parent Category</FormLabel>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-full justify-between font-normal items-center",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value === "null" || !field.value
+                          ? "None (Root)"
+                          : categories?.find(
+                              (category) => category.id === field.value
+                            )?.name_en}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
                   </FormControl>
-                  <FormDescription>Determines order on homepage.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 z-popover">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      form.setValue("parent_id", "null")
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        field.value === "null" || !field.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    None (Root)
+                  </DropdownMenuItem>
+                  {categories?.filter(c => c.id !== initialData?.id).map((category) => (
+                      <DropdownMenuItem
+                        key={category.id}
+                        onClick={() => {
+                          form.setValue("parent_id", category.id)
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            category.id === field.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {category.name_en}
+                      </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <FormMessage />
+            </FormItem>
           )}
+        />
+            </CardContent>
+          </Card>
+        </FieldGroup>
 
-          <FormField
-            control={form.control}
-            name="is_active"
-            render={({ field }: { field: any }) => (
-              <FormItem className="flex items-center justify-between">
-                <div>
-                  <FormLabel>Active Status</FormLabel>
-                  <FormDescription>Enable or disable this category.</FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
+        <FieldGroup>
+          <Card>
+            <CardHeader>
+              <CardTitle>Category Settings</CardTitle>
+              <CardDescription>Configure how this category appears on the homepage.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <FormField
+                control={form.control}
+                name="is_homepage_pinned"
+                render={({ field }: { field: any }) => (
+                  <FormItem className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Pin to Homepage</FormLabel>
+                      <FormDescription>Show this category in the homepage grid.</FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              {form.watch("is_homepage_pinned") && (
+                <FormField
+                  control={form.control}
+                  name="homepage_order"
+                  render={({ field }: { field: any }) => (
+                    <FormItem>
+                      <FormLabel>Display Order</FormLabel>
+                      <FormControl>
+  <Input 
+    type="text" 
+    {...field} 
+    onChange={e => {
+      const value = e.target.value
+      // Allow empty string or valid numbers
+      if (value === "" || /^\d+$/.test(value)) {
+        field.onChange(value === "" ? "" : +value)
+      }
+    }}
+    onKeyDown={(e) => {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault()
+      }
+    }}
+    onWheel={(e) => e.currentTarget.blur()}
+    placeholder="0"
+  />
+</FormControl>
+                      <FormDescription>Determines order on homepage.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              <FormField
+                control={form.control}
+                name="is_active"
+                render={({ field }: { field: any }) => (
+                  <FormItem className="flex items-center justify-between">
+                    <div>
+                      <FormLabel>Active Status</FormLabel>
+                      <FormDescription>Enable or disable this category.</FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+        </FieldGroup>
 
         <div className="flex gap-4">
           <Button 
@@ -331,7 +520,7 @@ export function CategoryForm({ initialData, categories, onSuccess }: CategoryFor
             {initialData ? "Update Category" : "Create Category"}
           </Button>
 
-          <Button type="button" variant="outline" onClick={() => router.push("/categories")}>
+          <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
         </div>

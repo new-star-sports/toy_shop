@@ -8,14 +8,15 @@
     "dev:admin": "turbo dev --filter=@nss/admin",
     "dev:storefront": "turbo dev --filter=@nss/storefront",
     "dev:api": "turbo dev --filter=@nss/api",
+    "dev:clean": "turbo clean && rm -rf apps/*/.next .turbo && turbo dev --force",
     "build": "turbo build",
-
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\""
   },
   "devDependencies": {
+    "@types/uuid": "^11.0.0",
     "prettier": "^3.5.3",
     "turbo": "^2.4.4",
     "typescript": "^5.7.3"
@@ -23,5 +24,9 @@
   "packageManager": "pnpm@9.15.4",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "react-dropzone": "^15.0.0",
+    "uuid": "^13.0.0"
   }
 }

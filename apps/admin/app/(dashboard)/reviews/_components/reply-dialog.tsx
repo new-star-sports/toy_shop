@@ -7,10 +7,10 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogFooter 
-} from "@nss/ui/components/dialog"
-import { Button } from "@nss/ui/components/button"
-import { Textarea } from "@nss/ui/components/textarea"
-import { Label } from "@nss/ui/components/label"
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 import { submitReviewReplyAction } from "../_actions"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"

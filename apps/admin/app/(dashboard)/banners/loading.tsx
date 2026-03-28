@@ -1,4 +1,4 @@
-import { Card } from "@nss/ui"
+import { Card } from "@/components/ui"
 
 export default function Loading() {
   return (

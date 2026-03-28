@@ -9,7 +9,7 @@ export default function AdminLoginPage() {
           <div className="w-14 h-14 mx-auto rounded-xl bg-primary flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
             <span className="text-2xl text-white font-bold">★</span>
           </div>
-          <h1 className="text-2xl font-bold text-primary">NSS Admin</h1>
+          <h1 className="text-2xl font-bold text-primary">Admin</h1>
           <p className="text-sm text-foreground/60 mt-1">Sign in to your dashboard</p>
         </div>
 

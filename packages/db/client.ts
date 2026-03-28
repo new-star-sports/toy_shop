@@ -60,7 +60,7 @@ export function createServerClient(cookieStore: {
 export function createServiceClient() {
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       auth: {
         autoRefreshToken: false,
@@ -68,4 +68,41 @@ export function createServiceClient() {
       },
     }
   );
+}
+
+/**
+ * Create a Supabase client specifically for storage operations.
+ * Ensures service role key is loaded for storage uploads with fallback.
+ */
+export function createStorageClient() {
+  // Force environment variable loading
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  let supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  
+  if (!supabaseUrl) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not set')
+  }
+  
+  // Try multiple approaches to get service role key
+  if (!supabaseKey) {
+    // Try explicit environment casting
+    const env = process.env as any;
+    supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY;
+  }
+  
+  if (!supabaseKey) {
+    // Fall back to anon key
+    supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseKey) {
+      throw new Error('No Supabase keys available - neither SUPABASE_SERVICE_ROLE_KEY nor NEXT_PUBLIC_SUPABASE_ANON_KEY are set')
+    }
+  }
+  
+  return createClient<Database>(supabaseUrl, supabaseKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  })
 }

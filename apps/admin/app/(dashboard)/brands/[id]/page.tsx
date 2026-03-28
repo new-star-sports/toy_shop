@@ -2,7 +2,7 @@ import { createServerClient } from "@nss/db/client"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 import { BrandForm } from "../../_components/brands/brand-form"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 

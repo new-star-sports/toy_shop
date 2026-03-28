@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
-import { Button } from "@nss/ui/components/button";
+import { Button } from "@/components/ui";
 
 interface ProductGalleryProps {
   images: { url: string; alt_en?: string; alt_ar?: string }[];

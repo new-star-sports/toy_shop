@@ -14,20 +14,22 @@ import {
   TableRow,
   Avatar,
   AvatarFallback,
+} from "@/components/ui";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@nss/ui";
+} from "@/components/ui/dropdown-menu";
 import {
   IconSearch,
   IconFilter,
   IconEye,
 } from "@tabler/icons-react";
 import { format } from "date-fns";
-import { cn } from "@nss/ui/lib/utils";
+import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<string, string> = {
   delivered: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/50",
@@ -104,7 +106,7 @@ export default async function OrdersPage({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-full h-9 px-3 gap-2 border-border/50 min-w-max text-xs font-bold">
+                <Button variant="outline" size="sm" className="rounded-full h-9 px-3 gap-2 border-border/50 min-w-max text-xs font-bold hover:bg-muted/80 transition-colors">
                   <IconFilter size={14} stroke={1.5} />
                   <span className="hidden sm:inline">More Filters</span>
                 </Button>
@@ -199,7 +201,7 @@ export default async function OrdersPage({
                     </Badge>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
-                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" asChild>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted/80 transition-colors" asChild>
                       <Link href={`/orders/${order.id}`}>
                         <IconEye size={18} stroke={1.5} />
                       </Link>
@@ -233,7 +235,7 @@ export default async function OrdersPage({
                     <Badge variant="outline" className={cn("rounded-full px-2.5 py-0.5 font-bold text-[10px] capitalize border-none", STATUS_STYLES[order.status] || "bg-muted text-muted-foreground")}>
                       {order.status}
                     </Badge>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0" asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0 hover:bg-muted/80 transition-colors" asChild>
                       <Link href={`/orders/${order.id}`}>
                         <IconEye size={16} stroke={1.5} />
                       </Link>

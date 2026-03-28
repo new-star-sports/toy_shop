@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserAddresses } from "@nss/db/queries";
 import { redirect } from "next/navigation";
 import { AddressCard } from "./_components/address-card";
-import { Button } from "@nss/ui/components/button";
+import { Button } from "@/components/ui";
 import { IconPlus, IconMapPin } from "@tabler/icons-react";
 import type { Locale } from "@/lib/i18n";
 import Link from "next/link";

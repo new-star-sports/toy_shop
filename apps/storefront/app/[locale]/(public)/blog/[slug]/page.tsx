@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { format } from "date-fns"
 import { Calendar, Clock, ChevronLeft, ChevronRight, Share2 } from "lucide-react"
 import Link from "next/link"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui"
 
 interface BlogDetailPageProps {
   params: Promise<{ locale: string; slug: string }>

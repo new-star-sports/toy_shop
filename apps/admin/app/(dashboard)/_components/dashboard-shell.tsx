@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "./sidebar";
-import { Button } from "@nss/ui/components/button";
+import { Button } from "@/components/ui/button";
 import { IconMenu2 } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -40,7 +40,7 @@ export function DashboardShell({ userPromise, children }: DashboardShellProps) {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile-only compact header */}
-        <div className="lg:hidden flex items-center justify-between p-4 border-b border-border/50 bg-card shrink-0">
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-border/50 bg-white shrink-0 sticky top-0 z-50 force-solid-bg" style={{ backgroundColor: 'white' }}>
           <Button
             variant="ghost"
             size="icon"

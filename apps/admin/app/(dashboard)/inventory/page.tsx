@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { getAdminProducts } from "@nss/db/queries";
-import { Button } from "@nss/ui/components/button";
-import { Input } from "@nss/ui/components/input";
-import { Badge } from "@nss/ui/components/badge";
-import { Card, CardContent } from "@nss/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui";
 import { StockUpdateForm } from "../_components/inventory/stock-update-form";
 import { IconSearch, IconAlertTriangle } from "@tabler/icons-react";
-import { cn } from "@nss/ui/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface InventoryItem {
   id: string;

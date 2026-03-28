@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, ShoppingBag, ArrowRight, ArrowLeft } from "lucide-react";
-import { Button } from "@nss/ui/components/button";
+import { Button } from "@/components/ui";
 import { useCartStore } from "@/store/cart-store";
 import { CartItem } from "./cart-item";
 import type { Locale } from "@/lib/i18n";

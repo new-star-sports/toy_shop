@@ -8,7 +8,7 @@ import {
   IconHeart, 
   IconSparkles
 } from "@tabler/icons-react";
-import { Button } from "@nss/ui";
+import { Button } from "@/components/ui";
 
 interface HeaderProps {
   locale: Locale;
@@ -33,8 +33,8 @@ export default async function Header({ locale, user }: HeaderProps) {
         <div 
           className="text-center py-2 px-4 text-[11px] sm:text-xs font-semibold uppercase tracking-wider overflow-hidden shadow-sm"
           style={{ 
-            backgroundColor: annSettings.bg_color || "var(--nss-primary)",
-            color: annSettings.text_color || "#FFFFFF"
+            backgroundColor: annSettings.bg_color || 'hsl(var(--primary))',
+            color: annSettings.text_color || '#FFFFFF'
           }}
         >
           <div className="flex items-center justify-center gap-4 animate-in slide-in-from-top-full duration-700">
@@ -142,4 +142,4 @@ export default async function Header({ locale, user }: HeaderProps) {
   );
 }
 
-import { cn } from "@nss/ui/lib/utils";
+import { cn } from "@/lib/utils";

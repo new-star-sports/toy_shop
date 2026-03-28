@@ -8,7 +8,7 @@ import {
   SheetHeader, 
   SheetTitle,
   Button
-} from "@nss/ui";
+} from "@/components/ui";
 import { IconPlus, IconPencil } from "@tabler/icons-react";
 import { CategoryForm } from "./category-form";
 import type { Category } from "@nss/db/types";
@@ -58,6 +58,7 @@ export function CategorySheetForm({ mode, category, categories, trigger }: Categ
             initialData={category} 
             categories={categories} 
             onSuccess={() => setOpen(false)} 
+            onCancel={() => setOpen(false)} 
           />
         </div>
       </SheetContent>

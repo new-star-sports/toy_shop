@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@nss/ui";
+import { Card, CardContent } from "@/components/ui";
 import { IconArrowBackUp } from "@tabler/icons-react";
 
 export default function ReturnsPage() {

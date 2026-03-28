@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, CreditCard, Truck, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Ticket, ShoppingCart } from "lucide-react";
-import { Button } from "@nss/ui/components/button";
-import { Card } from "@nss/ui/components/card";
+import { Button } from "@/components/ui";
+import { Card } from "@/components/ui";
 import { useCartStore } from "@/store/cart-store";
 import { createOrder } from "@/app/_actions/order";
 import { reserveStock } from "@/app/_actions/cart";

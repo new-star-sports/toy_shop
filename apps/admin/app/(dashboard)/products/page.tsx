@@ -15,8 +15,8 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@nss/ui";
-import { cn } from "@nss/ui/lib/utils";
+} from "@/components/ui";
+import { cn } from "@/lib/utils";
 import {
   IconPlus,
   IconSearch,
@@ -35,7 +35,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@nss/ui";
+} from "@/components/ui/dropdown-menu";
 import { Suspense } from "react";
 
 export default async function ProductsPage({
@@ -63,11 +63,11 @@ export default async function ProductsPage({
         </div>
         <Button
           asChild
-          className="w-full sm:w-auto rounded-full px-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 bg-primary text-white ring-2 ring-primary/20"
+          className="flex items-center gap-2"
         >
-          <Link href="/products/new" className="flex flex-row items-center justify-center gap-2">
-            <IconPlus size={18} stroke={3} className="text-white shrink-0" />
-            <span className="font-black text-white">Add Product</span>
+          <Link href="/products/new">
+            <IconPlus size={18} stroke={2.5} />
+            Add Product
           </Link>
         </Button>
       </div>
@@ -320,18 +320,18 @@ async function ProductTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="rounded-xl border-border/40 p-1.5 shadow-xl min-w-[160px]"
+                        className="rounded-xl p-1.5 shadow-xl min-w-[160px]"
                       >
                         <DropdownMenuItem
                           asChild
-                          className="rounded-lg gap-2.5 py-2 cursor-pointer focus:bg-primary/5 focus:text-primary"
+                          className="rounded-lg gap-2.5 py-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
                         >
                           <Link href={`/products/${product.id}`}>
                             <IconEdit size={16} stroke={2} />
                             <span className="font-semibold">Edit Product</span>
                           </Link>
                         </DropdownMenuItem>
-                        <div className="h-px bg-border/20 my-1 mx-1" />
+                        <div className="h-px bg-gray-200 my-1 mx-1" />
                         <DeleteProductButton productId={product.id} />
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -380,17 +380,17 @@ async function ProductTable({
                         <IconDotsVertical size={18} className="text-muted-foreground" stroke={1.5} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="rounded-xl border-border/40 p-1.5 shadow-xl min-w-[160px]">
+                    <DropdownMenuContent align="end" className="rounded-xl p-1.5 shadow-xl min-w-[160px]">
                       <DropdownMenuItem
                         asChild
-                        className="rounded-lg gap-2.5 py-2 cursor-pointer focus:bg-primary/5 focus:text-primary"
+                        className="rounded-lg gap-2.5 py-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
                       >
                         <Link href={`/products/${product.id}`}>
                           <IconEdit size={16} stroke={2} />
                           <span className="font-semibold">Edit Product</span>
                         </Link>
                       </DropdownMenuItem>
-                      <div className="h-px bg-border/20 my-1 mx-1" />
+                      <div className="h-px bg-gray-200 my-1 mx-1" />
                       <DeleteProductButton productId={product.id} />
                     </DropdownMenuContent>
                   </DropdownMenu>

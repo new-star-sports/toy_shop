@@ -248,9 +248,22 @@ export async function updateProduct(id: string, data: Product, _images?: string[
     return { success: false, error: productError.message }
   }
 
-  // TODO: Update Variants and Images (this would require a more complex sync logic)
-  // For now we assume they are handled by separate child components or we overwrite them
-  // For MVP focus, we'll just revalidate
+  // Sync images: replace all existing images with the current set
+  if (_images !== undefined) {
+    await (supabase.from("product_images") as any).delete().eq("product_id", id)
+
+    if (_images.length > 0) {
+      const imagesToInsert = _images.map((url, i) => ({
+        product_id: id,
+        url,
+        display_order: i,
+      }))
+      const { error: imageError } = await (supabase.from("product_images") as any).insert(imagesToInsert)
+      if (imageError) {
+        console.error("Error updating images:", imageError)
+      }
+    }
+  }
 
   revalidatePath("/products")
   revalidatePath(`/products/${id}`)

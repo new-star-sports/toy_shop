@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useTransition } from "react";
 import { saveAddress, getAreas } from "@/app/_actions/address";
-import { Button } from "@nss/ui/components/button";
-import { Input } from "@nss/ui/components/input";
-import { Label } from "@nss/ui/components/label";
-import { Checkbox } from "@nss/ui/components/checkbox";
-import { Alert, AlertDescription } from "@nss/ui/components/alert";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Label } from "@/components/ui";
+import { Checkbox } from "@/components/ui";
+import { Alert, AlertDescription } from "@/components/ui";
 import { MapPin, User, Building2, Home, Briefcase, Plus } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 

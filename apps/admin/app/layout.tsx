@@ -21,10 +21,10 @@ const ibmPlexSans = IBM_Plex_Sans({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NSS Admin",
-    default: "Dashboard | NSS Admin",
+    template: "%s | Admin",
+    default: "Dashboard | Admin",
   },
-  description: "NewStarSports Admin Dashboard",
+  description: "Admin Dashboard",
   robots: { index: false, follow: false },
 };
 

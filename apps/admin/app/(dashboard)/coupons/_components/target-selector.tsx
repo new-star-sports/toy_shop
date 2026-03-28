@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@nss/ui/components/dialog"
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
-import { Badge } from "@nss/ui/components/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import { Search, Plus, Loader2, X, Check } from "lucide-react"
 import { searchProducts, searchCategories } from "../_actions"
 

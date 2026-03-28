@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 import { getCategories } from "@nss/db/queries"
 import { CategoryForm } from "../../_components/categories/category-form"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 

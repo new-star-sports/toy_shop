@@ -1,17 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@nss/ui/components/table"
-import { Badge } from "@nss/ui/components/badge"
-import { Button } from "@nss/ui/components/button"
-import { Switch } from "@nss/ui/components/switch"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@nss/ui/components/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { IconEdit, IconTrash, IconTicket, IconUsers, IconCalendar, IconDotsVertical } from "@tabler/icons-react"
 import Link from "next/link"
 import { toggleCouponStatus, removeCoupon } from "../_actions"

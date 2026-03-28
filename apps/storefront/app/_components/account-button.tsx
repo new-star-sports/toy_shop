@@ -3,7 +3,7 @@
 import Link from "next/link"
 import type { Locale } from "@/lib/i18n"
 import { AuthDialog } from "../[locale]/_components/auth-dialog"
-import { Button } from "@nss/ui"
+import { Button } from "@/components/ui"
 import { IconUser } from "@tabler/icons-react"
 
 interface AccountButtonProps {

@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/_actions/auth";
-import { Button } from "@nss/ui/components/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@nss/ui/components/card";
+import { Button } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui";
 import type { Locale } from "@/lib/i18n";
 
 export default async function ProfilePage({

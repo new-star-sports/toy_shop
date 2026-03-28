@@ -8,7 +8,7 @@ import {
   SheetHeader, 
   SheetTitle,
   Button
-} from "@nss/ui";
+} from "@/components/ui";
 import { IconPlus, IconPencil } from "@tabler/icons-react";
 import { BrandForm } from "./brand-form";
 import type { Brand } from "@nss/db/types";
@@ -56,6 +56,7 @@ export function BrandSheetForm({ mode, brand, trigger }: BrandSheetFormProps) {
            <BrandForm 
             initialData={brand} 
             onSuccess={() => setOpen(false)} 
+            onCancel={() => setOpen(false)} 
           />
         </div>
       </SheetContent>

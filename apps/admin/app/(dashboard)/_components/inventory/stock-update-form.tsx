@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@nss/ui/components/button";
-import { Input } from "@nss/ui/components/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { updateStockAction } from "../../inventory/_actions";
 
 interface StockUpdateFormProps {

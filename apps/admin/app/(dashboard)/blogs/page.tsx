@@ -2,15 +2,15 @@ import { Suspense } from "react"
 import { Metadata } from "next"
 import Link from "next/link"
 import { getBlogs, type Blog } from "@nss/db/queries"
-import { Button } from "@nss/ui/components/button"
-import { Badge } from "@nss/ui/components/badge"
-import { Card, CardContent } from "@nss/ui"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui"
 import { IconPlus, IconSearch, IconFileText, IconEdit, IconCalendar } from "@tabler/icons-react"
-import { Input } from "@nss/ui/components/input"
+import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 
 export const metadata: Metadata = {
-  title: "Blog Posts | NSS Admin",
+  title: "Blog Posts | Admin",
 }
 
 export default async function BlogListPage() {
@@ -25,10 +25,10 @@ export default async function BlogListPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">Create and manage articles, toy reviews, and store news.</p>
         </div>
-        <Button asChild className="w-full sm:w-auto rounded-full px-5 bg-primary text-white shadow-lg shadow-primary/20">
-          <Link href="/blogs/new" className="flex flex-row items-center justify-center gap-2">
-            <IconPlus size={16} stroke={3} />
-            <span className="font-bold">New Article</span>
+        <Button asChild className="flex items-center gap-2">
+          <Link href="/blogs/new">
+            <IconPlus size={16} stroke={2} />
+            New Article
           </Link>
         </Button>
       </div>
@@ -60,7 +60,7 @@ async function BlogList() {
           <IconFileText className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-foreground">No articles found</h3>
           <p className="text-muted-foreground mb-6 text-sm">Start by creating your first blog post.</p>
-          <Button variant="outline" asChild className="rounded-xl font-bold">
+          <Button variant="outline" asChild className="rounded-xl font-bold hover:bg-muted/80 transition-colors">
             <Link href="/blogs/new">Create Initial Post</Link>
           </Button>
         </div>
@@ -114,7 +114,7 @@ async function BlogList() {
                       {blog.published_at ? format(new Date(blog.published_at), "MMM d, yyyy") : "—"}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" asChild>
+                      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted/80 transition-colors" asChild>
                         <Link href={`/blogs/${blog.id}`}>
                           <IconEdit className="h-4 w-4" />
                         </Link>
@@ -159,7 +159,7 @@ async function BlogList() {
                           )}
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0" asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0 hover:bg-muted/80 transition-colors" asChild>
                         <Link href={`/blogs/${blog.id}`}>
                           <IconEdit className="h-4 w-4" />
                         </Link>

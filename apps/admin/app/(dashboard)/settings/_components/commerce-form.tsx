@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
-import { Label } from "@nss/ui/components/label"
-import { Switch } from "@nss/ui/components/switch"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@nss/ui/components/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
 import { saveShippingSettingsAction, saveLoyaltySettingsAction } from "../_actions"
 import { Loader2, Truck, Coins, Save } from "lucide-react"
@@ -92,7 +92,7 @@ export function CommerceForm({ shipping, loyalty }: CommerceFormProps) {
              </div>
 
              <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={isShipSubmitting} className="bg-nss-primary min-w-[120px]">
+              <Button type="submit" disabled={isShipSubmitting} className="min-w-[120px]">
                 {isShipSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save Rates
               </Button>
@@ -131,7 +131,7 @@ export function CommerceForm({ shipping, loyalty }: CommerceFormProps) {
              </div>
 
              <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={isLoySubmitting} className="bg-nss-primary min-w-[120px]">
+              <Button type="submit" disabled={isLoySubmitting} className="min-w-[120px]">
                 {isLoySubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save Loyalty Settings
               </Button>

@@ -1,4 +1,4 @@
-import { Badge } from "@nss/ui/components/badge"
+import { Badge } from "@/components/ui/badge"
 
 const typeConfig = {
   hero: { label: "Hero Slider", variant: "default" as const },

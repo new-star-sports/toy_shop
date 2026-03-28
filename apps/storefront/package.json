@@ -13,7 +13,6 @@
     "@nss/auth": "workspace:*",
     "@nss/config": "workspace:*",
     "@nss/db": "workspace:*",
-    "@nss/ui": "workspace:*",
     "@nss/validators": "workspace:*",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.1",

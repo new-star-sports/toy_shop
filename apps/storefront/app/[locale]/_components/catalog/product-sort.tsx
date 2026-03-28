@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@nss/ui/components/select";
+} from "@/components/ui/select";
 import type { Locale } from "@/lib/i18n";
 
 export function ProductSort({ locale }: { locale: Locale }) {

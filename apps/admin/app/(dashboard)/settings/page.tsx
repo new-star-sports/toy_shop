@@ -1,5 +1,5 @@
 import { getSettings } from "@nss/db/queries"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@nss/ui/components/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GeneralForm } from "./_components/general-form"
 import { MarketingForm } from "./_components/marketing-form"
 import { CommerceForm } from "./_components/commerce-form"

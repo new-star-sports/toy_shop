@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { toggleProductFlashSale } from "../_actions"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"

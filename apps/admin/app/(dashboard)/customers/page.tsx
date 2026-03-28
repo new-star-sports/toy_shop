@@ -1,8 +1,8 @@
 import { getAdminCustomers } from "@nss/db/queries";
-import { Button } from "@nss/ui/components/button";
-import { Input } from "@nss/ui/components/input";
-import { Badge } from "@nss/ui/components/badge";
-import { Card, CardContent } from "@nss/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui";
 import Link from "next/link";
 import { IconSearch, IconEye } from "@tabler/icons-react";
 
@@ -95,7 +95,7 @@ export default async function CustomersPage({
                         {c.total_spent_kwd.toFixed(3)} KD
                       </td>
                       <td className="px-6 py-4 text-end">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted/80 transition-colors" asChild>
                           <Link href={`/customers/${c.id}`}>
                             <IconEye size={18} stroke={1.5} />
                           </Link>
@@ -128,7 +128,7 @@ export default async function CustomersPage({
                       </span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full shrink-0" asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full shrink-0 hover:bg-muted/80 transition-colors" asChild>
                     <Link href={`/customers/${c.id}`}>
                       <IconEye size={18} stroke={1.5} />
                     </Link>

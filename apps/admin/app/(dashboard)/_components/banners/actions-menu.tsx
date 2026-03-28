@@ -1,14 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@nss/ui/components/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react"
 import { deleteBanner } from "../../banners/_actions"
 import { toast } from "sonner"

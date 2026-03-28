@@ -9,7 +9,7 @@ import {
   Avatar,
   AvatarFallback,
   Separator
-} from "@nss/ui";
+} from "@/components/ui";
 import {
   IconPackage,
   IconTruck,

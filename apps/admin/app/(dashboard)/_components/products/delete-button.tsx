@@ -1,7 +1,7 @@
 "use client"
 
 import { useTransition } from "react"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
 import { deleteProduct } from "../../products/_actions"
 import { Trash2 } from "lucide-react"
 

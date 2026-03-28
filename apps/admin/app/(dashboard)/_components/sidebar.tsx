@@ -3,8 +3,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@nss/ui/lib/utils";
-import { Button } from "@nss/ui/components/button";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   IconLayoutDashboard,
   IconPackage,
@@ -25,7 +25,7 @@ import {
   IconLogout,
 } from "@tabler/icons-react";
 import { Suspense, use } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@nss/ui/components/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AdminUser } from "./dashboard-shell";
 
 const navItems = [
@@ -97,7 +97,7 @@ function NavContent({
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
           <span className="text-sm text-white font-bold">★</span>
         </div>
-        <span className="font-semibold text-primary">NSS Admin</span>
+        <span className="font-semibold text-primary">Admin</span>
       </div>
 
       {/* Navigation */}
@@ -112,16 +112,16 @@ function NavContent({
               href={item.href}
               onClick={onLinkClick}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
               )}
             >
               <item.icon
                 size={20}
                 stroke={1.5}
-                className={cn(isActive ? "text-primary" : "text-muted-foreground")}
+                className={cn(isActive ? "text-primary-foreground" : "text-muted-foreground")}
               />
               <span>{item.label}</span>
             </Link>
@@ -162,7 +162,7 @@ export function Sidebar({ mobileOpen, onCloseMobile, userPromise, onSignOut }: S
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col border-r border-border/50 bg-card shrink-0 h-screen sticky top-0">
+      <aside className="hidden lg:flex w-64 flex-col border-r border-border/50 bg-white shrink-0 h-screen sticky top-0 force-solid-bg">
         <NavContent pathname={pathname} userPromise={userPromise} onSignOutClick={onSignOut} />
       </aside>
 
@@ -177,7 +177,7 @@ export function Sidebar({ mobileOpen, onCloseMobile, userPromise, onSignOut }: S
       {/* Mobile drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-card border-r border-border/50 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden",
+          "fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white border-r border-border/50 shadow-2xl transition-transform duration-300 ease-in-out lg:hidden force-solid-bg",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >

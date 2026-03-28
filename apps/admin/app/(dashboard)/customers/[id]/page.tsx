@@ -1,7 +1,7 @@
 import { getAdminCustomerById } from "@nss/db/queries";
-import { Button } from "@nss/ui/components/button";
-import { Badge } from "@nss/ui/components/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@nss/ui/components/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

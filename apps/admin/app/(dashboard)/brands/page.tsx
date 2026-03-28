@@ -4,14 +4,14 @@ import {
   Button,
   Card,
   Badge,
-} from "@nss/ui"
+} from "@/components/ui"
 import {
   IconPencil,
   IconBuildingStore,
   IconStar,
 } from "@tabler/icons-react"
 import { BrandSheetForm } from "../_components/brands/brand-sheet-form"
-import { cn } from "@nss/ui/lib/utils"
+import { cn } from "@/lib/utils"
 
 export default async function BrandsPage() {
   return (

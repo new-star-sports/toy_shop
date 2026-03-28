@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
-import { Label } from "@nss/ui/components/label"
-import { Switch } from "@nss/ui/components/switch"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@nss/ui/components/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
 import { saveAnnouncementBarAction, saveTrustBarAction } from "../_actions"
 import { Loader2, Plus, Trash2, Megaphone, ShieldCheck, Save, GripVertical } from "lucide-react"
@@ -155,7 +155,7 @@ export function MarketingForm({ announcementBar, trustBar }: MarketingFormProps)
             </div>
 
             <div className="flex justify-end border-t border-nss-border pt-4">
-              <Button type="submit" disabled={isAnnSubmitting} className="bg-nss-primary min-w-[120px]">
+              <Button type="submit" disabled={isAnnSubmitting} className="min-w-[120px]">
                 {isAnnSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save Bar
               </Button>
@@ -219,7 +219,7 @@ export function MarketingForm({ announcementBar, trustBar }: MarketingFormProps)
             </div>
 
             <div className="flex justify-end border-t border-nss-border pt-4">
-              <Button type="submit" disabled={isTrustSubmitting} className="bg-nss-primary min-w-[120px]">
+              <Button type="submit" disabled={isTrustSubmitting} className="min-w-[120px]">
                 {isTrustSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save Trust Bar
               </Button>

@@ -8,16 +8,16 @@ import {
   TableHead, 
   TableHeader, 
   TableRow 
-} from "@nss/ui/components/table"
-import { Badge } from "@nss/ui/components/badge"
-import { Button } from "@nss/ui/components/button"
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@nss/ui/components/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 
 import { Check, X, MessageSquare, Trash2, Star, Home, Pin, MoreHorizontal } from "lucide-react"
 import { 

@@ -8,13 +8,13 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Loader2, Save, Trash2, ImageIcon, Layout } from "lucide-react"
 
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
-import { Label } from "@nss/ui/components/label"
-import { Textarea } from "@nss/ui/components/textarea"
-import { Switch } from "@nss/ui/components/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@nss/ui/components/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@nss/ui/components/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { Blog, BlogCategory } from "@nss/db/queries"
 import { saveBlogAction, deleteBlogAction } from "../_actions"
@@ -134,7 +134,7 @@ export function BlogForm({ initialData, categories }: BlogFormProps) {
               {isDeleting ? "Deleting..." : "Delete"}
             </Button>
           )}
-          <Button type="submit" disabled={isSubmitting} className="bg-nss-primary hover:bg-nss-primary/90 min-w-[120px]">
+          <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
             {initialData ? "Update" : "Publish"}
           </Button>

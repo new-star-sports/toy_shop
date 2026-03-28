@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@nss/ui";
+} from "@/components/ui";
 import {
   IconCoin,
   IconShoppingCart,
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
           <p className="text-sm text-muted-foreground mt-0.5">Welcome back to your administration panel.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 hover:bg-muted/80 transition-colors">
             Download Report
           </Button>
           <Button className="flex items-center gap-2 uppercase font-bold text-xs" asChild>
@@ -59,42 +59,44 @@ export default async function DashboardPage() {
           <RecentOrdersSection />
         </Suspense>
 
-        <Card className="rounded-2xl border-border/50 shadow-card">
-          <CardHeader className="px-6 py-5 border-b border-border/50 bg-muted/20">
-            <CardTitle className="text-base font-semibold">Administration</CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              {[
-                { label: "Manage Inventory", href: "/inventory", icon: IconBox },
-                { label: "View Customers", href: "/customers", icon: IconUsers },
-                { label: "Marketing Banners", href: "/banners", icon: IconPlus },
-              ].map((link) => (
-                <Link 
-                  key={link.href} 
-                  href={link.href}
-                  className="flex items-center justify-between p-3 rounded-xl border border-border/50 hover:bg-muted/30 hover:border-border transition-all group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                      <link.icon size={16} stroke={1.5} className="text-muted-foreground group-hover:text-primary transition-colors" />
+        <Suspense fallback={<AdminSkeleton />}>
+          <Card className="rounded-2xl border-border/50 shadow-card">
+            <CardHeader className="px-6 py-5 border-b border-border/50 bg-muted/20">
+              <CardTitle className="text-base font-semibold">Administration</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                {[
+                  { label: "Manage Inventory", href: "/inventory", icon: IconBox },
+                  { label: "View Customers", href: "/customers", icon: IconUsers },
+                  { label: "Marketing Banners", href: "/banners", icon: IconPlus },
+                ].map((link) => (
+                  <Link 
+                    key={link.href} 
+                    href={link.href}
+                    className="flex items-center justify-between p-3 rounded-xl border border-border/50 hover:bg-muted/30 hover:border-border transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <link.icon size={16} stroke={1.5} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                      </div>
+                      <span className="text-sm font-medium">{link.label}</span>
                     </div>
-                    <span className="text-sm font-medium">{link.label}</span>
-                  </div>
-                  <IconArrowUpRight size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              ))}
-            </div>
-            
-            <div className="mt-8 p-4 rounded-xl bg-primary/5 border border-primary/10">
-              <h4 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">System Status</h4>
-              <div className="flex items-center gap-2 text-sm text-foreground">
-                <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                <span>All systems operational</span>
+                    <IconArrowUpRight size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </Link>
+                ))}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              
+              <div className="mt-8 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <h4 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">System Status</h4>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                  <span>All systems operational</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Suspense>
       </div>
     </div>
   );
@@ -230,5 +232,11 @@ function KPIsSkeleton() {
 function OrdersSkeleton() {
   return (
     <div className="lg:col-span-2 h-64 bg-muted/10 rounded-2xl border border-border/40 animate-pulse" />
+  );
+}
+
+function AdminSkeleton() {
+  return (
+    <div className="h-64 bg-muted/10 rounded-2xl border border-border/40 animate-pulse" />
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@nss/ui/components/button";
-import { Input } from "@nss/ui/components/input";
-import { Label } from "@nss/ui/components/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { signInAction } from "../_actions";
 
 export function LoginForm() {
@@ -37,7 +37,7 @@ export function LoginForm() {
           id="email"
           name="email"
           type="email"
-          placeholder="admin@newstarsports.com"
+          placeholder="admin@example.com"
           required
           disabled={loading}
           className="h-11 bg-background border-border text-foreground placeholder:text-foreground/40"

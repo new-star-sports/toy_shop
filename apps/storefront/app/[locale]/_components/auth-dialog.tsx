@@ -8,11 +8,11 @@ import {
   DialogTitle, 
   DialogDescription,
   DialogTrigger 
-} from "@nss/ui"
+} from "@/components/ui"
 import { LoginForm } from "../(auth)/login/_components/login-form"
 import { RegisterForm } from "../(auth)/register/_components/register-form"
 import type { Locale } from "@/lib/i18n"
-import { Button } from "@nss/ui"
+import { Button } from "@/components/ui"
 import { IconUser } from "@tabler/icons-react"
 
 interface AuthDialogProps {

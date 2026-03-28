@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
 import { updateOrderStatusAction, updateTrackingAction } from "../_actions"
 import type { OrderStatus } from "@nss/db/types"
 import { 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getAdminBanners } from "@nss/db/queries";
-import { Button } from "@nss/ui/components/button";
-import { Card, CardContent } from "@nss/ui";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui";
 import { BannerTypeBadge } from "../_components/banners/type-badge";
 import { ToggleBannerStatus } from "../_components/banners/toggle-status";
 import { BannerActionsMenu } from "../_components/banners/actions-menu";
@@ -36,10 +36,10 @@ export default async function BannersPage({
             Manage promotional banners and announcements ({banners.length} total)
           </p>
         </div>
-        <Button asChild className="w-full sm:w-auto rounded-full px-5 bg-primary text-white shadow-lg shadow-primary/20">
-          <Link href="/banners/new" className="flex flex-row items-center justify-center gap-2">
-            <IconPlus size={16} stroke={3} />
-            <span className="font-bold">Add Banner</span>
+        <Button asChild className="flex items-center gap-2">
+          <Link href="/banners/new">
+            <IconPlus size={16} stroke={2} />
+            Add Banner
           </Link>
         </Button>
       </div>
@@ -115,7 +115,7 @@ export default async function BannersPage({
                           {banner.image_desktop_url ? (
                             <img src={banner.image_desktop_url} alt={banner.title_en} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full" style={{ backgroundColor: banner.bg_color || "#e5e7eb" }} />
+                            <div className="w-full h-full bg-dynamic" style={{ '--dynamic-bg': banner.bg_color || '#e5e7eb' } as React.CSSProperties} />
                           )}
                         </div>
                         <div>
@@ -161,7 +161,7 @@ export default async function BannersPage({
           <Card key={banner.id} className="rounded-2xl border-border/40 overflow-hidden bg-card">
             <div className="flex items-start gap-0">
               {/* Banner preview strip */}
-              <div className="w-2 self-stretch shrink-0 rounded-l-2xl" style={{ backgroundColor: banner.bg_color || "#e5e7eb" }} />
+              <div className="w-2 self-stretch shrink-0 rounded-l-2xl bg-dynamic" style={{ '--dynamic-bg': banner.bg_color || '#e5e7eb' } as React.CSSProperties} />
               <div className="flex-1 p-4">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-16 h-10 rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden border border-border/30 shrink-0">

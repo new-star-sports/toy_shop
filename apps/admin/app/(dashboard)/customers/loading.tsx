@@ -1,4 +1,4 @@
-import { Card, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@nss/ui"
+import { Card, Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui"
 
 export default function Loading() {
   return (

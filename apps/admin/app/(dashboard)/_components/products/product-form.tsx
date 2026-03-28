@@ -3,16 +3,18 @@
 import { useState, useEffect, useRef } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { productSchema, type Product } from "@nss/validators/product"
+import { z } from "zod"
+import { productSchema } from "@nss/validators/product"
+import { uploadFile } from "@/lib/upload"
 import { createProduct, updateProduct } from "../../products/_actions"
 import { useRouter } from "next/navigation"
-import { Button } from "@nss/ui/components/button"
-import { Card } from "@nss/ui/components/card"
-import { Input } from "@nss/ui/components/input"
-import { Label } from "@nss/ui/components/label"
-import { Textarea } from "@nss/ui/components/textarea"
-import { Switch } from "@nss/ui/components/switch"
-import { cn } from "@nss/ui/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { cn } from "@/lib/utils"
 import { 
   Plus, 
   Trash2, 
@@ -27,20 +29,52 @@ import {
 } from "lucide-react"
 import { translateToArabic } from "../../_lib/translate"
 import type { Category, Brand } from "@nss/db/types"
+import { toast } from "sonner"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@nss/ui/components/select"
+} from "@/components/ui/select"
 import { 
   Form,
   FormControl, 
   FormField, 
   FormItem, 
   FormMessage 
-} from "@nss/ui/components/form"
+} from "@/components/ui/form"
+
+// Local form schema — relaxes strict base validator for the create/edit flow
+const productFormSchema = productSchema.extend({
+  // Arabic fields are auto-translated in onSubmit — no Arabic inputs in UI
+  name_ar: z.string().optional(),
+  description_ar: z.string().optional(),
+  short_description_ar: z.string().optional(),
+  safety_warnings_ar: z.string().optional(),
+  materials_ar: z.string().optional(),
+  seo_title_ar: z.string().optional(),
+  seo_description_ar: z.string().optional(),
+  // brand_id — nullable FK in DB, may be left unselected
+  brand_id: z.union([z.string().uuid(), z.literal("")]).optional(),
+  // Optional safety/compliance fields — not all products have them
+  kucas_certificate: z.string().optional(),
+  kucas_expiry: z.string().optional(),
+  country_of_origin: z.string().optional(),
+  manufacturer_name: z.string().optional(),
+  safety_warnings_en: z.string().optional(),
+  materials_en: z.string().optional(),
+  // Dimensions — DB allows >= 0, not strictly positive
+  weight_grams: z.number().int().min(0),
+  length_cm: z.number().min(0),
+  width_cm: z.number().min(0),
+  height_cm: z.number().min(0),
+  // SEO — nullable in DB
+  seo_title_en: z.string().optional(),
+  seo_description_en: z.string().optional(),
+})
+
+type ProductFormValues = z.infer<typeof productFormSchema>
 
 const slugify = (text: string) => 
   text
@@ -60,42 +94,45 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
   const [currentStep, setCurrentStep] = useState(0)
   const router = useRouter()
 
-  const form = useForm<Product>({
-    resolver: zodResolver(productSchema),
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
     defaultValues: {
-      status: "draft",
-      price_kwd: 0,
-      stock_quantity: 0,
-      min_age: 0,
-      weight_grams: 0,
-      length_cm: 0,
-      width_cm: 0,
-      height_cm: 0,
-      return_eligibility: "eligible",
-      tax_status: "taxable",
-      track_inventory: true,
-      out_of_stock_behaviour: "show_out_of_stock",
+      status: initialData?.status ?? "draft",
+      name_en: initialData?.name_en || "",
+      slug: initialData?.slug || "",
+      price_kwd: initialData?.price_kwd ?? undefined,
+      cost_price_kwd: initialData?.cost_price_kwd ?? undefined,
+      compare_at_price_kwd: initialData?.compare_at_price_kwd ?? undefined,
+      stock_quantity: initialData?.stock_quantity ?? 0,
+      min_age: initialData?.min_age ?? 0,
+      weight_grams: initialData?.weight_grams ?? 0,
+      length_cm: initialData?.length_cm ?? 0,
+      width_cm: initialData?.width_cm ?? 0,
+      height_cm: initialData?.height_cm ?? 0,
+      return_eligibility: initialData?.return_eligibility ?? "eligible",
+      tax_status: initialData?.tax_status ?? "taxable",
+      track_inventory: initialData?.track_inventory ?? true,
+      out_of_stock_behaviour: initialData?.out_of_stock_behaviour ?? "show_out_of_stock",
+      include_in_flash_sale: initialData?.include_in_flash_sale ?? false,
+      flash_sale_discount_percent: initialData?.flash_sale_discount_percent ?? undefined,
+      is_new_arrival: initialData?.is_new_arrival ?? false,
       category_ids: initialData?.category_ids || (initialData?.category_id ? [initialData.category_id] : []),
       brand_id: initialData?.brand_id || "",
       short_description_en: initialData?.short_description_en || "",
-      short_description_ar: initialData?.short_description_ar || "",
       description_en: initialData?.description_en || "",
-      description_ar: initialData?.description_ar || "",
       sku: initialData?.sku || "",
+      barcode: initialData?.barcode || "",
+      low_stock_threshold: initialData?.low_stock_threshold ?? undefined,
       kucas_certificate: initialData?.kucas_certificate || "",
+      kucas_expiry: initialData?.kucas_expiry || "",
       safety_warnings_en: initialData?.safety_warnings_en || "",
-      safety_warnings_ar: initialData?.safety_warnings_ar || "",
       country_of_origin: initialData?.country_of_origin || "",
       materials_en: initialData?.materials_en || "",
-      materials_ar: initialData?.materials_ar || "",
       manufacturer_name: initialData?.manufacturer_name || "",
       seo_title_en: initialData?.seo_title_en || "",
-      seo_title_ar: initialData?.seo_title_ar || "",
       seo_description_en: initialData?.seo_description_en || "",
-      seo_description_ar: initialData?.seo_description_ar || "",
       hs_code_6: initialData?.hs_code_6 || "000000",
       gcc_tariff_12: initialData?.gcc_tariff_12 || "000000000000",
-      ...initialData,
     },
   })
 
@@ -113,14 +150,33 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
     }
   }, [watchAll.name_en, form])
 
-  // Mock media state for preview
-  const [images, setImages] = useState<string[]>(initialData?.images || [])
-  
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [images, setImages] = useState<string[]>(
+    initialData?.images
+      ? initialData.images.map((img: any) => (typeof img === "string" ? img : img.url))
+      : []
+  )
+  const [isUploadingImages, setIsUploadingImages] = useState(false)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (files) {
-      const newImages = Array.from(files).map(file => URL.createObjectURL(file))
-      setImages(prev => [...prev, ...newImages])
+    if (!files || files.length === 0) return
+    setIsUploadingImages(true)
+    try {
+      const results = await Promise.allSettled(
+        Array.from(files).map((file) => uploadFile({ file, bucket: "products" }))
+      )
+      const urls: string[] = []
+      results.forEach((result, i) => {
+        if (result.status === "fulfilled") {
+          urls.push(result.value.url)
+        } else {
+          toast.error(`Failed to upload ${Array.from(files)[i].name}: ${result.reason?.message ?? "Unknown error"}`)
+        }
+      })
+      if (urls.length > 0) setImages((prev) => [...prev, ...urls])
+    } finally {
+      setIsUploadingImages(false)
+      e.target.value = ""
     }
   }
 
@@ -136,7 +192,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
         title: "Details", 
         description: "Identity & Status", 
         icon: <Package size={18} />,
-        fields: ["name_en", "name_ar", "slug", "category_ids", "status", "description_en", "description_ar", "short_description_en", "short_description_ar"] 
+        fields: ["name_en", "slug", "category_ids", "status", "description_en", "short_description_en"] 
     },
     { 
         title: "Pricing", 
@@ -154,13 +210,13 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
         title: "Safety", 
         description: "Compliance & Shipping", 
         icon: <ShieldCheck size={18} />,
-        fields: ["min_age", "weight_grams", "length_cm", "width_cm", "height_cm", "safety_warnings_en", "safety_warnings_ar", "country_of_origin", "materials_en", "materials_ar", "manufacturer_name"] 
+        fields: ["min_age", "weight_grams", "length_cm", "width_cm", "height_cm", "safety_warnings_en", "country_of_origin", "materials_en", "manufacturer_name"] 
     },
     {
         title: "Advanced",
         description: "SEO & Customs",
         icon: <Globe size={18} />,
-        fields: ["seo_title_en", "seo_title_ar", "seo_description_en", "seo_description_ar", "hs_code_6", "gcc_tariff_12"]
+        fields: ["seo_title_en", "seo_description_en", "hs_code_6", "gcc_tariff_12"]
     }
   ]
 
@@ -171,6 +227,29 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
     if (isValid) {
       setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
       window.scrollTo({ top: 0, behavior: "smooth" })
+    } else {
+      // Show which fields are failing validation
+      const errors = form.formState.errors
+      const errorFields = Object.keys(errors)
+      
+      if (errorFields.length > 0) {
+        // Focus on the first field with an error
+        const firstErrorField = errorFields[0]
+        const element = document.querySelector(`[name="${firstErrorField}"]`) as HTMLElement
+        if (element) {
+          element.focus()
+          element.scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+        
+        // Show toast with error messages
+        const errorMessages = errorFields.map(field => {
+          const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+          const errorMessage = errors[field as keyof typeof errors]?.message
+          return `${fieldName}: ${errorMessage}`
+        }).join('\n')
+        
+        toast.error(`Validation errors:\n${errorMessages}`)
+      }
     }
   }
 
@@ -179,7 +258,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const onSubmit = async (data: Product) => {
+  const onSubmit = async (data: ProductFormValues) => {
     try {
       // Automate Arabic translations in background
       const translatedData = {
@@ -194,7 +273,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
       }
 
       if (initialData?.id) {
-        const result = await updateProduct(initialData.id, translatedData as Product, images, variants)
+        const result = await updateProduct(initialData.id, translatedData as any, images, variants)
         if (result.success) {
           router.push("/products")
           router.refresh()
@@ -202,17 +281,17 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
           alert("Error updating product: " + result.error)
         }
       } else {
-        const result = await createProduct(translatedData as Product, images, variants)
+        const result = await createProduct(translatedData as any, images, variants)
         if (result.success) {
           router.push("/products")
           router.refresh()
         } else {
-          alert("Error creating product: " + result.error)
+          toast.error(`Validation errors:\n${result.error}`)
         }
       }
     } catch (err) {
       console.error(err)
-      alert("An unexpected error occurred.")
+      toast.error("An unexpected error occurred.")
     }
   }
 
@@ -270,8 +349,8 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                 onClick={() => idx < currentStep && setCurrentStep(idx)}
                 className={cn(
                   "h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-500 relative group/step",
-                  idx < currentStep ? "bg-primary text-white scale-90 opacity-60" :
-                  idx === currentStep ? "bg-primary text-white shadow-2xl shadow-primary/40 scale-110" :
+                  idx < currentStep ? "bg-primary text-primary-foreground scale-90 opacity-60" :
+                  idx === currentStep ? "bg-primary text-primary-foreground shadow-2xl shadow-primary/40 scale-110" :
                   "bg-muted/30 text-muted-foreground border-2 border-border/40"
                 )}
               >
@@ -320,7 +399,9 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                 <div className="space-y-12">
                   <div className="space-y-8">
                     <div className="flex items-center gap-4 border-b border-border/40 pb-6 relative">
-                      <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center text-3xl shadow-inner">📦</div>
+                      <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center text-3xl shadow-inner">
+                        <Package size={24} className="text-muted-foreground" />
+                      </div>
                       <div>
                         <h3 className="font-black text-xl uppercase tracking-wider text-foreground">Basic Identity</h3>
                         <p className="text-xs text-muted-foreground font-medium">Core information about the product</p>
@@ -329,7 +410,9 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                     </div>
                     
                     <div className="space-y-4">
-                      <Label htmlFor="name_en" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">Product Name</Label>
+                      <Label htmlFor="name_en" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">
+                        Product Name <span className="text-red-500">*</span>
+                      </Label>
                       <Input
                         id="name_en"
                         {...form.register("name_en")}
@@ -353,6 +436,22 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                             className="bg-transparent border-none focus-visible:ring-0 h-12 font-mono text-sm text-primary font-bold"
                         />
                         </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label htmlFor="short_description_en" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">
+                        Short Description <span className="text-red-500">*</span>
+                      </Label>
+                      <Textarea
+                        id="short_description_en"
+                        className="min-h-[80px] rounded-[1.25rem] bg-muted/10 border-border/40 focus:bg-background transition-all resize-none px-6 py-4 font-medium leading-relaxed"
+                        {...form.register("short_description_en")}
+                        placeholder="One-line summary shown in product listings (max 160 chars)..."
+                        maxLength={160}
+                      />
+                      {form.formState.errors.short_description_en && (
+                        <p className="text-xs text-destructive font-bold ms-2 mt-1">{form.formState.errors.short_description_en.message}</p>
+                      )}
                     </div>
 
                     <div className="space-y-4">
@@ -386,9 +485,9 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent className="rounded-2xl border-border/40 shadow-2xl">
-                              <SelectItem value="draft" className="rounded-xl font-bold py-3">📁 Draft</SelectItem>
-                              <SelectItem value="published" className="rounded-xl font-bold py-3">🚀 Published</SelectItem>
-                              <SelectItem value="archived" className="rounded-xl font-bold py-3">📦 Archived</SelectItem>
+                              <SelectItem value="draft" className="rounded-xl font-bold py-3">Draft</SelectItem>
+                              <SelectItem value="published" className="rounded-xl font-bold py-3">Published</SelectItem>
+                              <SelectItem value="archived" className="rounded-xl font-bold py-3">Archived</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -465,12 +564,12 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         <h3 className="text-3xl font-black text-foreground tracking-tight">Visual Assets</h3>
                         <p className="text-muted-foreground font-medium mt-1">Images are the first thing users see.</p>
                     </div>
-                    <Label htmlFor="img-upload" className="cursor-pointer group">
+                    <Label htmlFor="img-upload" className={cn("group", isUploadingImages ? "cursor-wait opacity-60" : "cursor-pointer")}>
                         <div className="bg-primary text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
-                            <UploadCloud size={20} />
-                            Upload Images
+                            <UploadCloud size={20} className={isUploadingImages ? "animate-bounce" : ""} />
+                            {isUploadingImages ? "Uploading..." : "Upload Images"}
                         </div>
-                        <input id="img-upload" type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" />
+                        <input id="img-upload" type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" disabled={isUploadingImages} />
                     </Label>
                  </div>
 
@@ -522,15 +621,34 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                                 </div>
                             </div>
 
+                            <div className="space-y-4">
+                                <Label htmlFor="compare_at_price_kwd" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">
+                                    Original Price / Compare At (KD)
+                                </Label>
+                                <p className="text-[10px] text-muted-foreground/60 ms-2 -mt-2">Show as strikethrough on storefront when lower than retail price</p>
+                                <div className="relative group">
+                                    <Input
+                                        id="compare_at_price_kwd"
+                                        type="number"
+                                        step="0.001"
+                                        {...form.register("compare_at_price_kwd", { valueAsNumber: true })}
+                                        className="h-16 ps-6 rounded-[1.5rem] bg-muted/10 border-border/40 focus:bg-background transition-all font-black text-2xl"
+                                        placeholder="0.000"
+                                    />
+                                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-muted-foreground font-black">KD</span>
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-4">
-                                    <Label htmlFor="cost_price_kwd" className="text-xs font-black uppercase tracking-widest text-muted-foreground ms-2">Unit Cost</Label>
+                                    <Label htmlFor="cost_price_kwd" className="text-xs font-black uppercase tracking-widest text-muted-foreground ms-2">Unit Cost (KD)</Label>
                                     <Input
                                         id="cost_price_kwd"
                                         type="number"
                                         step="0.001"
                                         {...form.register("cost_price_kwd", { valueAsNumber: true })}
                                         className="h-16 rounded-2xl bg-muted/10"
+                                        placeholder="0.000"
                                     />
                                 </div>
                                 <div className="space-y-4">
@@ -788,7 +906,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         </div>
                         <div className="space-y-4">
                             <Label className="text-xs font-black uppercase text-muted-foreground ms-2">KUCAS Expiry</Label>
-                            <Input type="datetime-local" {...form.register("kucas_expiry")} className="h-14 rounded-2xl bg-muted/10 font-bold" />
+                            <Input type="date" {...form.register("kucas_expiry")} className="h-14 rounded-2xl bg-muted/10 font-bold" />
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-4">

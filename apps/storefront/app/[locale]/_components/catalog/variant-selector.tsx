@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nss/ui/components/button";
+import { Button } from "@/components/ui";
 import type { ProductVariant } from "@nss/db/types";
 import type { Locale } from "@/lib/i18n";
 

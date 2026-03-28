@@ -4,14 +4,14 @@ import {
   Button,
   Card,
   Badge,
-} from "@nss/ui"
+} from "@/components/ui"
 import {
   IconPencil,
   IconFolder,
   IconCornerDownRight,
 } from "@tabler/icons-react"
 import { CategorySheetForm } from "../_components/categories/category-sheet-form"
-import { cn } from "@nss/ui/lib/utils"
+import { cn } from "@/lib/utils"
 
 export default async function CategoriesPage() {
   return (
@@ -45,10 +45,10 @@ async function CategoryList() {
         {/* Column headers — hidden on mobile */}
         <div className="hidden sm:block p-4 bg-muted/20 border-b border-border/50">
           <div className="grid grid-cols-12 text-xs font-semibold text-muted-foreground uppercase tracking-wide px-4">
-            <div className="col-span-6">Category Name</div>
+            <div className="col-span-5">Category Name</div>
             <div className="col-span-3">Slug</div>
             <div className="col-span-2">Status</div>
-            <div className="col-span-1 text-right">Actions</div>
+            <div className="col-span-2 text-right">Actions</div>
           </div>
         </div>
         <div className="divide-y divide-border/30">
@@ -99,13 +99,21 @@ function CategoryRow({ category, children, allCategories, level = 0 }: any) {
       <div className="p-3 sm:p-4 hover:bg-muted/10 transition-colors group">
         {/* Desktop row */}
         <div className="hidden sm:grid grid-cols-12 items-center px-4">
-          <div className="col-span-6 flex items-center gap-3" style={{ paddingLeft: `${level * 24}px` }}>
-            {level > 0 ? (
-              <IconCornerDownRight size={14} className="text-muted-foreground/60 shrink-0" stroke={1.5} />
-            ) : (
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+          <div className={`col-span-5 flex items-center gap-3 pl-hierarchy-desktop-${Math.min(level, 4)}`}>
+            {/* Category Image */}
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-muted/20 flex items-center justify-center shrink-0">
+              {category.image_url ? (
+                <img 
+                  src={category.image_url} 
+                  alt={category.name_en}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
                 <IconFolder size={16} className="text-primary" stroke={1.5} />
-              </div>
+              )}
+            </div>
+            {level > 0 && (
+              <IconCornerDownRight size={14} className="text-muted-foreground/60 shrink-0" stroke={1.5} />
             )}
             <div className="flex flex-col min-w-0">
               <span className="font-semibold text-foreground leading-tight truncate">{category.name_en}</span>
@@ -130,13 +138,13 @@ function CategoryRow({ category, children, allCategories, level = 0 }: any) {
               </span>
             </div>
           </div>
-          <div className="col-span-1 flex justify-end">
+          <div className="col-span-2 flex justify-end">
             <CategorySheetForm
               mode="edit"
               category={category}
               categories={allCategories}
               trigger={
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted/80 transition-colors">
                   <IconPencil size={14} stroke={1.5} />
                 </Button>
               }
@@ -145,13 +153,21 @@ function CategoryRow({ category, children, allCategories, level = 0 }: any) {
         </div>
 
         {/* Mobile row */}
-        <div className="sm:hidden flex items-center gap-3" style={{ paddingLeft: `${level * 16}px` }}>
-          {level > 0 ? (
-            <IconCornerDownRight size={13} className="text-muted-foreground/60 shrink-0" stroke={1.5} />
-          ) : (
-            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+        <div className={`sm:hidden flex items-center gap-3 pl-hierarchy-${Math.min(level, 4)}`}>
+          {/* Category Image */}
+          <div className="w-9 h-9 rounded-lg overflow-hidden bg-muted/20 flex items-center justify-center shrink-0">
+            {category.image_url ? (
+              <img 
+                src={category.image_url} 
+                alt={category.name_en}
+                className="w-full h-full object-cover"
+              />
+            ) : (
               <IconFolder size={16} className="text-primary" stroke={1.5} />
-            </div>
+            )}
+          </div>
+          {level > 0 && (
+            <IconCornerDownRight size={13} className="text-muted-foreground/60 shrink-0" stroke={1.5} />
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -175,7 +191,7 @@ function CategoryRow({ category, children, allCategories, level = 0 }: any) {
             category={category}
             categories={allCategories}
             trigger={
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0 hover:bg-muted/80 transition-colors">
                 <IconPencil size={14} stroke={1.5} />
               </Button>
             }

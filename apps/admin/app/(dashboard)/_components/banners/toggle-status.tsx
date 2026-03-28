@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Switch } from "@nss/ui/components/switch"
+import { Switch } from "@/components/ui/switch"
 import { toggleBannerActive } from "../../banners/_actions"
 import { toast } from "sonner"
 

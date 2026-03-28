@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Label } from "@nss/ui/components/label";
-import { Checkbox } from "@nss/ui/components/checkbox";
+import { Label } from "@/components/ui";
+import { Checkbox } from "@/components/ui";
 import { Filter } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { useState } from "react";

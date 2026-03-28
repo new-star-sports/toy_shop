@@ -3,10 +3,10 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
-import { Label } from "@nss/ui/components/label"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@nss/ui/components/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
 import { saveStoreInfoAction } from "../_actions"
 import { translateToArabic } from "../../_lib/translate"
@@ -36,11 +36,11 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const defaultValues: StoreInfoSettings = {
-    store_name_en: initialData?.store_name_en || "NewStarSports",
-    store_name_ar: initialData?.store_name_ar || "نيو ستار سبورتس",
-    tagline_en: initialData?.tagline_en || "Kuwait's home for toys",
-    tagline_ar: initialData?.tagline_ar || "وجهتك للألعاب في الكويت",
-    contact_email: initialData?.contact_email || "info@newstarsports.com",
+    store_name_en: initialData?.store_name_en || "Admin Store",
+    store_name_ar: initialData?.store_name_ar || "متجر الإدارة",
+    tagline_en: initialData?.tagline_en || "Professional Admin Dashboard",
+    tagline_ar: initialData?.tagline_ar || "لوحة تحكم احترافية",
+    contact_email: initialData?.contact_email || "admin@example.com",
     contact_phone: initialData?.contact_phone || "+965 2222 2222",
     whatsapp_number: initialData?.whatsapp_number || "+965 2222 2222",
     cr_number: initialData?.cr_number || "",
@@ -75,7 +75,7 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
 
   return (
     <div className="grid gap-6">
-      <Card className="border-nss-border shadow-none">
+      <Card className="border-border shadow-none">
         <CardHeader>
           <CardTitle>Store Identity</CardTitle>
           <CardDescription>Main brand information used across the site and invoices.</CardDescription>
@@ -94,7 +94,7 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
               </div>
             </div>
 
-            <div className="h-px bg-nss-border my-2" />
+            <div className="h-px bg-border my-2" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -116,7 +116,7 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
               </div>
             </div>
 
-            <div className="h-px bg-nss-border my-2" />
+            <div className="h-px bg-border my-2" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -130,7 +130,7 @@ export function GeneralForm({ initialData }: GeneralFormProps) {
             </div>
 
             <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={isSubmitting} className="bg-nss-primary hover:bg-nss-primary/90 min-w-[120px]">
+              <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save Changes
               </Button>

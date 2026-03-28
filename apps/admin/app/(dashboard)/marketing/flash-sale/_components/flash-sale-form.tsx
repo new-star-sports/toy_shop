@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { flashSaleSettingsSchema, type FlashSaleSettings } from "@nss/validators/marketing"
 import { updateFlashSaleSettings } from "../_actions"
-import { Button } from "@nss/ui/components/button"
-import { Card } from "@nss/ui/components/card"
-import { Input } from "@nss/ui/components/input"
-import { Label } from "@nss/ui/components/label"
-import { Switch } from "@nss/ui/components/switch"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 
 interface FlashSaleFormProps {
@@ -38,8 +38,8 @@ export function FlashSaleForm({ initialData }: FlashSaleFormProps) {
         toast.error("Failed to update settings: " + result.error)
       }
     } catch (err) {
-      console.error(err)
-      toast.error("An unexpected error occurred.")
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred"
+      toast.error(errorMessage)
     }
   }
 

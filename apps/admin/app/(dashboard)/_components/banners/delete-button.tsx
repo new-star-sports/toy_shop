@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@nss/ui/components/button"
+import { Button } from "@/components/ui/button"
 import { deleteBanner } from "../../banners/_actions"
 import { toast } from "sonner"
 

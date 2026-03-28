@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@nss/ui/components/dialog"
-import { Button } from "@nss/ui/components/button"
-import { Input } from "@nss/ui/components/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { searchProducts, addProductsToFlashSale } from "../_actions"
 import { toast } from "sonner"
 import { Plus, Search, Loader2 } from "lucide-react"
