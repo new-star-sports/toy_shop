@@ -1,4 +1,4 @@
-import { getAdminBannerById } from "@nss/db/queries";
+import { getAdminBannerById, getCategories, getBrands } from "@nss/db/queries";
 import { BannerForm } from "../../_components/banners/banner-form";
 import { notFound } from "next/navigation";
 
@@ -8,7 +8,11 @@ export default async function EditBannerPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const banner = await getAdminBannerById(id);
+  const [banner, categories, brands] = await Promise.all([
+    getAdminBannerById(id),
+    getCategories(),
+    getBrands(),
+  ])
 
   if (!banner) {
     notFound();
@@ -22,7 +26,7 @@ export default async function EditBannerPage({
           Update your banner content, scheduling, and appearance.
         </p>
       </div>
-      <BannerForm initialData={banner} />
+      <BannerForm initialData={banner} categories={categories} brands={brands} />
     </div>
   );
 }

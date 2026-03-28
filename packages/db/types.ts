@@ -320,6 +320,8 @@ export interface Banner {
   schedule_start: string | null;
   schedule_end: string | null;
   slot: string | null;
+  category_id: string | null;
+  brand_id: string | null;
   created_at: string;
   updated_at: string;
 }

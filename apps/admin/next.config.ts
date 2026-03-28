@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["@nss/ui", "@tabler/icons-react"],
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
   },
 };
 

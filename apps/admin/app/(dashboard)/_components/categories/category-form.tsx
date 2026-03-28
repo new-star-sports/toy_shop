@@ -92,13 +92,6 @@ export function CategoryForm({ initialData, categories, onSuccess, onCancel }: C
     },
   })
   
-  // Debug image loading
-  useEffect(() => {
-    console.log("CategoryForm initialData:", initialData)
-    console.log("image_url from initialData:", initialData?.image_url)
-    console.log("categoryImage state:", categoryImage)
-  }, [initialData, categoryImage])
-  
   // Sync image preview with form field
   useEffect(() => {
     const imageUrl = form.watch("image_url")
@@ -121,29 +114,35 @@ export function CategoryForm({ initialData, categories, onSuccess, onCancel }: C
   }, [nameEn, form])
 
   async function onSubmit(values: CategoryFormValues) {
-    // Automate Arabic translations in background - matching product form pattern
-    const translatedData = {
-      ...values,
-      name_ar: values.name_ar || await translateToArabic(values.name_en),
-      description_ar: values.description_ar || (values.description_en ? await translateToArabic(values.description_en) : await translateToArabic(values.name_en)),
-    }
-
-    const result = await upsertCategoryAction({
-      ...initialData,
-      ...translatedData,
-      image_url: categoryImage, // Ensure image URL is included
-      parent_id: values.parent_id === "null" ? null : values.parent_id,
-    } as Partial<Category>)
-
-    if (result.success) {
-      toast.success(initialData ? "Category updated" : "Category created")
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push("/categories")
+    try {
+      const translatedData = {
+        ...values,
+        name_ar: await translateToArabic(values.name_en),
+        description_ar: values.description_en
+          ? await translateToArabic(values.description_en)
+          : await translateToArabic(values.name_en),
       }
-    } else {
-      toast.error(result.error || "Something went wrong")
+
+      const result = await upsertCategoryAction({
+        ...initialData,
+        ...translatedData,
+        image_url: categoryImage,
+        parent_id: values.parent_id === "null" ? null : values.parent_id,
+      } as Partial<Category>)
+
+      if (result.success) {
+        toast.success(initialData ? "Category updated successfully!" : "Category created successfully!")
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          router.push("/categories")
+        }
+      } else {
+        toast.error(result.error || "Something went wrong")
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      toast.error("Unexpected error: " + message)
     }
   }
 
@@ -166,27 +165,6 @@ export function CategoryForm({ initialData, categories, onSuccess, onCancel }: C
                 </FormControl>
                 <FormDescription>
                   Category name (max 200 characters). {field.value?.length || 0}/200 characters used
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="name_ar"
-            render={({ field }: { field: any }) => (
-              <FormItem>
-                <FormLabel>Category Name (Arabic)</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...field} 
-                    placeholder="مثلاً: ألعاب الحركة" 
-                    maxLength={200}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Arabic category name (optional - will be auto-translated if empty)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -306,27 +284,6 @@ export function CategoryForm({ initialData, categories, onSuccess, onCancel }: C
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="description_ar"
-            render={({ field }: { field: any }) => (
-              <FormItem>
-                <FormLabel>Description (Arabic)</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    {...field} 
-                    placeholder="صف هذه الفئة..." 
-                    maxLength={500}
-                    rows={4}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Arabic description (optional - will be auto-translated if empty)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </FieldGroup>
 
         {/* Image Upload Section */}
@@ -354,79 +311,6 @@ export function CategoryForm({ initialData, categories, onSuccess, onCancel }: C
               </FormItem>
             )}
           />
-        </FieldGroup>
-
-        <FieldGroup>
-          <Card>
-            <CardHeader>
-              <CardTitle>Parent Category</CardTitle>
-              <CardDescription>Choose a parent category or leave as root.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="parent_id"
-                render={({ field }: { field: any }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Parent Category</FormLabel>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          "w-full justify-between font-normal items-center",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value === "null" || !field.value
-                          ? "None (Root)"
-                          : categories?.find(
-                              (category) => category.id === field.value
-                            )?.name_en}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                  </FormControl>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 z-popover">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      form.setValue("parent_id", "null")
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        field.value === "null" || !field.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    None (Root)
-                  </DropdownMenuItem>
-                  {categories?.filter(c => c.id !== initialData?.id).map((category) => (
-                      <DropdownMenuItem
-                        key={category.id}
-                        onClick={() => {
-                          form.setValue("parent_id", category.id)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            category.id === field.value ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {category.name_en}
-                      </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-            </CardContent>
-          </Card>
         </FieldGroup>
 
         <FieldGroup>
@@ -515,7 +399,6 @@ export function CategoryForm({ initialData, categories, onSuccess, onCancel }: C
           <Button 
             type="submit" 
             loading={form.formState.isSubmitting}
-            disabled={!form.formState.isValid}
           >
             {initialData ? "Update Category" : "Create Category"}
           </Button>

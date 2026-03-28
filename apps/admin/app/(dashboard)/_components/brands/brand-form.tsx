@@ -27,13 +27,18 @@ import { FileUpload } from "@/components/ui/file-upload"
 import type { Brand } from "@nss/db/types"
 import { translateToArabic } from "../../_lib/translate"
 
+const brandFormSchema = brandSchema.extend({
+  name_ar: z.string().optional(),
+  description_ar: z.string().optional().nullable(),
+})
+
+type BrandFormValues = z.infer<typeof brandFormSchema>
+
 interface BrandFormProps {
   initialData?: Brand | null;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
-
-type BrandFormValues = z.infer<typeof brandSchema>
 
 const slugify = (text: string) => 
   text
@@ -45,30 +50,25 @@ const slugify = (text: string) =>
 
 export function BrandForm({ initialData, onSuccess, onCancel }: BrandFormProps) {
   const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  
+
   // Image upload state
   const [brandLogo, setBrandLogo] = useState<string>(initialData?.logo_url || "")
   
   const form = useForm<BrandFormValues>({
-    resolver: zodResolver(brandSchema) as any,
+    resolver: zodResolver(brandFormSchema) as any,
     mode: "onChange",
     defaultValues: initialData ? {
       name_en: initialData.name_en,
-      name_ar: initialData.name_ar || "",
       slug: initialData.slug,
-      description_en: initialData.description_en,
-      description_ar: initialData.description_ar,
+      description_en: initialData.description_en || "",
       logo_url: initialData.logo_url || "",
       is_featured: initialData.is_featured,
       display_order: initialData.display_order,
       is_active: initialData.is_active,
     } : {
       name_en: "",
-      name_ar: "",
       slug: "",
       description_en: "",
-      description_ar: "",
       logo_url: "",
       is_featured: false,
       display_order: 0,
@@ -98,76 +98,38 @@ export function BrandForm({ initialData, onSuccess, onCancel }: BrandFormProps) 
   }, [nameEn, form])
 
   async function onSubmit(values: BrandFormValues) {
-    setIsSubmitting(true)
     try {
-      // Automate Arabic translations in background - using category pattern
-      const translatedNameAr = values.name_ar || await translateToArabic(values.name_en)
-      const translatedDescAr = values.description_ar || (values.description_en ? await translateToArabic(values.description_en) : translatedNameAr)
+      const name_ar = await translateToArabic(values.name_en)
+      const description_ar = values.description_en
+        ? await translateToArabic(values.description_en)
+        : name_ar
 
       const result = await upsertBrandAction({
         ...initialData,
         ...values,
-        name_ar: translatedNameAr,
-        description_ar: translatedDescAr,
+        name_ar,
+        description_ar,
       } as Partial<Brand>)
 
       if (result.success) {
-        toast.success(initialData ? "Brand updated" : "Brand created")
+        toast.success(initialData ? "Brand updated successfully!" : "Brand created successfully!")
         if (onSuccess) {
           onSuccess()
         } else {
           router.push("/brands")
         }
       } else {
-        const errorMessage = result.error || "Something went wrong"
-        toast.error(errorMessage)
+        toast.error(result.error || "Something went wrong")
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred"
-      toast.error(errorMessage)
-    } finally {
-      setIsSubmitting(false)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      toast.error("Unexpected error: " + message)
     }
   }
 
   return (
     <Form {...form}>
-      <form 
-        onSubmit={async (e) => {
-          e.preventDefault()
-          
-          // Get current form values
-          const currentValues = form.getValues()
-          
-          // Apply translation before validation if Arabic fields are empty
-          if (!currentValues.name_ar || currentValues.name_ar.trim() === '') {
-            const translatedName = await translateToArabic(currentValues.name_en)
-            form.setValue("name_ar", translatedName, { shouldValidate: false })
-          }
-          
-          if (!currentValues.description_ar || currentValues.description_ar.trim() === '') {
-            const translatedDesc = currentValues.description_en ? await translateToArabic(currentValues.description_en) : ''
-            form.setValue("description_ar", translatedDesc, { shouldValidate: false })
-          }
-          
-          // Wait a tick for form to update
-          setTimeout(async () => {
-            // Manual validation check
-            const isValid = await form.trigger()
-            
-            if (!isValid) {
-              const errors = form.formState.errors
-              const errorMessages = Object.values(errors).map(err => err.message).join(", ")
-              toast.error(`Validation failed: ${errorMessages}`)
-              return
-            }
-            
-            // If valid, call onSubmit
-            onSubmit(form.getValues())
-          }, 100)
-        }} 
-        className="space-y-8 max-w-2xl"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-2xl">
         <FieldGroup>
           <FormField
             control={form.control}
@@ -184,27 +146,6 @@ export function BrandForm({ initialData, onSuccess, onCancel }: BrandFormProps) 
                 </FormControl>
                 <FormDescription>
                   Brand name (max 200 characters). {field.value?.length || 0}/200 characters used
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="name_ar"
-            render={({ field }: { field: any }) => (
-              <FormItem>
-                <FormLabel>Brand Name (Arabic)</FormLabel>
-                <FormControl>
-                  <Input 
-                    {...field} 
-                    placeholder="مثلاً: ليغو" 
-                    maxLength={200}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Arabic brand name (optional - will be auto-translated if empty)
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -246,7 +187,7 @@ export function BrandForm({ initialData, onSuccess, onCancel }: BrandFormProps) 
                     value={field.value || undefined}
                     onChange={field.onChange}
                     bucket="brands"
-                    disabled={isSubmitting}
+                    disabled={form.formState.isSubmitting}
                     maxSize={5 * 1024 * 1024} // 5MB (after compression)
                     allowedTypes={['jpeg', 'jpg', 'png', 'svg', 'webp']}
                   />
@@ -284,30 +225,6 @@ export function BrandForm({ initialData, onSuccess, onCancel }: BrandFormProps) 
               )}
             />
           </FieldGroup>
-
-        <FieldGroup>
-          <FormField
-            control={form.control}
-            name="description_ar"
-            render={({ field }: { field: any }) => (
-              <FormItem>
-                <FormLabel>Description (Arabic)</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    {...field} 
-                    placeholder="صف هذا العلامة التجارية..." 
-                    maxLength={500}
-                    rows={4}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Arabic description (optional - will be auto-translated if empty)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </FieldGroup>
 
         <FieldGroup>
           <Card>
@@ -392,19 +309,10 @@ export function BrandForm({ initialData, onSuccess, onCancel }: BrandFormProps) 
 
         <div className="flex gap-4">
           <Button 
-            type="submit" 
-            disabled={isSubmitting}
+            type="submit"
+            loading={form.formState.isSubmitting}
           >
-            {isSubmitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                {initialData ? "Updating..." : "Creating..."}
-              </>
-            ) : (
-              <>
-                {initialData ? "Update Brand" : "Create Brand"}
-              </>
-            )}
+            {initialData ? "Update Brand" : "Create Brand"}
           </Button>
 
           <Button 

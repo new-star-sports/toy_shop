@@ -18,7 +18,6 @@ import { cn } from "@/lib/utils"
 import { 
   Plus, 
   Trash2, 
-  UploadCloud, 
   ChevronRight, 
   ChevronLeft,
   Package,
@@ -258,6 +257,33 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
+  const handleValidationError = (errors: Record<string, any>) => {
+    const errorFields = Object.keys(errors)
+    for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
+      const stepFields = steps[stepIndex].fields as string[]
+      const firstErrorField = errorFields.find(f => stepFields.includes(f))
+      if (firstErrorField) {
+        setCurrentStep(stepIndex)
+        setTimeout(() => {
+          const element = document.querySelector(`[name="${firstErrorField}"]`) as HTMLElement
+          if (element) {
+            element.focus()
+            element.scrollIntoView({ behavior: "smooth", block: "center" })
+          }
+        }, 150)
+        const fieldLabel = firstErrorField.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+        toast.error(`Required field missing: ${fieldLabel}`)
+        return
+      }
+    }
+    // Fallback: first error not found in step fields list
+    const first = errorFields[0]
+    if (first) {
+      const fieldLabel = first.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+      toast.error(`Please fill in required field: ${fieldLabel}`)
+    }
+  }
+
   const onSubmit = async (data: ProductFormValues) => {
     try {
       // Automate Arabic translations in background
@@ -275,23 +301,26 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
       if (initialData?.id) {
         const result = await updateProduct(initialData.id, translatedData as any, images, variants)
         if (result.success) {
+          toast.success("Product updated successfully!")
           router.push("/products")
           router.refresh()
         } else {
-          alert("Error updating product: " + result.error)
+          toast.error("Error updating product: " + result.error)
         }
       } else {
         const result = await createProduct(translatedData as any, images, variants)
         if (result.success) {
+          toast.success("Product created successfully!")
           router.push("/products")
           router.refresh()
         } else {
-          toast.error(`Validation errors:\n${result.error}`)
+          toast.error("Error creating product: " + result.error)
         }
       }
     } catch (err) {
       console.error(err)
-      toast.error("An unexpected error occurred.")
+      const message = err instanceof Error ? err.message : String(err)
+      toast.error("Unexpected error: " + message)
     }
   }
 
@@ -317,11 +346,11 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
           {currentStep === steps.length - 1 ? (
             <Button 
                 type="button" 
-                onClick={form.handleSubmit(onSubmit)} 
+                onClick={form.handleSubmit(onSubmit, handleValidationError)} 
                 loading={form.formState.isSubmitting} 
-                className="rounded-2xl px-10 py-6 bg-primary text-white hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 text-base font-bold flex items-center justify-center min-w-[180px]"
+                className="rounded-2xl px-10 py-6 bg-emerald-500 text-white hover:bg-emerald-600 shadow-2xl shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-95 text-base font-bold flex items-center justify-center min-w-[180px]"
             >
-              {initialData ? "Apply Changes" : "Publish to Store"}
+              {initialData ? "Update Product" : "Launch Product"}
             </Button>
           ) : (
             <Button 
@@ -564,13 +593,6 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         <h3 className="text-3xl font-black text-foreground tracking-tight">Visual Assets</h3>
                         <p className="text-muted-foreground font-medium mt-1">Images are the first thing users see.</p>
                     </div>
-                    <Label htmlFor="img-upload" className={cn("group", isUploadingImages ? "cursor-wait opacity-60" : "cursor-pointer")}>
-                        <div className="bg-primary text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
-                            <UploadCloud size={20} className={isUploadingImages ? "animate-bounce" : ""} />
-                            {isUploadingImages ? "Uploading..." : "Upload Images"}
-                        </div>
-                        <input id="img-upload" type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" disabled={isUploadingImages} />
-                    </Label>
                  </div>
 
                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
@@ -583,16 +605,16 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         <button
                           type="button"
                           onClick={() => removeImage(idx)}
-                          className="absolute top-4 right-4 h-10 w-10 rounded-2xl bg-destructive text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
+                          className="absolute top-4 right-4 h-10 w-10 rounded-2xl bg-destructive text-white flex items-center justify-center opacity-80 hover:opacity-100 transition-all"
                         >
                           <Trash2 size={18} />
                         </button>
                       </div>
                     ))}
                     {images.length < 10 && (
-                        <label className="aspect-square rounded-[2.5rem] border-4 border-dashed border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 group">
+                        <label className={cn("aspect-square rounded-[2.5rem] border-4 border-dashed border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-3 group", isUploadingImages ? "cursor-not-allowed opacity-40 pointer-events-none" : "cursor-pointer")}>
                             <Plus size={32} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                            <input type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" />
+                            <input type="file" multiple className="hidden" onChange={handleImageUpload} accept="image/*" disabled={isUploadingImages} />
                         </label>
                     )}
                  </div>
@@ -609,6 +631,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         <div className="space-y-6">
                             <div className="space-y-4">
                                 <Label htmlFor="price_kwd" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">Retail Price (KD)</Label>
+                                <p className="text-[10px] text-muted-foreground/60 ms-2 mt-1">The price customers pay on the storefront</p>
                                 <div className="relative group">
                                     <Input
                                         id="price_kwd"
@@ -625,7 +648,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                                 <Label htmlFor="compare_at_price_kwd" className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ms-2">
                                     Original Price / Compare At (KD)
                                 </Label>
-                                <p className="text-[10px] text-muted-foreground/60 ms-2 -mt-2">Show as strikethrough on storefront when lower than retail price</p>
+                                <p className="text-[10px] text-muted-foreground/60 ms-2 mt-1">Show as strikethrough on storefront when lower than retail price</p>
                                 <div className="relative group">
                                     <Input
                                         id="compare_at_price_kwd"
@@ -642,6 +665,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <Label htmlFor="cost_price_kwd" className="text-xs font-black uppercase tracking-widest text-muted-foreground ms-2">Unit Cost (KD)</Label>
+                                    <p className="text-[10px] text-muted-foreground/60 ms-2 mt-1">Your purchase cost (used for margin calculation)</p>
                                     <Input
                                         id="cost_price_kwd"
                                         type="number"
@@ -851,9 +875,18 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                                 <Input type="number" {...form.register("weight_grams", { valueAsNumber: true })} className="h-16 rounded-2xl bg-muted/10 font-black text-2xl" />
                             </div>
                             <div className="grid grid-cols-3 gap-4">
-                                <Input {...form.register("length_cm", { valueAsNumber: true })} placeholder="L" className="h-14 rounded-xl text-center font-bold" />
-                                <Input {...form.register("width_cm", { valueAsNumber: true })} placeholder="W" className="h-14 rounded-xl text-center font-bold" />
-                                <Input {...form.register("height_cm", { valueAsNumber: true })} placeholder="H" className="h-14 rounded-xl text-center font-bold" />
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-muted-foreground ms-1">Length (cm)</Label>
+                                    <Input {...form.register("length_cm", { valueAsNumber: true })} placeholder="0" className="h-14 rounded-xl text-center font-bold" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-muted-foreground ms-1">Width (cm)</Label>
+                                    <Input {...form.register("width_cm", { valueAsNumber: true })} placeholder="0" className="h-14 rounded-xl text-center font-bold" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-muted-foreground ms-1">Height (cm)</Label>
+                                    <Input {...form.register("height_cm", { valueAsNumber: true })} placeholder="0" className="h-14 rounded-xl text-center font-bold" />
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-4">
@@ -906,16 +939,16 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         </div>
                         <div className="space-y-4">
                             <Label className="text-xs font-black uppercase text-muted-foreground ms-2">KUCAS Expiry</Label>
-                            <Input type="date" {...form.register("kucas_expiry")} className="h-14 rounded-2xl bg-muted/10 font-bold" />
+                            <Input type="date" {...form.register("kucas_expiry")} className="h-14 rounded-2xl bg-muted/10 font-bold cursor-pointer" onClick={(e) => (e.currentTarget as any).showPicker?.()} />
                         </div>
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <Label className="text-xs font-black uppercase text-muted-foreground ms-2">HS Code (6 digits)</Label>
-                                <Input {...form.register("hs_code_6")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" maxLength={6} placeholder="950300" />
+                                <Input {...form.register("hs_code_6")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" maxLength={6} placeholder="950300" onFocus={(e) => { if (e.target.value === "000000") form.setValue("hs_code_6", "") }} />
                             </div>
                             <div className="space-y-4">
                                 <Label className="text-xs font-black uppercase text-muted-foreground ms-2">GCC Tariff (12 digits)</Label>
-                                <Input {...form.register("gcc_tariff_12")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" maxLength={12} placeholder="950300400010" />
+                                <Input {...form.register("gcc_tariff_12")} className="h-14 rounded-2xl bg-muted/10 font-mono font-bold" maxLength={12} placeholder="950300400010" onFocus={(e) => { if (e.target.value === "000000000000") form.setValue("gcc_tariff_12", "") }} />
                             </div>
                         </div>
                     </div>
@@ -976,11 +1009,11 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
           ) : (
               <Button 
                 type="button" 
-                onClick={form.handleSubmit(onSubmit)} 
+                onClick={form.handleSubmit(onSubmit, handleValidationError)}
                 loading={form.formState.isSubmitting}
                 className="h-14 px-12 rounded-2xl bg-emerald-500 text-white font-black uppercase tracking-widest gap-2 shadow-2xl shadow-emerald-500/20 transition-all hover:scale-105 flex items-center justify-center min-w-[180px]"
               >
-                Done & Launch
+                {initialData?.id ? "Update Product" : "Launch Product"}
               </Button>
           )}
       </div>

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const bannerSchema = z.object({
   banner_type: z.enum(["hero", "announcement", "editorial", "split_promo"]),
   title_en: z.string().min(1, "Title (English) is required").max(500),
-  title_ar: z.string().min(1, "Title (Arabic) is required").max(500),
+  title_ar: z.string().optional().nullable(),
   subtitle_en: z.string().optional().nullable(),
   subtitle_ar: z.string().optional().nullable(),
   image_desktop_url: z.string().url().or(z.literal("")).optional().nullable(),
@@ -22,6 +22,8 @@ export const bannerSchema = z.object({
   schedule_start: z.string().datetime().optional().nullable(),
   schedule_end: z.string().datetime().optional().nullable(),
   slot: z.string().optional().nullable(),
+  category_id: z.string().uuid().optional().nullable(),
+  brand_id: z.string().uuid().optional().nullable(),
 });
 
 export type Banner = z.infer<typeof bannerSchema>;

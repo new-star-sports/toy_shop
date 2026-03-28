@@ -1,9 +1,11 @@
 "use client"
 
 import { useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { deleteProduct } from "../../products/_actions"
 import { Trash2 } from "lucide-react"
+import { toast } from "sonner"
 
 interface DeleteProductButtonProps {
   productId: string
@@ -11,6 +13,7 @@ interface DeleteProductButtonProps {
 
 export function DeleteProductButton({ productId }: DeleteProductButtonProps) {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   return (
     <Button
@@ -22,7 +25,12 @@ export function DeleteProductButton({ productId }: DeleteProductButtonProps) {
         if (confirm("Are you sure you want to delete this product?")) {
           startTransition(async () => {
             const result = await deleteProduct(productId)
-            if (!result.success) alert("Error: " + result.error)
+            if (result.success) {
+              toast.success("Product deleted successfully!")
+              router.refresh()
+            } else {
+              toast.error("Error deleting product: " + result.error)
+            }
           })
         }
       }}

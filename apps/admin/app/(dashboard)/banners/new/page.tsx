@@ -1,6 +1,13 @@
 import { BannerForm } from "../../_components/banners/banner-form";
+import { getCategories } from "@nss/db/queries";
+import { getBrands } from "@nss/db/queries";
 
-export default function NewBannerPage() {
+export default async function NewBannerPage() {
+  const [categories, brands] = await Promise.all([
+    getCategories(),
+    getBrands(),
+  ])
+
   return (
     <div className="max-w-5xl mx-auto pb-10">
       <div className="mb-6">
@@ -9,7 +16,7 @@ export default function NewBannerPage() {
           Add a new promotional slider, announcement, or editorial banner to your storefront.
         </p>
       </div>
-      <BannerForm />
+      <BannerForm categories={categories} brands={brands} />
     </div>
   );
 }

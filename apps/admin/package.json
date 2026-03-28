@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo -p 3002",
+    "dev": "node --max-http-header-size=65536 ./node_modules/next/dist/bin/next dev --turbo -p 3002",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
