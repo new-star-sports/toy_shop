@@ -113,7 +113,7 @@ export default async function BannersPage({
                       <div className="flex items-center gap-3">
                         <div className="w-16 h-10 rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden border border-border/30 shrink-0">
                           {banner.image_desktop_url ? (
-                            <img src={banner.image_desktop_url} alt={banner.title_en} className="w-full h-full object-cover" />
+                            <img src={banner.image_desktop_url} alt={banner.title_en ?? undefined} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full bg-dynamic" style={{ '--dynamic-bg': banner.bg_color || '#e5e7eb' } as React.CSSProperties} />
                           )}
@@ -166,7 +166,7 @@ export default async function BannersPage({
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-16 h-10 rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden border border-border/30 shrink-0">
                     {banner.image_desktop_url ? (
-                      <img src={banner.image_desktop_url} alt={banner.title_en} className="w-full h-full object-cover" />
+                      <img src={banner.image_desktop_url} alt={banner.title_en ?? undefined} className="w-full h-full object-cover" />
                     ) : (
                       <IconPhoto size={18} className="text-muted-foreground/40" stroke={1.5} />
                     )}

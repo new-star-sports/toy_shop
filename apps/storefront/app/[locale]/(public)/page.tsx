@@ -59,97 +59,181 @@ export default async function HomePage({ params }: { params: Params }) {
       {/* ── Section 02: Hero Banner ── */}
       <section id="hero" className="relative pt-6 pb-12 sm:pt-10 sm:pb-20 overflow-hidden bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-[40px] bg-gradient-to-br from-primary to-primary/90 overflow-hidden shadow-2xl shadow-primary/20 min-h-[500px] flex items-center">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-              <div className="absolute top-[-10%] right-[-10%] w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] animate-pulse-slow" />
-              <div className="absolute bottom-[10%] left-[20%] w-[60%] h-[60%] border-[40px] border-white/5 rounded-full rotate-12" />
-            </div>
+          {(() => {
+            const banner = heroBanners?.[0] as any
+            const desktopVideo = banner?.video_desktop_url
+            const mobileVideo = banner?.video_mobile_url
+            const desktopImage = banner?.image_desktop_url
+            const mobileImage = banner?.image_mobile_url
+            const hasMedia = !!(desktopVideo || desktopImage)
+            const ctaLink = banner?.cta_link || `/${locale}/products`
+            const title = isAr ? banner?.title_ar : banner?.title_en
+            const subtitle = isAr ? banner?.subtitle_ar : banner?.subtitle_en
+            const ctaText = isAr ? banner?.cta_text_ar : banner?.cta_text_en
 
-            <div className="relative z-10 w-full grid lg:grid-cols-2 gap-12 p-8 sm:p-16 items-center">
-              <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest shadow-sm">
-                  <IconSparkles size={14} className="text-accent" />
-                  {isAr ? "ألعاب أصلية 100%" : "100% Genuine Toys"}
-                </div>
-                
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tighter">
-                  {heroBanners && heroBanners.length > 0 
-                    ? (isAr ? heroBanners[0].title_ar : heroBanners[0].title_en)
-                    : (isAr ? "اكتشف عالم الألعاب السحري" : "Discover the Magic of Play")
-                  }
-                </h1>
-                
-                <p className="text-lg sm:text-xl text-white/80 max-w-lg leading-relaxed font-medium">
-                  {heroBanners && heroBanners.length > 0
-                    ? (isAr ? heroBanners[0].subtitle_ar : heroBanners[0].subtitle_en)
-                    : (isAr ? "وجهتك الأولى لأفضل الألعاب والماركات العالمية في الكويت" : "Your premier destination for the best toys and global brands in Kuwait")
-                  }
-                </p>
-                
-                <div className="flex flex-wrap gap-4 pt-4">
-                  <Link
-                    href={heroBanners && heroBanners[0]?.cta_link ? heroBanners[0].cta_link : `/${locale}/products`}
-                    className="h-14 px-10 bg-accent text-white font-black rounded-full hover:bg-accent/90 transition-all hover:scale-105 shadow-xl shadow-accent/25 flex items-center gap-2 group"
-                  >
-                    {heroBanners && heroBanners[0]?.cta_text_en ? (isAr ? heroBanners[0].cta_text_ar : heroBanners[0].cta_text_en) : (isAr ? "تسوق الآن" : "Shop Now")}
-                    <IconArrowRight size={20} className="group-hover:translate-x-1 transition-transform rtl:rotate-180" />
-                  </Link>
-                  <Link
-                    href={`/${locale}/products?sort=new`}
-                    className="h-14 px-10 bg-white/10 text-white font-bold rounded-full border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all flex items-center justify-center shadow-lg"
-                  >
-                    {isAr ? "وصل حديثاً" : "New Arrivals"}
-                  </Link>
-                </div>
+            if (hasMedia) {
+              return (
+                <Link
+                  href={ctaLink}
+                  className="relative block rounded-[40px] overflow-hidden shadow-2xl shadow-primary/20 group cursor-pointer"
+                  style={{ aspectRatio: "16/5" }}
+                >
+                  {/* Video (desktop) */}
+                  {desktopVideo && (
+                    <video
+                      src={desktopVideo}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 hidden sm:block"
+                      autoPlay loop muted playsInline
+                    />
+                  )}
+                  {/* Video (mobile fallback) */}
+                  {(mobileVideo || desktopVideo) && (
+                    <video
+                      src={mobileVideo || desktopVideo}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 sm:hidden"
+                      autoPlay loop muted playsInline
+                    />
+                  )}
+                  {/* Image (desktop) — shown when no video */}
+                  {!desktopVideo && desktopImage && (
+                    <img
+                      src={desktopImage}
+                      alt={title || "Banner"}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 hidden sm:block"
+                    />
+                  )}
+                  {/* Image (mobile fallback) */}
+                  {!desktopVideo && (mobileImage || desktopImage) && (
+                    <img
+                      src={mobileImage || desktopImage}
+                      alt={title || "Banner"}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 sm:hidden"
+                    />
+                  )}
 
-                <div className="flex items-center gap-6 pt-4">
-                  <div className="flex -space-x-3 rtl:space-x-reverse">
-                    {[1,2,3,4].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-primary bg-muted/20 flex items-center justify-center text-[10px] font-bold text-white backdrop-blur-sm">
-                        {String.fromCharCode(64 + i)}
+                  {/* Optional text overlay */}
+                  {(title || subtitle) && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex items-end pointer-events-none">
+                      <div className="p-6 sm:p-10 space-y-2 max-w-3xl">
+                        {title && (
+                          <h1 className="text-2xl sm:text-5xl font-black text-white leading-tight drop-shadow-lg">
+                            {title}
+                          </h1>
+                        )}
+                        {subtitle && (
+                          <p className="text-sm sm:text-lg text-white/80 font-medium drop-shadow max-w-xl">
+                            {subtitle}
+                          </p>
+                        )}
+                        {ctaText && (
+                          <div className="pt-2 sm:pt-4">
+                            <span className="inline-flex items-center gap-2 h-10 sm:h-13 px-6 sm:px-10 bg-accent text-white font-black rounded-full shadow-xl text-sm sm:text-base">
+                              {ctaText}
+                              <IconArrowRight size={18} className="rtl:rotate-180" />
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                    <div className="w-10 h-10 rounded-full border-2 border-primary bg-accent flex items-center justify-center text-[10px] font-bold text-white shadow-lg">
-                      +1k
+                    </div>
+                  )}
+                </Link>
+              )
+            }
+
+            // ── Gradient fallback (no banner image) ──
+            return (
+              <div className="relative rounded-[40px] bg-gradient-to-br from-primary to-primary/90 overflow-hidden shadow-2xl shadow-primary/20 min-h-[500px] flex items-center">
+                {/* Background Decorative Elements */}
+                <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+                  <div className="absolute top-[-10%] right-[-10%] w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] animate-pulse-slow" />
+                  <div className="absolute bottom-[10%] left-[20%] w-[60%] h-[60%] border-[40px] border-white/5 rounded-full rotate-12" />
+                </div>
+
+                <div className="relative z-10 w-full grid lg:grid-cols-2 gap-12 p-8 sm:p-16 items-center">
+                  <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest shadow-sm">
+                      <IconSparkles size={14} className="text-accent" />
+                      {isAr ? "ألعاب أصلية 100%" : "100% Genuine Toys"}
+                    </div>
+
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tighter">
+                      {heroBanners && heroBanners.length > 0
+                        ? (isAr ? heroBanners[0].title_ar : heroBanners[0].title_en)
+                        : (isAr ? "اكتشف عالم الألعاب السحري" : "Discover the Magic of Play")
+                      }
+                    </h1>
+
+                    <p className="text-lg sm:text-xl text-white/80 max-w-lg leading-relaxed font-medium">
+                      {heroBanners && heroBanners.length > 0
+                        ? (isAr ? heroBanners[0].subtitle_ar : heroBanners[0].subtitle_en)
+                        : (isAr ? "وجهتك الأولى لأفضل الألعاب والماركات العالمية في الكويت" : "Your premier destination for the best toys and global brands in Kuwait")
+                      }
+                    </p>
+
+                    <div className="flex flex-wrap gap-4 pt-4">
+                      <Link
+                        href={heroBanners?.[0]?.cta_link || `/${locale}/products`}
+                        className="h-14 px-10 bg-accent text-white font-black rounded-full hover:bg-accent/90 transition-all hover:scale-105 shadow-xl shadow-accent/25 flex items-center gap-2 group"
+                      >
+                        {heroBanners?.[0]?.cta_text_en
+                          ? (isAr ? heroBanners[0].cta_text_ar : heroBanners[0].cta_text_en)
+                          : (isAr ? "تسوق الآن" : "Shop Now")}
+                        <IconArrowRight size={20} className="group-hover:translate-x-1 transition-transform rtl:rotate-180" />
+                      </Link>
+                      <Link
+                        href={`/${locale}/products?sort=new`}
+                        className="h-14 px-10 bg-white/10 text-white font-bold rounded-full border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all flex items-center justify-center shadow-lg"
+                      >
+                        {isAr ? "وصل حديثاً" : "New Arrivals"}
+                      </Link>
+                    </div>
+
+                    <div className="flex items-center gap-6 pt-4">
+                      <div className="flex -space-x-3 rtl:space-x-reverse">
+                        {[1,2,3,4].map(i => (
+                          <div key={i} className="w-10 h-10 rounded-full border-2 border-primary bg-muted/20 flex items-center justify-center text-[10px] font-bold text-white backdrop-blur-sm">
+                            {String.fromCharCode(64 + i)}
+                          </div>
+                        ))}
+                        <div className="w-10 h-10 rounded-full border-2 border-primary bg-accent flex items-center justify-center text-[10px] font-bold text-white shadow-lg">
+                          +1k
+                        </div>
+                      </div>
+                      <div className="text-xs text-white/60 font-medium">
+                        <span className="text-white font-bold block">10,000+ Happy Kids</span>
+                        Trusting our toys
+                      </div>
                     </div>
                   </div>
-                  <div className="text-xs text-white/60 font-medium">
-                    <span className="text-white font-bold block">10,000+ Happy Kids</span>
-                    Trusting our toys
-                  </div>
-                </div>
-              </div>
 
-              <div className="hidden lg:flex justify-end animate-in fade-in zoom-in duration-1000 delay-200">
-                <div className="relative w-full max-w-md aspect-square rounded-[60px] bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group shadow-2xl">
-                    <div className="absolute inset-4 rounded-[45px] border border-white/5 animate-pulse-slow" />
-                    <span className="text-[180px] group-hover:scale-110 transition-transform duration-700 drop-shadow-2xl">🧸</span>
-                    
-                    {/* Floating Indicators */}
-                    <div className="absolute -top-4 -right-4 bg-white p-4 rounded-3xl shadow-2xl animate-bounce-slow flex items-center gap-3">
+                  <div className="hidden lg:flex justify-end animate-in fade-in zoom-in duration-1000 delay-200">
+                    <div className="relative w-full max-w-md aspect-square rounded-[60px] bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group shadow-2xl">
+                      <div className="absolute inset-4 rounded-[45px] border border-white/5 animate-pulse-slow" />
+                      <span className="text-[180px] group-hover:scale-110 transition-transform duration-700 drop-shadow-2xl">🧸</span>
+                      <div className="absolute -top-4 -right-4 bg-white p-4 rounded-3xl shadow-2xl animate-bounce-slow flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-success/10 text-success flex items-center justify-center">
-                            <IconCircleCheck size={20} />
+                          <IconCircleCheck size={20} />
                         </div>
                         <div className="text-start">
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase block">Delivery</span>
-                            <span className="text-sm font-bold text-primary">Free Shipping</span>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase block">Delivery</span>
+                          <span className="text-sm font-bold text-primary">Free Shipping</span>
                         </div>
-                    </div>
-
-                    <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-3xl shadow-2xl animate-float flex items-center gap-3">
+                      </div>
+                      <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-3xl shadow-2xl animate-float flex items-center gap-3">
                         <div className="w-10 h-10 rounded-2xl bg-accent/10 text-accent flex items-center justify-center">
-                            <IconStar size={20} fill="currentColor" />
+                          <IconStar size={20} fill="currentColor" />
                         </div>
                         <div className="text-start">
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase block">Rating</span>
-                            <span className="text-sm font-bold text-primary">4.9 / 5.0</span>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase block">Rating</span>
+                          <span className="text-sm font-bold text-primary">4.9 / 5.0</span>
                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            )
+          })()}
         </div>
       </section>
 

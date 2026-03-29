@@ -40,8 +40,8 @@ const BUCKET_CONFIGS: Record<string, BucketConfig> = {
     pathPrefix: 'products'
   },
   banners: {
-    maxSize: 15 * 1024 * 1024, // 15MB (after compression)
-    allowedTypes: ['jpeg', 'jpg', 'png', 'webp'],
+    maxSize: 50 * 1024 * 1024, // 50MB (videos)
+    allowedTypes: ['jpeg', 'jpg', 'png', 'webp', 'mp4', 'webm'],
     pathPrefix: 'banners'
   }
 }
@@ -53,7 +53,7 @@ async function compressImageFile(
 ): Promise<File> {
   const options = {
     maxSizeMB,
-    maxWidthOrHeight: 1920, // Max dimensions
+    maxWidthOrHeight: 1920,
     useWebWorker: true,
     quality,
   }
@@ -62,9 +62,21 @@ async function compressImageFile(
     const compressedFile = await imageCompression(file, options)
     return compressedFile
   } catch (error) {
-    console.error('Compression failed:', error)
-    return file // Fallback to original file
+    console.error('Image compression failed:', error)
+    return file
   }
+}
+
+const VIDEO_MAX_SIZE_MB = 50
+
+async function processVideoFile(file: File): Promise<File> {
+  const sizeMB = file.size / 1024 / 1024
+  if (sizeMB > VIDEO_MAX_SIZE_MB) {
+    throw new Error(`Video too large. Maximum size is ${VIDEO_MAX_SIZE_MB}MB.`)
+  }
+  // Browser-side video re-encoding is not supported without heavy dependencies.
+  // The file passes through as-is; size is validated above.
+  return file
 }
 
 export async function uploadFile(options: UploadOptions): Promise<UploadResult> {
@@ -77,12 +89,17 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
       throw new Error(`Invalid bucket: ${bucket}`)
     }
     
-    // Compress image if it's large
-    let processedFile = file
-    const fileSizeMB = file.size / 1024 / 1024
-    
-    if (fileSizeMB > 2) {
-      processedFile = await compressImageFile(file, 2, 0.8)
+    // Process file: compress images, validate videos
+    const isVideo = file.type.startsWith('video/')
+    let processedFile: File
+
+    if (isVideo) {
+      processedFile = await processVideoFile(file)
+    } else {
+      const fileSizeMB = file.size / 1024 / 1024
+      processedFile = fileSizeMB > 2
+        ? await compressImageFile(file, 2, 0.8)
+        : file
     }
     
     // Validate processed file

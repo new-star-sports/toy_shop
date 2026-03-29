@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { Upload, X, Image as ImageIcon, Video, Loader2 } from 'lucide-react'
 import { Button } from './button'
 import { Progress } from './progress'
 import { uploadFile, type UploadResult } from '@/lib/upload'
@@ -61,7 +61,7 @@ export function FileUpload({
       onUploadComplete?.(result)
       
       // Success toast
-      toast.success(`Image uploaded successfully! (${(result.size / 1024 / 1024).toFixed(2)}MB)`)
+      toast.success(`File uploaded successfully! (${(result.size / 1024 / 1024).toFixed(2)}MB)`)
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed'
@@ -76,11 +76,18 @@ export function FileUpload({
     }
   }, [bucket, maxSize, allowedTypes, onChange, onUploadStart, onUploadComplete, onUploadError])
   
+  const VIDEO_EXTS = new Set(['mp4', 'webm', 'mov', 'avi', 'mkv'])
+  const isVideoExt = (ext: string) => VIDEO_EXTS.has(ext.toLowerCase())
+  const isVideoUrl = (url: string) => /\.(mp4|webm|mov|avi|mkv)(\?.*)?$/i.test(url)
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: allowedTypes ? 
-      Object.fromEntries(allowedTypes.map(type => [`image/${type}`, [`.${type}`]])) :
-      { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
+    accept: allowedTypes
+      ? Object.fromEntries(allowedTypes.map(type => [
+          isVideoExt(type) ? `video/${type === 'mov' ? 'quicktime' : type}` : `image/${type}`,
+          [`.${type}`]
+        ]))
+      : { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
     maxFiles: 1,
     disabled: disabled || isUploading
   })
@@ -96,14 +103,26 @@ export function FileUpload({
         <div className="flex items-start gap-4">
           <div className="w-24 h-24 rounded-lg border-2 border-dashed border-border/40 overflow-hidden bg-muted/20 flex items-center justify-center shrink-0">
             {value ? (
-              <img 
-                src={value} 
-                alt="Preview" 
-                className="w-full h-full object-cover"
-                onError={() => setError('Failed to load image preview')}
-              />
+              isVideoUrl(value) ? (
+                <video
+                  src={value}
+                  className="w-full h-full object-cover"
+                  muted
+                  playsInline
+                  onError={() => setError('Failed to load video preview')}
+                />
+              ) : (
+                <img
+                  src={value}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  onError={() => setError('Failed to load image preview')}
+                />
+              )
             ) : (
-              <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
+              allowedTypes?.some(isVideoExt)
+                ? <Video className="w-8 h-8 text-muted-foreground/50" />
+                : <ImageIcon className="w-8 h-8 text-muted-foreground/50" />
             )}
           </div>
           
@@ -123,7 +142,7 @@ export function FileUpload({
                 <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
               )}
               <p className="text-sm font-medium">
-                {isUploading ? 'Uploading...' : isDragActive ? 'Drop image here' : 'Click to upload or drag and drop'}
+                {isUploading ? 'Uploading...' : isDragActive ? 'Drop file here' : 'Click to upload or drag and drop'}
               </p>
               <p className="text-xs text-muted-foreground">
                 {allowedTypes ? allowedTypes.join(', ') : 'JPEG, PNG, WebP'} up to {maxSize ? `${maxSize / 1024 / 1024}MB` : '5MB'}
@@ -139,7 +158,7 @@ export function FileUpload({
                 className="w-full"
               >
                 <X className="w-4 h-4 mr-2" />
-                Remove Image
+                Remove File
               </Button>
             )}
           </div>

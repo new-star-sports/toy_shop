@@ -300,12 +300,14 @@ export interface StockReservation {
 export interface Banner {
   id: string;
   banner_type: BannerType;
-  title_en: string;
+  title_en: string | null;
   title_ar: string;
   subtitle_en: string | null;
   subtitle_ar: string | null;
   image_desktop_url: string | null;
   image_mobile_url: string | null;
+  video_desktop_url: string | null;
+  video_mobile_url: string | null;
   cta_text_en: string | null;
   cta_text_ar: string | null;
   cta_link: string | null;
