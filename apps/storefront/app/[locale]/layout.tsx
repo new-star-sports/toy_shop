@@ -5,6 +5,7 @@ import { SiteHeader } from "../_components/site-header";
 import Footer from "../_components/footer";
 import MobileBottomNav from "../_components/mobile-bottom-nav";
 import { CartDrawer } from "./_components/cart/cart-drawer";
+import { AuthHandler } from "./_components/auth-handler";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/i18n";
@@ -56,10 +57,11 @@ export default async function RootLayout({
       <body className="min-h-screen bg-background font-sans antialiased flex flex-col pb-16 sm:pb-0">
         <TooltipProvider>
           <SiteHeader locale={locale as Locale} user={user} />
-          <main className="flex-1 pt-[136px] sm:pt-[148px]">{children}</main>
+          <main className="flex-1 pt-[184px] sm:pt-[148px]">{children}</main>
           <Footer locale={locale as Locale} />
           <MobileBottomNav locale={locale as Locale} user={user} />
           <CartDrawer locale={locale as Locale} />
+          <AuthHandler locale={locale as Locale} />
         </TooltipProvider>
       </body>
     </html>

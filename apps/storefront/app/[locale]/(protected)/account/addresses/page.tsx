@@ -21,7 +21,7 @@ export default async function AddressesPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/${locale}/login`);
+    redirect(`/${locale}?auth=login&redirect=${encodeURIComponent(`/${locale}/account/addresses`)}`);
   }
 
   // @ts-ignore - Supabase client type mismatch in monorepo

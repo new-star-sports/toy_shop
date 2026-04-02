@@ -29,10 +29,10 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
   return (
     <Link
       href={`/${locale}/product/${product.slug}`}
-      className="group block bg-white rounded-[1.75rem] overflow-hidden transition-all duration-300 clay-shadow-white clay-hover"
+      className="group block bg-white rounded-[1.25rem] sm:rounded-[1.75rem] overflow-hidden transition-all duration-300 clay-shadow-white clay-hover"
     >
       {/* Image Container */}
-      <div className="relative aspect-square bg-clay-sky/30 overflow-hidden rounded-[1.5rem] m-2 mb-0">
+      <div className="relative aspect-square bg-clay-sky/30 overflow-hidden rounded-[1rem] sm:rounded-[1.5rem] m-2 mb-0">
         {product.primary_image_url ? (
           <Image
             src={product.primary_image_url}
@@ -87,7 +87,7 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
       </div>
 
       {/* Content */}
-      <div className="p-3.5 pt-3 space-y-1.5">
+      <div className="p-2.5 sm:p-3.5 pt-2 sm:pt-3 space-y-1 sm:space-y-1.5">
         {brandName && (
           <p className="text-[10px] text-primary font-black uppercase tracking-[0.12em] truncate">
             {brandName}

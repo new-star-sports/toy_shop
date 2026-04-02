@@ -9,7 +9,12 @@ interface SiteHeaderProps {
 }
 
 export async function SiteHeader({ locale, user }: SiteHeaderProps) {
-  const categories = await getCategories();
+  let categories: any[] = [];
+  try {
+    categories = await getCategories();
+  } catch (error) {
+    console.error("Failed to fetch categories in header:", error);
+  }
 
   return (
     <SiteHeaderClient

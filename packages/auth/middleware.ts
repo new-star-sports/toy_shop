@@ -92,7 +92,9 @@ function handleStorefront(
 
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}${pathname}`;
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => redirectResponse.cookies.set(c));
+    return redirectResponse;
   }
 
   // ── Auth guard for protected routes ──
@@ -103,9 +105,12 @@ function handleStorefront(
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${firstSegment}/login`;
+    url.pathname = `/${firstSegment}`; // Redirect to home instead of /login
+    url.searchParams.set("auth", "login");
     url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => redirectResponse.cookies.set(c));
+    return redirectResponse;
   }
 
   return response;
@@ -125,8 +130,11 @@ function handleAdmin(
   // All other admin routes require authentication
   if (!user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    url.pathname = "/"; 
+    url.searchParams.set("auth", "login");
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => redirectResponse.cookies.set(c));
+    return redirectResponse;
   }
 
   return response;

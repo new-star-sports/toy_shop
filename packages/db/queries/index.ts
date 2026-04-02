@@ -60,3 +60,5 @@ export {
   getBlogCategories
 } from "./blog";
 export type { Blog, BlogCategory } from "./blog";
+
+export { getWishlistProducts, isInWishlist, addToWishlist, removeFromWishlist } from "./wishlist";

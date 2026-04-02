@@ -238,9 +238,9 @@ const footerLinks = (locale: Locale) => {
     {
       title: isAr ? "تسوق" : "Shop",
       links: [
-        { id: 1, title: isAr ? "جميع المنتجات" : "All Products", url: `/${locale}/products` },
-        { id: 2, title: isAr ? "وصل حديثاً" : "New Arrivals", url: `/${locale}/products?sort=new` },
-        { id: 3, title: isAr ? "العروض" : "Sale", url: `/${locale}/products?sale=true` },
+        { id: 1, title: isAr ? "جميع المنتجات" : "All Products", url: `/${locale}/search` },
+        { id: 2, title: isAr ? "وصل حديثاً" : "New Arrivals", url: `/${locale}/search?sort=new` },
+        { id: 3, title: isAr ? "العروض" : "Sale", url: `/${locale}/search?sale=true` },
         { id: 4, title: "LEGO", url: `/${locale}/brand/lego` },
         { id: 5, title: "Barbie", url: `/${locale}/brand/barbie` },
       ],
@@ -296,7 +296,7 @@ export function FlickeringFooter({
       <div className="flex flex-col md:flex-row md:items-start md:justify-between px-6 sm:px-10 pt-10 pb-6 max-w-7xl mx-auto gap-8">
 
         {/* Brand column */}
-        <div className="flex flex-col items-start gap-4 max-w-xs">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4 max-w-xs mx-auto md:mx-0">
           <Link href={`/${locale}`} className="inline-block group">
             <img
               src="/logo.png"
@@ -350,8 +350,8 @@ export function FlickeringFooter({
             <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block mb-2">
               {isAr ? "طرق الدفع" : "Secure Payments"}
             </span>
-            <div className="flex gap-1.5 flex-wrap">
-              {["KNET", "VISA", "MC", "Apple Pay"].map((pm) => (
+            <div className="flex justify-center md:justify-start gap-1.5 flex-wrap">
+              {["VISA", "MC", "Apple Pay"].map((pm) => (
                 <div key={pm} className="px-2.5 py-1 bg-white rounded-full text-[10px] font-black text-foreground/70 tracking-tight clay-shadow-white">
                   {pm}
                 </div>
@@ -361,7 +361,7 @@ export function FlickeringFooter({
         </div>
 
         {/* Links columns */}
-        <div className="flex flex-col sm:flex-row gap-8 md:gap-12 lg:gap-16">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-8 md:gap-12 lg:gap-16">
           {columns.map((col, idx) => (
             <ul key={idx} className="flex flex-col gap-2">
               <li className="mb-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -389,7 +389,7 @@ export function FlickeringFooter({
         <div className="absolute inset-0 mx-4 sm:mx-6">
           <FlickeringGrid
             text={isTablet ? storeName : `${storeName} • Kuwait`}
-            fontSize={isTablet ? 60 : 80}
+            fontSize={isTablet ? 40 : 80}
             className="h-full w-full"
             squareSize={2}
             gridGap={isTablet ? 2 : 3}

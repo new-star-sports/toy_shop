@@ -1,9 +1,8 @@
 "use client";
-
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, normalizeBannerLink } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface HeroBanner {
@@ -33,9 +32,17 @@ export function HeroCarousel({
   banners,
   locale,
   autoPlayInterval = 4500,
-  aspectRatio = "aspect-[16/8] sm:aspect-[16/9]",
+  aspectRatio = "aspect-[16/8] sm:aspect-[21/7]",
 }: HeroCarouselProps) {
   const isAr = locale === "ar";
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Tier logic
   const count = banners.length;
@@ -44,7 +51,7 @@ export function HeroCarousel({
   const isMany = count >= 3;
 
   // slide flex-basis per tier
-  const slideBasis = isOne ? "100%" : isTwo ? "50%" : "44%";
+  const slideBasis = isMobile ? "100%" : (isOne ? "100%" : isTwo ? "50%" : "44%");
   // only loop/autoplay for 3+
   const shouldLoop = isMany;
   const shouldAutoplay = isMany;
@@ -128,9 +135,10 @@ export function HeroCarousel({
               const subtitle = isAr ? banner.subtitle_ar : banner.subtitle_en;
               const ctaText = isAr ? banner.cta_text_ar : banner.cta_text_en;
 
-              const SlideWrapper = banner.cta_link ? Link : "div";
-              const slideWrapperProps = banner.cta_link
-                ? { href: banner.cta_link, className: cn("relative flex-shrink-0 overflow-hidden rounded-[1.75rem] block", aspectRatio, !hasMedia && "clay-shadow-sky"), style: { flex: `0 0 ${slideBasis}`, ...(!hasMedia ? { background: banner.bg_color || "linear-gradient(135deg, oklch(0.75 0.12 215) 0%, oklch(0.55 0.19 215) 100%)" } : {}) } }
+              const normalizedLink = normalizeBannerLink(banner.cta_link, locale);
+              const SlideWrapper = normalizedLink ? Link : "div";
+              const slideWrapperProps = normalizedLink
+                ? { href: normalizedLink, className: cn("relative flex-shrink-0 overflow-hidden rounded-[1.75rem] block", aspectRatio, !hasMedia && "clay-shadow-sky"), style: { flex: `0 0 ${slideBasis}`, ...(!hasMedia ? { background: banner.bg_color || "linear-gradient(135deg, oklch(0.75 0.12 215) 0%, oklch(0.55 0.19 215) 100%)" } : {}) } }
                 : { className: cn("relative flex-shrink-0 overflow-hidden rounded-[1.75rem]", aspectRatio, !hasMedia && "clay-shadow-sky"), style: { flex: `0 0 ${slideBasis}`, ...(!hasMedia ? { background: banner.bg_color || "linear-gradient(135deg, oklch(0.75 0.12 215) 0%, oklch(0.55 0.19 215) 100%)" } : {}) } };
 
               return (
@@ -192,7 +200,7 @@ export function HeroCarousel({
                         isAr && "mr-auto pr-6 sm:pr-9 pl-0 text-right"
                       )}>
                         {title && (
-                          <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white leading-tight drop-shadow-md">
+                          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight drop-shadow-md">
                             {title}
                           </h2>
                         )}
@@ -201,13 +209,10 @@ export function HeroCarousel({
                             {subtitle}
                           </p>
                         )}
-                        {ctaText && banner.cta_link && (
-                          <Link
-                            href={banner.cta_link}
-                            className="inline-flex items-center gap-1.5 h-9 sm:h-10 px-5 sm:px-6 bg-white text-primary font-black rounded-full text-xs hover:scale-105 transition-all duration-200 clay-shadow-white"
-                          >
+                        {ctaText && normalizedLink && (
+                          <div className="inline-flex items-center gap-1.5 h-9 sm:h-10 px-5 sm:px-6 bg-white text-primary font-black rounded-full text-xs hover:scale-105 transition-all duration-200 clay-shadow-white">
                             {ctaText}
-                          </Link>
+                          </div>
                         )}
                       </div>
                     </div>

@@ -39,11 +39,11 @@ function getQuickActions(locale: Locale): SearchAction[] {
   return [
     {
       id: "shop",
-      label: "Shop All Products",
-      labelAr: "تسوق جميع المنتجات",
+      label: "Products",
+      labelAr: "المنتجات",
       icon: <ShoppingBag className="h-4 w-4 text-sky-500" />,
       description: "Browse everything",
-      href: `/${locale}/products`,
+      href: `/${locale}/search`,
     },
     {
       id: "new",
@@ -51,7 +51,7 @@ function getQuickActions(locale: Locale): SearchAction[] {
       labelAr: "وصل حديثاً",
       icon: <Sparkles className="h-4 w-4 text-purple-500" />,
       description: "Just landed",
-      href: `/${locale}/products?sort=new`,
+      href: `/${locale}/search?sort=new`,
     },
     {
       id: "sale",
@@ -59,7 +59,7 @@ function getQuickActions(locale: Locale): SearchAction[] {
       labelAr: "العروض والتخفيضات",
       icon: <Tag className="h-4 w-4 text-orange-500" />,
       description: "Best deals",
-      href: `/${locale}/products?sale=true`,
+      href: `/${locale}/search?sale=true`,
     },
     {
       id: "wishlist",
@@ -67,7 +67,7 @@ function getQuickActions(locale: Locale): SearchAction[] {
       labelAr: "قائمة الأمنيات",
       icon: <Heart className="h-4 w-4 text-red-500" />,
       description: "Saved items",
-      href: `/${locale}/account/wishlist`,
+      href: `/${locale}/account/profile`,
     },
     {
       id: "orders",
@@ -87,11 +87,11 @@ function getQuickActions(locale: Locale): SearchAction[] {
     },
     {
       id: "products-page",
-      label: "Browse Categories",
-      labelAr: "تصفح الفئات",
+      label: "All Products",
+      labelAr: "جميع المنتجات",
       icon: <Package className="h-4 w-4 text-violet-500" />,
       description: "By category",
-      href: `/${locale}/products`,
+      href: `/${locale}/search`,
     },
   ];
 }

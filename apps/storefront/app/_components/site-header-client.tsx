@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, Package, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ interface SiteHeaderClientProps {
 export function SiteHeaderClient({ locale, user, categories }: SiteHeaderClientProps) {
   const isAr = locale === "ar";
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [scrolled, setScrolled] = useState(false);
 
   const activeCategorySlug = pathname.match(/\/category\/([^/]+)/)?.[1] ?? undefined;
@@ -48,31 +49,74 @@ export function SiteHeaderClient({ locale, user, categories }: SiteHeaderClientP
       {/* Single gradient container — always maintains #85c3ff → white gradient */}
       <div style={{ background: HEADER_GRADIENT }}>
 
-        {/* ── ROW 1: Logo + Search (flex-1) + Right actions ── */}
+        {/* ── ROW 1: Logo + Right actions (Search bar moved to Row 2 on mobile) ── */}
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 sm:gap-3 h-14 sm:h-16">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 py-2 sm:h-16">
+            
+            <div className="flex items-center justify-between w-full sm:w-auto">
+              {/* Logo */}
+              <Link href={`/${locale}`} className="flex-shrink-0 group">
+                <img
+                  src="/logo.png"
+                  alt={isAr ? "نيو ستار سبورتس" : "NewStarSports"}
+                  className="h-7 sm:h-9 w-auto transition-opacity group-hover:opacity-80"
+                />
+              </Link>
 
-            {/* Logo */}
-            <Link href={`/${locale}`} className="flex-shrink-0 group">
-              <img
-                src="/logo.png"
-                alt={isAr ? "نيو ستار سبورتس" : "NewStarSports"}
-                className="h-7 sm:h-9 w-auto transition-opacity group-hover:opacity-80"
-              />
-            </Link>
+              {/* Mobile Actions (Visible only on very small screens if we want to save space, but let's keep it consistent) */}
+              <div className="flex items-center gap-0.5 sm:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full text-white hover:bg-white/30 drop-shadow"
+                  asChild
+                >
+                  <Link href={`/${locale}/account/wishlist`} aria-label={isAr ? "المفضلات" : "Wishlist"}>
+                    <Heart size={18} />
+                  </Link>
+                </Button>
+                <CartButton locale={locale} scrolled={true} />
+                <AccountButton locale={locale} user={user} scrolled={true} />
+              </div>
+            </div>
 
             {/* Desktop nav links */}
-            <nav className="hidden lg:flex items-center gap-5 text-sm font-bold shrink-0">
+            <nav className="hidden lg:flex items-center gap-2 text-sm font-bold shrink-0">
               {[
-                { href: `/${locale}/products`, en: "Shop", ar: "المتجر" },
-                { href: `/${locale}/products?sort=new`, en: "New Arrivals", ar: "وصل حديثاً" },
-                { href: `/${locale}/products?sale=true`, en: "Sale", ar: "تخفيضات" },
-                { href: `/${locale}/blog`, en: "Blog", ar: "المدونة" },
+                { 
+                  href: `/${locale}/search`, 
+                  en: "Shop", 
+                  ar: "المتجر", 
+                  isActive: pathname === `/${locale}/search` && !searchParams.get("sort") && !searchParams.get("sale")
+                },
+                { 
+                  href: `/${locale}/search?sort=new`, 
+                  en: "New Arrivals", 
+                  ar: "وصل حديثاً",
+                  isActive: pathname === `/${locale}/search` && searchParams.get("sort") === "new"
+                },
+                { 
+                  href: `/${locale}/search?sale=true`, 
+                  en: "Sale", 
+                  ar: "تخفيضات",
+                  isActive: pathname === `/${locale}/search` && searchParams.get("sale") === "true"
+                },
+                { 
+                  href: `/${locale}/blog`, 
+                  en: "Blog", 
+                  ar: "المدونة",
+                  isActive: pathname.includes("/blog")
+                },
               ].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-white drop-shadow hover:text-white/80 transition-colors"
+                  className={cn(
+                    "px-4 py-2 rounded-full transition-all duration-200 drop-shadow",
+                    link.isActive 
+                      ? "bg-white/20 text-white ring-1 ring-white/30 shadow-[0_4px_12px_rgba(0,0,0,0.1)]" 
+                      : "text-white/85 hover:text-white hover:bg-white/10"
+                  )}
                   style={{ textShadow: "0 1px 3px rgba(0,80,160,0.35)" }}
                 >
                   {isAr ? link.ar : link.en}
@@ -80,17 +124,17 @@ export function SiteHeaderClient({ locale, user, categories }: SiteHeaderClientP
               ))}
             </nav>
 
-            {/* Search — grows to fill available space */}
-            <div className="flex-1 min-w-0">
+            {/* Search — Full width on mobile, flex-1 on desktop */}
+            <div className="w-full sm:flex-1 min-w-0">
               <ActionSearchBar locale={locale} />
             </div>
 
-            {/* Right actions */}
-            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+            {/* Right actions (Desktop/Tablet) */}
+            <div className="hidden sm:flex items-center gap-0.5 sm:gap-1 shrink-0">
               {/* Language toggle */}
               <Link
                 href={`/${locale === "ar" ? "en" : "ar"}`}
-                className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-xs font-extrabold bg-white/40 text-[#1a5fa8] border border-white/60 hover:bg-white/60 transition-all duration-200 shadow-sm"
+                className="flex items-center justify-center w-8 h-8 rounded-full text-xs font-extrabold bg-white/40 text-[#1a5fa8] border border-white/60 hover:bg-white/60 transition-all duration-200 shadow-sm"
               >
                 {isAr ? "EN" : "AR"}
               </Link>

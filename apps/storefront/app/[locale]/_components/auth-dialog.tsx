@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
-import { LoginForm } from "../(auth)/login/_components/login-form"
-import { RegisterForm } from "../(auth)/register/_components/register-form"
+import { LoginForm } from "./auth/login-form"
+import { RegisterForm } from "./auth/register-form"
 import type { Locale } from "@/lib/i18n"
 import { Button } from "@/components/ui/button"
 import { User } from "lucide-react"
@@ -14,11 +14,24 @@ interface AuthDialogProps {
   defaultView?: "login" | "register"
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  hideTrigger?: boolean
 }
 
-export function AuthDialog({ locale, trigger, defaultView = "login", open: controlledOpen, onOpenChange }: AuthDialogProps) {
+export function AuthDialog({ 
+  locale, 
+  trigger, 
+  defaultView = "login", 
+  open: controlledOpen, 
+  onOpenChange,
+  hideTrigger = false 
+}: AuthDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [view, setView] = useState<"login" | "register">(defaultView)
+
+  // Sync view state when defaultView prop changes
+  useEffect(() => {
+    setView(defaultView)
+  }, [defaultView])
   const isAr = locale === "ar"
 
   const isControlled = controlledOpen !== undefined
@@ -39,17 +52,18 @@ export function AuthDialog({ locale, trigger, defaultView = "login", open: contr
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      {trigger && (
-        <DialogTrigger asChild>
-          {trigger}
-        </DialogTrigger>
-      )}
-      {!trigger && (
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-full h-9 w-9">
-            <User size={20} />
-          </Button>
-        </DialogTrigger>
+      {!hideTrigger && (
+        trigger ? (
+          <DialogTrigger asChild>
+            {trigger}
+          </DialogTrigger>
+        ) : (
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full h-9 w-9">
+              <User size={20} />
+            </Button>
+          </DialogTrigger>
+        )
       )}
       <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[440px] p-0 overflow-hidden border-none clay-shadow-white rounded-[2rem]">
         <div className="p-6 sm:p-8 space-y-5">

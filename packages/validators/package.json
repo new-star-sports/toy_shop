@@ -11,7 +11,8 @@
     "./banner": "./banner.ts",
     "./blog": "./blog.ts",
     "./marketing": "./marketing.ts",
-    "./coupon": "./coupon.ts"
+    "./coupon": "./coupon.ts",
+    "./auth": "./auth.ts"
   },
   "dependencies": {
     "zod": "^3.24.2"

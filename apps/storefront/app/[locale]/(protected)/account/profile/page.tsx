@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { logout } from "@/app/_actions/auth";
-import { Button } from "@/components/ui";
+import LogoutButton from "@/components/account/logout-button";
 import type { Locale } from "@/lib/i18n";
-import { User, Package, MapPin, LogOut } from "lucide-react";
+import { User, Package, MapPin, Heart } from "lucide-react";
 
 export default async function ProfilePage({
   params,
@@ -19,7 +18,7 @@ export default async function ProfilePage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/${locale}/login`);
+    redirect(`/${locale}?auth=login&redirect=${encodeURIComponent(`/${locale}/account/profile`)}`);
   }
 
   const initials = (user.user_metadata?.full_name as string || user.email || "U")
@@ -32,6 +31,7 @@ export default async function ProfilePage({
   const navLinks = [
     { href: `/${locale}/account/profile`, icon: User, en: "Profile", ar: "الملف الشخصي", active: true },
     { href: `/${locale}/account/orders`, icon: Package, en: "My Orders", ar: "طلباتي", active: false },
+    { href: `/${locale}/account/wishlist`, icon: Heart, en: "Wishlist", ar: "المفضلات", active: false },
     { href: `/${locale}/account/addresses`, icon: MapPin, en: "Address Book", ar: "دفتر العناوين", active: false },
   ];
 
@@ -78,17 +78,7 @@ export default async function ProfilePage({
             ))}
           </div>
 
-          {/* Logout */}
-          <form action={logout.bind(null, locale)}>
-            <Button
-              type="submit"
-              variant="ghost"
-              className="w-full rounded-2xl text-clay-coral-deep bg-clay-coral/30 hover:bg-clay-coral/50 font-black gap-2 justify-start"
-            >
-              <LogOut size={16} />
-              {isAr ? "تسجيل الخروج" : "Logout"}
-            </Button>
-          </form>
+          <LogoutButton />
         </div>
 
         {/* Profile Content */}

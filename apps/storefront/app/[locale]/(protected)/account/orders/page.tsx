@@ -16,7 +16,7 @@ export default async function MyOrdersPage({
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/${locale}/login`);
+    redirect(`/${locale}?auth=login&redirect=${encodeURIComponent(`/${locale}/account/orders`)}`);
   }
 
   // @ts-ignore - Supabase client type mismatch in monorepo
@@ -74,7 +74,7 @@ export default async function MyOrdersPage({
             <p className="text-lg font-black text-foreground mb-2">{t.empty}</p>
             <p className="text-sm text-muted-foreground mb-6">{isAr ? "تصفح المنتجات وأضف ما يعجبك" : "Browse products and add your favourites"}</p>
             <Link
-              href={`/${locale}/products`}
+              href={`/${locale}/search`}
               className="inline-flex clay-shadow-sky bg-primary text-white px-8 py-3 rounded-full font-black hover:bg-primary/90 transition-all active:scale-95"
             >
               {t.startShopping}
