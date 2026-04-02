@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { Locale } from "@/lib/i18n";
 
-export async function login(formData: FormData, locale: Locale) {
+export async function login(formData: FormData, _locale: Locale) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = await createClient();
@@ -18,17 +18,17 @@ export async function login(formData: FormData, locale: Locale) {
     return { error: error.message };
   }
 
-  redirect(`/${locale}`);
+  return { success: true };
 }
 
-export async function register(formData: FormData, locale: Locale) {
+export async function register(formData: FormData, _locale: Locale) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const fullName = formData.get("fullName") as string;
   const phone = formData.get("phone") as string;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -44,7 +44,9 @@ export async function register(formData: FormData, locale: Locale) {
   }
 
   // Profile is created via DB trigger handle_new_user()
-  redirect(`/${locale}/login?message=check-email`);
+  // If email confirmation is required, session will be null
+  const needsConfirmation = !data.session;
+  return { success: true, needsConfirmation };
 }
 
 export async function logout(locale: Locale) {

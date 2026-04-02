@@ -50,44 +50,51 @@ export default async function SearchPage({
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
       <Breadcrumbs items={breadcrumbItems} locale={locale} />
-      
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+
+      {/* Header */}
+      <div className="clay-shadow-sky rounded-[2rem] bg-white p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
+          <h1 className="text-xl sm:text-2xl font-black text-foreground">
             {isAr ? "نتائج البحث" : "Search Results"}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isAr 
-              ? `تم العثور على ${count} منتج للبحث "${query}"` 
-              : `Found ${count} products for "${query}"`}
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {query
+              ? isAr
+                ? `تم العثور على ${count} منتج للبحث "${query}"`
+                : `Found ${count} products for "${query}"`
+              : isAr ? `${count} منتج` : `${count} products`}
           </p>
         </div>
         <ProductSort locale={locale} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <aside className="hidden lg:block lg:col-span-1 space-y-8 sticky top-24 h-fit">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
+        <aside className="hidden lg:block lg:col-span-1 sticky top-24 h-fit clay-shadow-lavender rounded-[2rem] bg-white p-4">
           <ProductFilters locale={locale} brands={brands} />
         </aside>
 
         <div className="lg:col-span-3">
           {products.length === 0 ? (
-            <div className="text-center py-20 bg-muted rounded-3xl border border-border/50">
-              <p className="text-muted-foreground">
-                {isAr 
-                  ? "عذراً، لم نجد أي نتائج. جرب كلمات بحث أخرى." 
+            <div className="text-center py-20 clay-shadow-white rounded-[2rem] bg-white">
+              <div className="w-16 h-16 rounded-full bg-clay-lemon/40 flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🔍</span>
+              </div>
+              <p className="font-black text-foreground mb-1">{isAr ? "لا توجد نتائج" : "No results found"}</p>
+              <p className="text-sm text-muted-foreground">
+                {isAr
+                  ? "عذراً، لم نجد أي نتائج. جرب كلمات بحث أخرى."
                   : "Sorry, no results found. Try different keywords."}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {products.map((product) => (
-                <ProductCardComponent 
-                  key={product.id} 
-                  product={product} 
-                  locale={locale} 
+                <ProductCardComponent
+                  key={product.id}
+                  product={product}
+                  locale={locale}
                   flashSaleActive={!!activeFlashSale}
                 />
               ))}

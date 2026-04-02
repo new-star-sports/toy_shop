@@ -52,11 +52,12 @@ const BUCKET_CONFIGS: Record<string, BucketConfig> = {
 async function compressImageFile(
   file: File, 
   maxSizeMB: number = 2,
-  quality: number = 0.8
+  quality: number = 0.8,
+  maxWidthOrHeight: number = 1920
 ): Promise<File> {
   const options = {
     maxSizeMB,
-    maxWidthOrHeight: 1920,
+    maxWidthOrHeight,
     useWebWorker: true,
     quality,
   }
@@ -100,9 +101,16 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
       processedFile = await processVideoFile(file)
     } else {
       const fileSizeMB = file.size / 1024 / 1024
-      processedFile = fileSizeMB > 2
-        ? await compressImageFile(file, 2, 0.8)
-        : file
+      if (bucket === 'banners') {
+        // Banners need high quality — only compress if truly oversized
+        processedFile = fileSizeMB > 8
+          ? await compressImageFile(file, 8, 0.95, 3840)
+          : file
+      } else {
+        processedFile = fileSizeMB > 2
+          ? await compressImageFile(file, 2, 0.8, 1920)
+          : file
+      }
     }
     
     // Validate processed file

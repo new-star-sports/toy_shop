@@ -58,7 +58,7 @@ export default async function RootLayout({
           <SiteHeader locale={locale as Locale} user={user} />
           <main className="flex-1 pt-[136px] sm:pt-[148px]">{children}</main>
           <Footer locale={locale as Locale} />
-          <MobileBottomNav locale={locale as Locale} />
+          <MobileBottomNav locale={locale as Locale} user={user} />
           <CartDrawer locale={locale as Locale} />
         </TooltipProvider>
       </body>

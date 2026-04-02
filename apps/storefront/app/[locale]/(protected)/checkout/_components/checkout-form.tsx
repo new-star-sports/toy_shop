@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, CreditCard, Truck, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Ticket, ShoppingCart } from "lucide-react";
+import { MapPin, Truck, AlertCircle, CheckCircle2, ChevronRight, ChevronLeft, Ticket, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui";
-import { Card } from "@/components/ui";
 import { useCartStore } from "@/store/cart-store";
 import { createOrder } from "@/app/_actions/order";
 import { reserveStock } from "@/app/_actions/cart";
@@ -39,7 +38,7 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
   const [selectedAddressId, setSelectedAddressId] = useState(
     addresses.find(a => a.is_default)?.id || (addresses.length > 0 ? addresses[0].id : "")
   );
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "knet">("cod");
+  const paymentMethod = "cod" as const;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -124,13 +123,15 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-20 bg-card rounded-3xl border border-border/50">
-        <ShoppingCart className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+      <div className="text-center py-20 clay-shadow-white rounded-[2rem] bg-white">
+        <div className="w-20 h-20 rounded-full bg-clay-lemon/40 clay-shadow-lemon flex items-center justify-center mx-auto mb-6">
+          <ShoppingCart className="h-9 w-9 text-clay-lemon-deep" />
+        </div>
+        <h2 className="text-2xl font-black text-foreground mb-2">
           {isAr ? "سلة التسوق فارغة" : "Your cart is empty"}
         </h2>
-        <Button onClick={() => router.push(`/${locale}`)}>
-          {isAr ? "العودة للتسوق" : "Back to Shopping"}
+        <p className="text-sm text-muted-foreground mb-6">{isAr ? "أضف منتجات للمتابعة" : "Add items to continue"}</p>
+        <Button className="rounded-full px-8 font-bold" onClick={() => router.push(`/${locale}`)}>          {isAr ? "العودة للتسوق" : "Back to Shopping"}
         </Button>
       </div>
     );
@@ -141,11 +142,11 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
       {/* Left Column: Form Steps */}
       <div className="lg:col-span-2 space-y-6">
         {/* Shipping Address */}
-        <Card className="p-6 rounded-3xl border-border/50 shadow-sm">
+        <div className="clay-shadow-sky rounded-[2rem] bg-white p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
-              <h2 className="text-xl font-bold text-foreground">{isAr ? "عنوان التوصيل" : "Shipping Address"}</h2>
+              <div className="w-10 h-10 rounded-2xl bg-clay-sky flex items-center justify-center text-clay-sky-deep font-black text-sm clay-shadow-sky">1</div>
+              <h2 className="text-lg font-black text-foreground">{isAr ? "عنوان التوصيل" : "Shipping Address"}</h2>
             </div>
             {user.user_metadata?.full_name && (
               <span className="text-xs text-muted-foreground hidden md:inline-block">
@@ -155,91 +156,64 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
           </div>
 
           {addresses.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-border rounded-2xl">
-              <MapPin className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-              <p className="text-muted-foreground mb-4">{isAr ? "ليس لديك عناوين مسجلة" : "No addresses found"}</p>
-              <Button variant="outline" onClick={() => router.push(`/${locale}/account/addresses`)}>
+            <div className="text-center py-8 border-2 border-dashed border-clay-sky rounded-[1.5rem] bg-clay-sky/20">
+              <MapPin className="h-8 w-8 text-clay-sky-deep/50 mx-auto mb-2" />
+              <p className="text-muted-foreground mb-4 text-sm">{isAr ? "ليس لديك عناوين مسجلة" : "No addresses found"}</p>
+              <Button variant="outline" className="rounded-full" onClick={() => router.push(`/${locale}/account/addresses`)}>
                  {isAr ? "أضف عنواناً جديداً" : "Add New Address"}
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {addresses.map((address) => (
                 <div
                   key={address.id}
                   onClick={() => setSelectedAddressId(address.id)}
-                  className={`cursor-pointer p-4 rounded-2xl border-2 transition-all ${
+                  className={`cursor-pointer p-4 rounded-[1.25rem] border-2 transition-all duration-200 ${
                     selectedAddressId === address.id
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/30"
+                      ? "border-primary bg-primary/5 clay-shadow-sky"
+                      : "border-border/50 hover:border-clay-sky bg-muted/30 hover:bg-clay-sky/20"
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-bold text-foreground">{address.recipient_name}</span>
-                    {selectedAddressId === address.id && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                    <span className="text-sm font-black text-foreground">{address.recipient_name}</span>
+                    {selectedAddressId === address.id && <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />}
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2">
                     {address.area?.name_en}, Block {address.block}, St {address.street}, Bldg {address.building}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-2">{address.recipient_phone}</p>
+                  <p className="text-xs text-muted-foreground mt-1.5">{address.recipient_phone}</p>
                 </div>
               ))}
             </div>
           )}
-        </Card>
+        </div>
 
-        {/* Payment Method */}
-        <Card className="p-6 rounded-3xl border-border/50 shadow-sm">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">2</div>
-            <h2 className="text-xl font-bold text-foreground">{isAr ? "طريقة الدفع" : "Payment Method"}</h2>
+        {/* Payment Method — COD only */}
+        <div className="clay-shadow-mint rounded-[2rem] bg-white p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-2xl bg-clay-mint flex items-center justify-center text-clay-mint-deep font-black text-sm clay-shadow-mint">2</div>
+            <h2 className="text-lg font-black text-foreground">{isAr ? "طريقة الدفع" : "Payment Method"}</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              onClick={() => setPaymentMethod("cod")}
-              className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex items-center gap-4 ${
-                paymentMethod === "cod"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/30"
-              }`}
-            >
-              <div className={`p-3 rounded-xl ${paymentMethod === "cod" ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
-                <Truck className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="font-bold text-foreground">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
-                <p className="text-xs text-muted-foreground">{isAr ? "ادفع نقداً عند باب منزلك" : "Pay cash at your doorstep"}</p>
-              </div>
+          <div className="flex items-center gap-4 p-4 rounded-[1.25rem] bg-clay-mint/30 border-2 border-clay-mint">
+            <div className="p-3 rounded-xl bg-clay-mint-deep text-white flex-shrink-0">
+              <Truck className="h-5 w-5" />
             </div>
-
-            <div
-              onClick={() => setPaymentMethod("knet")}
-              className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex items-center gap-4 ${
-                paymentMethod === "knet"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/30"
-              }`}
-            >
-              <div className={`p-3 rounded-xl ${paymentMethod === "knet" ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
-                <CreditCard className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="font-bold text-foreground">K-Net / Card</p>
-                <p className="text-xs text-muted-foreground">{isAr ? "دفع سريع وآمن أونلاين" : "Fast & secure online payment"}</p>
-              </div>
+            <div className="flex-1">
+              <p className="font-black text-foreground">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
+              <p className="text-xs text-muted-foreground">{isAr ? "ادفع نقداً عند باب منزلك" : "Pay cash at your doorstep"}</p>
             </div>
+            <CheckCircle2 className="h-5 w-5 text-clay-mint-deep flex-shrink-0" />
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Right Column: Summary */}
       <div className="lg:col-span-1">
         <div className="sticky top-24 space-y-6">
-          <Card className="p-6 rounded-3xl border-border/50 shadow-lg bg-white overflow-hidden relative">
+          <div className="clay-shadow-white rounded-[2rem] bg-white p-6 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-            
-            <h2 className="text-xl font-bold text-foreground mb-6 relative">{isAr ? "ملخص الطلب" : "Order Summary"}</h2>
+            <h2 className="text-xl font-black text-foreground mb-6 relative">{isAr ? "ملخص الطلب" : "Order Summary"}</h2>
             
             <div className="space-y-4 mb-6 relative">
               <div className="flex justify-between text-sm">
@@ -309,7 +283,7 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
             )}
 
             <Button
-              className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
+              className="w-full h-14 rounded-full text-lg font-black clay-shadow-sky transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
               onClick={handlePlaceOrder}
               disabled={isSubmitting || items.length === 0}
             >
@@ -331,10 +305,10 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
                 ? "بالضغط على تأكيد الطلب، فإنك توافق على الشروط والأحكام" 
                 : "By placing your order, you agree to our Terms & Conditions"}
             </p>
-          </Card>
+          </div>
 
           {/* Cart Item Mini List */}
-          <Card className="p-4 rounded-2xl border-border/30 bg-muted/30">
+          <div className="clay-shadow-lemon rounded-[1.75rem] bg-white/80 p-4">
             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
               {isAr ? `منتجات السلة (${items.length})` : `Cart Items (${items.length})`}
             </h3>
@@ -351,7 +325,7 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     </div>

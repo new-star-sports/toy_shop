@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { login } from "@/app/_actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { Locale } from "@/lib/i18n";
 
-export function LoginForm({ locale }: { locale: Locale }) {
+interface LoginFormProps {
+  locale: Locale;
+  onSuccess?: () => void;
+}
+
+export function LoginForm({ locale, onSuccess }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const isAr = locale === "ar";
-  const searchParams = useSearchParams();
-  const message = searchParams.get("message");
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,65 +31,51 @@ export function LoginForm({ locale }: { locale: Locale }) {
     if (result?.error) {
       setError(result.error);
       setLoading(false);
+      return;
+    }
+
+    if (result?.success) {
+      router.refresh();
+      onSuccess?.();
     }
   }
 
   return (
-    <Card className="shadow-lg border-border/50">
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {message === "check-email" && (
-            <Alert variant="default" className="mb-4 border-green-200 bg-green-50 text-green-800">
-              <AlertDescription>
-                {isAr
-                  ? "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب."
-                  : "Account created successfully. Please check your email to confirm your account."}
-              </AlertDescription>
-            </Alert>
-          )}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+      <div className="space-y-2 text-start">
+        <Label htmlFor="login-email">{isAr ? "البريد الإلكتروني" : "Email"}</Label>
+        <Input
+          id="login-email"
+          name="email"
+          type="email"
+          placeholder="name@example.com"
+          required
+          autoComplete="email"
+          className="h-11 rounded-xl"
+        />
+      </div>
 
-          <div className="space-y-2 text-start">
-            <Label htmlFor="email">{isAr ? "البريد الإلكتروني" : "Email"}</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="name@example.com"
-              required
-              autoComplete="email"
-            />
-          </div>
+      <div className="space-y-2 text-start">
+        <Label htmlFor="login-password">{isAr ? "كلمة المرور" : "Password"}</Label>
+        <Input
+          id="login-password"
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+          className="h-11 rounded-xl"
+        />
+      </div>
 
-          <div className="space-y-2 text-start">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">{isAr ? "كلمة المرور" : "Password"}</Label>
-              <Link
-                href={`/${locale}/forgot-password`}
-                className="text-xs text-primary hover:underline"
-              >
-                {isAr ? "نسيت كلمة المرور؟" : "Forgot password?"}
-              </Link>
-            </div>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
-          <Button type="submit" className="w-full h-11" disabled={loading}>
-            {loading ? (isAr ? "جاري التحميل..." : "Signing in...") : (isAr ? "تسجيل الدخول" : "Sign In")}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <Button type="submit" className="w-full h-11 rounded-full font-bold" disabled={loading}>
+        {loading ? (isAr ? "جاري التحميل..." : "Signing in...") : (isAr ? "تسجيل الدخول" : "Sign In")}
+      </Button>
+    </form>
   );
 }

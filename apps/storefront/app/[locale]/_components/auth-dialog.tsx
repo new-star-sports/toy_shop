@@ -12,69 +12,88 @@ interface AuthDialogProps {
   locale: Locale
   trigger?: React.ReactNode
   defaultView?: "login" | "register"
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function AuthDialog({ locale, trigger, defaultView = "login" }: AuthDialogProps) {
+export function AuthDialog({ locale, trigger, defaultView = "login", open: controlledOpen, onOpenChange }: AuthDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [view, setView] = useState<"login" | "register">(defaultView)
   const isAr = locale === "ar"
 
-  // Reset view when dialog closes/opens? 
-  // Probably better to keep it as passed or default
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : internalOpen
+
+  function handleOpenChange(val: boolean) {
+    if (!val) setView(defaultView)
+    if (isControlled) {
+      onOpenChange?.(val)
+    } else {
+      setInternalOpen(val)
+    }
+  }
+
+  function handleAuthSuccess() {
+    handleOpenChange(false)
+  }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 border-border/40">
-            <User size={20} strokeWidth={1.5} />
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      {trigger && (
+        <DialogTrigger asChild>
+          {trigger}
+        </DialogTrigger>
+      )}
+      {!trigger && (
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-full h-9 w-9">
+            <User size={20} />
           </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden border-border/40 shadow-2xl backdrop-blur-xl bg-background/95 rounded-3xl">
-        <div className="p-8 space-y-6">
-          <div className="text-center space-y-2">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold tracking-tight text-center">
-                {view === "login" 
-                  ? (isAr ? "تسجيل الدخول" : "Welcome Back") 
-                  : (isAr ? "إنشاء حساب جديد" : "Create Account")
-                }
-              </DialogTitle>
-              <DialogDescription className="text-center">
-                {view === "login"
-                  ? (isAr ? "سجل دخولك للوصول إلى حسابك وطلباتك" : "Sign in to access your account and orders")
-                  : (isAr ? "انضم إلينا اليوم للحصول على أفضل الألعاب والعروض" : "Join us today for the best toys and offers")
-                }
-              </DialogDescription>
-            </DialogHeader>
-          </div>
+        </DialogTrigger>
+      )}
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-[440px] p-0 overflow-hidden border-none clay-shadow-white rounded-[2rem]">
+        <div className="p-6 sm:p-8 space-y-5">
+          <DialogHeader className="text-center space-y-1">
+            <DialogTitle className="text-2xl font-black tracking-tight text-center">
+              {view === "login"
+                ? (isAr ? "تسجيل الدخول" : "Welcome Back")
+                : (isAr ? "إنشاء حساب جديد" : "Create Account")
+              }
+            </DialogTitle>
+            <DialogDescription className="text-center text-sm">
+              {view === "login"
+                ? (isAr ? "سجل دخولك للوصول إلى حسابك وطلباتك" : "Sign in to access your account and orders")
+                : (isAr ? "انضم إلينا اليوم للحصول على أفضل الألعاب والعروض" : "Join us today for the best toys and offers")
+              }
+            </DialogDescription>
+          </DialogHeader>
 
           <div className="relative">
             {view === "login" ? (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <LoginForm locale={locale} />
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <LoginForm locale={locale} onSuccess={handleAuthSuccess} />
               </div>
             ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <RegisterForm locale={locale} />
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <RegisterForm locale={locale} onSuccess={handleAuthSuccess} />
               </div>
             )}
           </div>
 
-          <div className="text-center text-sm pt-2">
+          <div className="text-center text-sm border-t border-border/30 pt-4">
             <span className="text-muted-foreground">
-              {view === "login" 
-                ? (isAr ? "ليس لديك حساب؟" : "Don't have an account?") 
+              {view === "login"
+                ? (isAr ? "ليس لديك حساب؟" : "Don't have an account?")
                 : (isAr ? "لديك حساب بالفعل؟" : "Already have an account?")
               }
             </span>
             {" "}
             <button
               onClick={() => setView(view === "login" ? "register" : "login")}
-              className="font-semibold text-primary hover:underline transition-all"
+              className="font-black text-primary hover:underline transition-all"
             >
-              {view === "login" 
-                ? (isAr ? "إنشاء حساب جديد" : "Sign up") 
+              {view === "login"
+                ? (isAr ? "إنشاء حساب جديد" : "Sign up")
                 : (isAr ? "تسجيل الدخول" : "Sign in")
               }
             </button>

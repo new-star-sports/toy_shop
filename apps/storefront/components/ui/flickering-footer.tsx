@@ -291,7 +291,7 @@ export function FlickeringFooter({
   const columns = footerLinks(locale);
 
   return (
-    <footer id="footer" className="w-full pb-0" style={{ background: "#c8e4ff" }}>
+    <footer id="footer" className="w-full pb-0 rounded-t-[2.5rem]" style={{ background: "linear-gradient(160deg, oklch(0.92 0.06 215) 0%, oklch(0.88 0.08 230) 100%)", boxShadow: "0 -8px 32px -4px oklch(0.65 0.14 215 / 25%), inset 0 2px 4px 0 rgba(255,255,255,0.65)" }}>
       {/* ── Main content ── */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between px-6 sm:px-10 pt-10 pb-6 max-w-7xl mx-auto gap-8">
 
@@ -315,7 +315,7 @@ export function FlickeringFooter({
                 href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/50 border border-white/70 flex items-center justify-center text-foreground/70 hover:text-primary hover:border-primary transition-all"
+                className="w-10 h-10 rounded-full bg-white clay-shadow-sky flex items-center justify-center text-clay-sky-deep hover:scale-110 transition-all duration-200"
                 aria-label="Instagram"
               >
                 <Instagram size={16} />
@@ -326,7 +326,7 @@ export function FlickeringFooter({
                 href={`https://wa.me/${whatsappNumber.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/50 border border-white/70 flex items-center justify-center text-foreground/70 hover:text-green-600 hover:border-green-600 transition-all"
+                className="w-10 h-10 rounded-full bg-white clay-shadow-mint flex items-center justify-center text-clay-mint-deep hover:scale-110 transition-all duration-200"
                 aria-label="WhatsApp"
               >
                 <MessageCircle size={16} />
@@ -337,7 +337,7 @@ export function FlickeringFooter({
                 href={tiktokUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/50 border border-white/70 flex items-center justify-center text-foreground/70 hover:text-foreground hover:border-foreground transition-all"
+                className="w-10 h-10 rounded-full bg-white clay-shadow-lavender flex items-center justify-center text-clay-lavender-deep hover:scale-110 transition-all duration-200"
                 aria-label="TikTok"
               >
                 <Music2 size={16} />
@@ -352,7 +352,7 @@ export function FlickeringFooter({
             </span>
             <div className="flex gap-1.5 flex-wrap">
               {["KNET", "VISA", "MC", "Apple Pay"].map((pm) => (
-                <div key={pm} className="px-2.5 py-1 bg-white/60 border border-white/80 rounded-md text-[10px] font-bold text-foreground/70 tracking-tight">
+                <div key={pm} className="px-2.5 py-1 bg-white rounded-full text-[10px] font-black text-foreground/70 tracking-tight clay-shadow-white">
                   {pm}
                 </div>
               ))}
@@ -385,7 +385,7 @@ export function FlickeringFooter({
 
       {/* ── Flickering grid band ── */}
       <div className="w-full h-40 md:h-52 relative mt-8 z-0">
-        <div className="absolute inset-0 z-10 from-40%" style={{ background: "linear-gradient(to top, transparent 0%, #c8e4ff 100%)" }} />
+        <div className="absolute inset-0 z-10 from-40%" style={{ background: "linear-gradient(to top, transparent 0%, oklch(0.88 0.08 230) 100%)" }} />
         <div className="absolute inset-0 mx-4 sm:mx-6">
           <FlickeringGrid
             text={isTablet ? storeName : `${storeName} • Kuwait`}
@@ -401,14 +401,14 @@ export function FlickeringFooter({
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="border-t py-5 px-6 sm:px-10" style={{ borderColor: "rgba(30,106,170,0.25)" }}>
+      <div className="border-t py-5 px-6 sm:px-10" style={{ borderColor: "rgba(30,106,170,0.18)" }}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-foreground/60">
           <p>
             © {new Date().getFullYear()} {storeName}.{" "}
             {isAr ? "جميع الحقوق محفوظة." : "All rights reserved."}
           </p>
           <div className="flex items-center gap-3">
-            <span className="px-2.5 py-1 bg-white/60 border border-white/80 rounded-md">
+            <span className="px-2.5 py-1 bg-white rounded-full clay-shadow-white">
               {isAr ? `سجل تجاري: ${crNumber}` : `CR: ${crNumber}`}
             </span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-foreground/20" />

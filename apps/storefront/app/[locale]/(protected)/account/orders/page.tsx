@@ -43,79 +43,83 @@ export default async function MyOrdersPage({
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusClay = (status: string) => {
     switch (status) {
-      case "delivered": return "bg-green-100 text-green-700";
-      case "cancelled": return "bg-red-100 text-red-700";
-      case "shipped": return "bg-blue-100 text-blue-700";
-      default: return "bg-orange-100 text-orange-700";
+      case "delivered": return "bg-clay-mint text-clay-mint-deep";
+      case "cancelled": return "bg-clay-coral text-clay-coral-deep";
+      case "shipped": return "bg-clay-sky text-clay-sky-deep";
+      case "returned": return "bg-clay-lavender text-clay-lavender-deep";
+      default: return "bg-clay-lemon text-clay-lemon-deep";
     }
   };
 
   return (
-    <div className="bg-muted min-h-screen py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-foreground mb-2">{t.title}</h1>
-          <p className="text-muted-foreground">{t.subtitle}</p>
+    <div className="min-h-screen py-8 sm:py-12 px-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-end justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground">{t.title}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{t.subtitle}</p>
+          </div>
+          <span className="text-sm font-black text-muted-foreground bg-clay-lemon/50 px-3 py-1 rounded-full">
+            {orders.length}
+          </span>
         </div>
 
         {orders.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-border p-12 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-muted rounded-full mb-6">
-              <ShoppingBag className="w-8 h-8 text-muted-foreground" />
+          <div className="clay-shadow-white rounded-[2rem] bg-white p-12 text-center">
+            <div className="w-20 h-20 rounded-full bg-clay-lavender/40 clay-shadow-lavender flex items-center justify-center mx-auto mb-6">
+              <ShoppingBag className="w-9 h-9 text-clay-lavender-deep" />
             </div>
-            <p className="text-lg font-medium text-foreground mb-6">{t.empty}</p>
+            <p className="text-lg font-black text-foreground mb-2">{t.empty}</p>
+            <p className="text-sm text-muted-foreground mb-6">{isAr ? "تصفح المنتجات وأضف ما يعجبك" : "Browse products and add your favourites"}</p>
             <Link
               href={`/${locale}/products`}
-              className="inline-flex bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-shadow shadow-md shadow-primary/20"
+              className="inline-flex clay-shadow-sky bg-primary text-white px-8 py-3 rounded-full font-black hover:bg-primary/90 transition-all active:scale-95"
             >
               {t.startShopping}
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {orders.map((order) => (
               <Link
                 key={order.id}
                 href={`/${locale}/account/orders/${order.id}`}
-                className="block bg-white rounded-2xl shadow-sm border border-border overflow-hidden hover:border-primary transition-all group"
+                className="block clay-shadow-white rounded-[2rem] bg-white overflow-hidden clay-hover transition-all group"
               >
-                <div className="p-6">
-                  <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <div className="p-5 sm:p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                        <Package className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <div className="w-10 h-10 bg-clay-sky/40 rounded-2xl flex items-center justify-center group-hover:bg-clay-sky transition-colors">
+                        <Package className="w-5 h-5 text-clay-sky-deep" />
                       </div>
                       <div>
-                        <p className="font-bold text-foreground">
+                        <p className="font-black text-foreground text-sm">
                           {t.orderHash}{order.order_number}
                         </p>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                           <Calendar className="w-3 h-3" />
-                          {t.placedOn} {new Date(order.created_at).toLocaleDateString(locale === "ar" ? "ar-KW" : "en-KW")}
+                          {new Date(order.created_at).toLocaleDateString(locale === "ar" ? "ar-KW" : "en-KW")}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${getStatusColor(order.status)}`}>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-wide ${getStatusClay(order.status)}`}>
                         {(t.status as any)[order.status] || order.status}
                       </span>
-                      <ChevronRight className={`w-5 h-5 text-muted-foreground group-hover:text-primary transition-all ${isAr ? 'rotate-180' : ''}`} />
+                      <ChevronRight className={`w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-all ${isAr ? "rotate-180" : ""}`} />
                     </div>
                   </div>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CreditCard className="w-4 h-4" />
-                      <span className="uppercase">{order.payment_method}</span>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-border/20">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span className="uppercase font-bold">{order.payment_method}</span>
                     </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground mr-2">{t.total}</span>
-                      <span className="text-lg font-bold text-primary">
-                        {formatCurrency(order.total_kwd, locale)}
-                      </span>
-                    </div>
+                    <span className="text-base font-black text-primary">
+                      {formatCurrency(order.total_kwd, locale)}
+                    </span>
                   </div>
                 </div>
               </Link>

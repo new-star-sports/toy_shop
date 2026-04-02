@@ -29,17 +29,17 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
   return (
     <Link
       href={`/${locale}/product/${product.slug}`}
-      className="group block bg-background rounded-2xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+      className="group block bg-white rounded-[1.75rem] overflow-hidden transition-all duration-300 clay-shadow-white clay-hover"
     >
       {/* Image Container */}
-      <div className="relative aspect-square bg-muted/30 overflow-hidden">
+      <div className="relative aspect-square bg-clay-sky/30 overflow-hidden rounded-[1.5rem] m-2 mb-0">
         {product.primary_image_url ? (
           <Image
             src={product.primary_image_url}
             alt={name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-4 group-hover:scale-105 transition-transform duration-500 ease-out"
+            className="object-contain p-3 group-hover:scale-105 transition-transform duration-500 ease-out"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
@@ -48,20 +48,20 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
         )}
 
         {/* Badges */}
-        <div className="absolute top-2.5 left-2.5 rtl:right-2.5 rtl:left-auto flex flex-col gap-1 z-10">
+        <div className="absolute top-2 left-2 rtl:right-2 rtl:left-auto flex flex-col gap-1 z-10">
           {product.is_new_arrival && (
-            <span className="px-2.5 py-0.5 bg-primary text-white text-[10px] font-bold uppercase tracking-wider rounded-full">
+            <span className="px-2.5 py-0.5 bg-clay-mint text-clay-mint-deep text-[10px] font-black uppercase tracking-wider rounded-full clay-shadow-mint">
               {isAr ? "جديد" : "New"}
             </span>
           )}
           {hasFlashSale && (
-            <span className="px-2.5 py-0.5 bg-red-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1">
+            <span className="px-2.5 py-0.5 bg-clay-coral text-clay-coral-deep text-[10px] font-black uppercase tracking-wider rounded-full clay-shadow-coral flex items-center gap-1">
               <Zap size={9} fill="currentColor" />
               {isAr ? "عرض" : "Sale"}
             </span>
           )}
           {discount && !hasFlashSale && (
-            <span className="px-2.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">
+            <span className="px-2.5 py-0.5 bg-clay-pink text-clay-pink-deep text-[10px] font-black rounded-full clay-shadow-pink">
               -{discount}%
             </span>
           )}
@@ -69,8 +69,8 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
 
         {/* Out of Stock */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px] flex items-center justify-center z-20">
-            <span className="px-4 py-1.5 bg-zinc-900 text-white text-[11px] font-bold uppercase tracking-wider rounded-full">
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20">
+            <span className="px-4 py-1.5 bg-clay-lavender text-clay-lavender-deep text-[11px] font-black uppercase tracking-wider rounded-full clay-shadow-lavender">
               {isAr ? "نفد المخزون" : "Sold Out"}
             </span>
           </div>
@@ -78,23 +78,23 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
 
         {/* Wishlist — always visible */}
         <button
-          className="absolute top-2.5 right-2.5 rtl:left-2.5 rtl:right-auto w-8 h-8 rounded-full bg-white shadow-md border border-border/40 flex items-center justify-center text-muted-foreground hover:text-red-500 transition-colors z-30"
+          className="absolute top-2 right-2 rtl:left-2 rtl:right-auto w-8 h-8 rounded-full bg-white clay-shadow-white flex items-center justify-center text-muted-foreground hover:text-clay-pink-deep hover:scale-110 transition-all duration-200 z-30"
           aria-label={isAr ? "أضف للمفضلة" : "Add to wishlist"}
           onClick={(e) => { e.preventDefault(); }}
         >
-          <Heart size={15} />
+          <Heart size={14} />
         </button>
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-2">
+      <div className="p-3.5 pt-3 space-y-1.5">
         {brandName && (
-          <p className="text-[10px] text-primary font-bold uppercase tracking-[0.12em] truncate">
+          <p className="text-[10px] text-primary font-black uppercase tracking-[0.12em] truncate">
             {brandName}
           </p>
         )}
 
-        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors min-h-[2.5rem]">
+        <h3 className="text-sm font-bold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors min-h-[2.5rem]">
           {name}
         </h3>
 
@@ -122,9 +122,12 @@ export default function ProductCardComponent({ product, locale, flashSaleActive 
                 {formatKWD(comparePrice, locale)}
               </span>
             )}
-            <span className="text-base font-bold text-primary ltr-nums">
+            <span className="text-base font-black text-primary ltr-nums">
               {formatKWD(currentPrice, locale)}
             </span>
+          </div>
+          <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-200">
+            <Zap size={13} className="text-primary group-hover:text-white" />
           </div>
         </div>
       </div>

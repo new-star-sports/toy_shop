@@ -89,12 +89,14 @@ export function HeroCarousel({
 
   if (count === 0) {
     return (
-      <div className={cn(aspectRatio, "relative w-full overflow-hidden rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center")}>
+      <div className={cn(aspectRatio, "relative w-full overflow-hidden rounded-[2rem] flex items-center clay-shadow-sky")}
+        style={{ background: "linear-gradient(135deg, oklch(0.75 0.12 215) 0%, oklch(0.55 0.19 215) 100%)" }}
+      >
         <div className="px-10 space-y-3 text-white">
-          <p className="text-xs font-bold uppercase tracking-widest opacity-70">
+          <p className="text-xs font-black uppercase tracking-widest opacity-70">
             {isAr ? "ألعاب أصلية 100%" : "100% Genuine Toys"}
           </p>
-          <h2 className="text-3xl sm:text-5xl font-black leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black leading-tight drop-shadow-md">
             {isAr ? "اكتشف عالم الألعاب" : "Discover the World of Play"}
           </h2>
           <p className="text-sm opacity-75 max-w-md">
@@ -112,10 +114,10 @@ export function HeroCarousel({
       {/* Banner strip */}
       <div className={cn(
         "relative group overflow-hidden",
-        isOne && "rounded-2xl shadow-md"
+        isOne && "rounded-[2rem] clay-shadow-sky"
       )}>
         <div ref={emblaRef} className="overflow-hidden">
-          <div className={cn("flex", !isOne && "gap-2 px-2")}>
+          <div className={cn("flex", !isOne && "gap-3 px-1")}>
             {displayBanners.map((banner, slideIdx) => {
               const video = banner.video_desktop_url || banner.video_mobile_url;
               const desktopImg = banner.image_desktop_url;
@@ -126,18 +128,15 @@ export function HeroCarousel({
               const subtitle = isAr ? banner.subtitle_ar : banner.subtitle_en;
               const ctaText = isAr ? banner.cta_text_ar : banner.cta_text_en;
 
+              const SlideWrapper = banner.cta_link ? Link : "div";
+              const slideWrapperProps = banner.cta_link
+                ? { href: banner.cta_link, className: cn("relative flex-shrink-0 overflow-hidden rounded-[1.75rem] block", aspectRatio, !hasMedia && "clay-shadow-sky"), style: { flex: `0 0 ${slideBasis}`, ...(!hasMedia ? { background: banner.bg_color || "linear-gradient(135deg, oklch(0.75 0.12 215) 0%, oklch(0.55 0.19 215) 100%)" } : {}) } }
+                : { className: cn("relative flex-shrink-0 overflow-hidden rounded-[1.75rem]", aspectRatio, !hasMedia && "clay-shadow-sky"), style: { flex: `0 0 ${slideBasis}`, ...(!hasMedia ? { background: banner.bg_color || "linear-gradient(135deg, oklch(0.75 0.12 215) 0%, oklch(0.55 0.19 215) 100%)" } : {}) } };
+
               return (
-                <div
+                <SlideWrapper
                   key={`${banner.id}-${slideIdx}`}
-                  className={cn(
-                    "relative flex-shrink-0 overflow-hidden rounded-lg",
-                    aspectRatio,
-                    !hasMedia && "bg-gradient-to-br from-primary to-primary/70"
-                  )}
-                  style={{
-                    flex: `0 0 ${slideBasis}`,
-                    ...(!hasMedia && banner.bg_color ? { backgroundColor: banner.bg_color } : {}),
-                  }}
+                  {...(slideWrapperProps as any)}
                 >
                   {/* Video takes priority */}
                   {video && (
@@ -170,10 +169,10 @@ export function HeroCarousel({
                   {!hasMedia && (
                     <div className="absolute inset-0 flex items-center px-8">
                       <div className="text-white space-y-2">
-                        <p className="text-xs font-bold uppercase tracking-widest opacity-70">
+                        <p className="text-xs font-black uppercase tracking-widest opacity-70">
                           {isAr ? "ألعاب أصلية 100%" : "100% Genuine Toys"}
                         </p>
-                        <h2 className="text-2xl sm:text-4xl font-black leading-tight">
+                        <h2 className="text-2xl sm:text-4xl font-black leading-tight drop-shadow-md">
                           {isAr ? "اكتشف عالم الألعاب" : "Discover the World of Play"}
                         </h2>
                         <p className="text-xs sm:text-sm opacity-75 max-w-md">
@@ -187,13 +186,13 @@ export function HeroCarousel({
 
                   {/* Text overlay for banners with title/CTA */}
                   {(title || ctaText) && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent rtl:bg-gradient-to-l flex items-center">
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-transparent rtl:bg-gradient-to-l flex items-center">
                       <div className={cn(
-                        "px-5 sm:px-8 space-y-2 max-w-xs sm:max-w-md",
-                        isAr && "mr-auto pr-5 sm:pr-8 pl-0 text-right"
+                        "px-6 sm:px-9 space-y-3 max-w-xs sm:max-w-md",
+                        isAr && "mr-auto pr-6 sm:pr-9 pl-0 text-right"
                       )}>
                         {title && (
-                          <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white leading-tight drop-shadow">
+                          <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white leading-tight drop-shadow-md">
                             {title}
                           </h2>
                         )}
@@ -205,7 +204,7 @@ export function HeroCarousel({
                         {ctaText && banner.cta_link && (
                           <Link
                             href={banner.cta_link}
-                            className="inline-flex items-center gap-1.5 h-8 sm:h-9 px-4 sm:px-5 bg-primary text-white font-bold rounded-full text-xs hover:bg-primary/90 transition-all shadow"
+                            className="inline-flex items-center gap-1.5 h-9 sm:h-10 px-5 sm:px-6 bg-white text-primary font-black rounded-full text-xs hover:scale-105 transition-all duration-200 clay-shadow-white"
                           >
                             {ctaText}
                           </Link>
@@ -213,46 +212,46 @@ export function HeroCarousel({
                       </div>
                     </div>
                   )}
-                </div>
+                </SlideWrapper>
               );
             })}
           </div>
         </div>
 
-        {/* Prev / Next arrows */}
+        {/* Prev / Next arrows — clay circle buttons */}
         {banners.length > 1 && (
           <>
             <button
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Previous"
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 hover:bg-white text-foreground shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white clay-shadow-white text-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200 z-10"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={17} />
             </button>
             <button
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Next"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/80 hover:bg-white text-foreground shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white clay-shadow-white text-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200 z-10"
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={17} />
             </button>
           </>
         )}
       </div>
 
-      {/* Dot indicators — show only original count, active via modulo */}
+      {/* Dot indicators — clay pills */}
       {count > 1 && (
-        <div className="flex justify-center gap-1 mt-2">
+        <div className="flex justify-center gap-1.5 mt-3">
           {banners.map((_, idx) => (
             <button
               key={idx}
               onClick={() => scrollTo(idx)}
               aria-label={`Slide ${idx + 1}`}
               className={cn(
-                "h-1 rounded-full transition-all duration-300",
+                "h-2 rounded-full transition-all duration-300",
                 idx === selectedIndex % count
-                  ? "bg-primary w-4"
-                  : "bg-border w-1 hover:bg-muted-foreground"
+                  ? "bg-primary w-6 clay-shadow-sky"
+                  : "bg-border w-2 hover:bg-muted-foreground"
               )}
             />
           ))}

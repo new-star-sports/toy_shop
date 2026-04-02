@@ -6,7 +6,6 @@ import { ProductGallery } from "./product-gallery";
 import { VariantSelector } from "./variant-selector";
 import { Breadcrumbs } from "./breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Share2, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import type { ProductWithRelations } from "@nss/db/queries";
@@ -75,86 +74,86 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
       <Breadcrumbs items={breadcrumbItems} locale={locale} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
         {/* Left Column: Gallery */}
-        <ProductGallery 
-          images={product.images.map((img: any) => ({ 
-            url: img.url, 
-            alt_en: product.name_en, 
-            alt_ar: product.name_ar 
-          }))} 
-          locale={locale} 
-        />
+        <div className="clay-shadow-white rounded-[2rem] bg-white overflow-hidden p-2">
+          <ProductGallery
+            images={product.images.map((img: any) => ({
+              url: img.url,
+              alt_en: product.name_en,
+              alt_ar: product.name_ar,
+            }))}
+            locale={locale}
+          />
+        </div>
 
         {/* Right Column: Info */}
-        <div className="space-y-8">
-          <div className="space-y-4">
+        <div className="space-y-5">
+          {/* Title + brand */}
+          <div className="space-y-3">
             {product.brand && (
-              <Link href={`/${locale}/brand/${product.brand.slug}`} className="text-sm font-semibold text-primary uppercase tracking-widest hover:underline">
+              <Link
+                href={`/${locale}/brand/${product.brand.slug}`}
+                className="inline-block text-xs font-black text-primary uppercase tracking-widest bg-clay-sky/40 px-3 py-1 rounded-full hover:bg-clay-sky transition-all"
+              >
                 {isAr ? product.brand.name_ar : product.brand.name_en}
               </Link>
             )}
-            <div className="flex flex-wrap gap-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+            <div className="flex flex-wrap items-start gap-2">
+              <h1 className="text-2xl sm:text-3xl font-black text-foreground leading-tight flex-1">
                 {isAr ? product.name_ar : product.name_en}
               </h1>
               {hasFlashSale && (
-                <Badge className="bg-red-500 hover:bg-red-500 text-white border-none">
+                <span className="text-xs font-black bg-clay-coral text-clay-coral-deep px-3 py-1 rounded-full uppercase tracking-wide flex-shrink-0">
                   {isAr ? "عرض بطل" : "FLASH SALE"}
-                </Badge>
+                </span>
               )}
             </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-yellow-500">
+
+            <div className="flex flex-wrap items-center gap-3 text-xs">
+              <div className="flex items-center gap-0.5 text-amber-400">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className={`w-4 h-4 fill-current ${i < (product.avg_rating || 0) ? "" : "text-gray-300"}`} viewBox="0 0 20 20">
+                  <svg key={i} className={`w-3.5 h-3.5 fill-current ${i < (product.avg_rating || 0) ? "" : "text-muted/30"}`} viewBox="0 0 20 20">
                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                   </svg>
                 ))}
-                <span className="text-sm text-foreground font-medium ms-1">
-                  {product.avg_rating || "0.0"}
-                </span>
-                <span className="text-xs text-muted-foreground ms-1">
-                  ({product.review_count} {isAr ? "تقييم" : "reviews"})
-                </span>
+                <span className="text-foreground font-black ms-1">{product.avg_rating || "0.0"}</span>
+                <span className="text-muted-foreground ms-1">({product.review_count})</span>
               </div>
-              <div className="h-4 w-px bg-border" />
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                SKU: {selectedVariant?.sku || product.sku || "N/A"}
-              </div>
+              <span className="text-muted-foreground/40">|</span>
+              <span className="text-muted-foreground font-bold uppercase">SKU: {selectedVariant?.sku || product.sku || "N/A"}</span>
             </div>
           </div>
 
-          <div className="space-y-4 bg-muted/30 p-6 rounded-2xl border border-border">
+          {/* Price card */}
+          <div className={`rounded-[1.75rem] p-5 space-y-3 ${hasFlashSale ? "clay-shadow-coral bg-clay-coral/10" : "clay-shadow-sky bg-clay-sky/10"}`}>
             <div className="flex items-baseline gap-3">
-              <span className={`text-3xl font-bold ${hasFlashSale ? 'text-red-600' : 'text-primary'}`}>
+              <span className={`text-3xl font-black ${hasFlashSale ? "text-clay-coral-deep" : "text-primary"}`}>
                 {finalPrice.toFixed(3)} {isAr ? "د.ك" : "KWD"}
               </span>
               {finalComparePrice && finalComparePrice > finalPrice && (
                 <>
-                  <span className="text-lg text-muted-foreground line-through">
+                  <span className="text-base text-muted-foreground line-through">
                     {finalComparePrice.toFixed(3)}
                   </span>
-                  <Badge className="bg-primary hover:bg-primary text-white border-none">
+                  <span className="text-xs font-black bg-clay-coral text-clay-coral-deep px-2.5 py-1 rounded-full">
                     -{discount}%
-                  </Badge>
+                  </span>
                 </>
               )}
             </div>
 
             <div className="flex items-center gap-2">
-              <div className={`h-2 w-2 rounded-full ${isOutOfStock ? "bg-red-500" : "bg-green-500"}`} />
-              <span className={`text-sm font-medium ${isOutOfStock ? "text-red-600" : "text-green-600"}`}>
-                {isOutOfStock 
-                  ? (isAr ? "غير متوفر" : "Out of Stock") 
-                  : (currentStock < 5 
-                      ? (isAr ? `متوفر فقط ${currentStock} قطعة!` : `Only ${currentStock} left!`) 
-                      : (isAr ? "متوفر" : "In Stock"))
-                }
+              <div className={`h-2 w-2 rounded-full ${isOutOfStock ? "bg-clay-coral-deep" : "bg-clay-mint-deep"}`} />
+              <span className={`text-sm font-black ${isOutOfStock ? "text-clay-coral-deep" : "text-clay-mint-deep"}`}>
+                {isOutOfStock
+                  ? (isAr ? "غير متوفر" : "Out of Stock")
+                  : (currentStock < 5
+                    ? (isAr ? `متوفر فقط ${currentStock} قطعة!` : `Only ${currentStock} left!`)
+                    : (isAr ? "متوفر" : "In Stock"))}
               </span>
             </div>
           </div>
@@ -170,64 +169,58 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
           )}
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              className="flex-1 h-12 rounded-full font-bold gap-2"
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              className="flex-1 h-13 rounded-full font-black text-base gap-2 clay-shadow-sky active:scale-[0.98] transition-all"
               disabled={isOutOfStock}
               onClick={handleAddToCart}
             >
-              <ShoppingCart className="h-6 w-6" />
+              <ShoppingCart className="h-5 w-5" />
               {isAr ? "إضافة إلى السلة" : "Add to Cart"}
             </Button>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-11 w-11 rounded-full border border-border hover:text-red-500 hover:border-red-500/30 transition-all"
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 rounded-full clay-shadow-pink bg-white border-0 hover:bg-clay-pink transition-all"
               >
-                <Heart className="h-6 w-6" />
+                <Heart className="h-5 w-5 text-clay-pink-deep" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-11 w-11 rounded-full border border-border hover:text-primary hover:border-primary/30 transition-all"
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 rounded-full clay-shadow-white bg-white border-0 hover:bg-clay-sky transition-all"
               >
-                <Share2 className="h-6 w-6" />
+                <Share2 className="h-5 w-5 text-muted-foreground" />
               </Button>
             </div>
           </div>
 
           {/* Trust Points */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6 border-y border-border">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />
-              <span className="text-xs font-medium text-muted-foreground leading-tight">
-                {isAr ? "منتج أصلي 100%" : "100% Genuine Product"}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Truck className="h-5 w-5 text-primary flex-shrink-0" />
-              <span className="text-xs font-medium text-muted-foreground leading-tight">
-                {isAr ? "توصيل سريع" : "Fast Delivery"}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <RotateCcw className="h-5 w-5 text-primary flex-shrink-0" />
-              <span className="text-xs font-medium text-muted-foreground leading-tight">
-                {isAr ? "إرجاع سهل خلال 14 يوم" : "Easy 14-day Returns"}
-              </span>
-            </div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: ShieldCheck, label: isAr ? "منتج أصلي 100%" : "Genuine", color: "clay-shadow-mint", bg: "bg-clay-mint/30", text: "text-clay-mint-deep" },
+              { icon: Truck, label: isAr ? "توصيل سريع" : "Fast Delivery", color: "clay-shadow-sky", bg: "bg-clay-sky/30", text: "text-clay-sky-deep" },
+              { icon: RotateCcw, label: isAr ? "إرجاع خلال 14 يوم" : "14-day Returns", color: "clay-shadow-lavender", bg: "bg-clay-lavender/30", text: "text-clay-lavender-deep" },
+            ].map(({ icon: Icon, label, color, bg, text }) => (
+              <div key={label} className={`${color} rounded-2xl ${bg} p-3 flex flex-col items-center gap-1.5 text-center`}>
+                <Icon className={`h-4 w-4 ${text}`} />
+                <span className={`text-[10px] font-black ${text} leading-tight`}>{label}</span>
+              </div>
+            ))}
           </div>
 
           {/* Description */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-foreground">
-              {isAr ? "الوصف" : "Description"}
-            </h3>
-            <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed">
-              {isAr ? product.description_ar : product.description_en}
+          {(product.description_ar || product.description_en) && (
+            <div className="clay-shadow-white rounded-[2rem] bg-white p-5 space-y-2">
+              <h3 className="text-sm font-black text-foreground">
+                {isAr ? "الوصف" : "Description"}
+              </h3>
+              <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed">
+                {isAr ? product.description_ar : product.description_en}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -17,12 +17,12 @@ export default async function LoginPage({
   const isAr = locale === "ar";
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-primary tracking-tight">
+    <div className="clay-shadow-white rounded-[2rem] bg-white p-8 space-y-6">
+      <div className="text-center space-y-1">
+        <h1 className="text-2xl font-black text-foreground tracking-tight">
           {isAr ? "تسجيل الدخول" : "Welcome Back"}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {isAr
             ? "سجل دخولك للوصول إلى حسابك وطلباتك"
             : "Sign in to access your account and orders"}
@@ -31,15 +31,15 @@ export default async function LoginPage({
 
       <LoginForm locale={locale} />
 
-      <div className="text-center text-sm">
+      <div className="text-center text-sm border-t border-border/30 pt-4">
         <span className="text-muted-foreground">
           {isAr ? "ليس لديك حساب؟" : "Don't have an account?"}{" "}
         </span>
         <Link
           href={`/${locale}/register`}
-          className="font-medium text-primary hover:text-primary transition-colors"
+          className="font-black text-primary hover:underline transition-colors"
         >
-          {isAr ? "إنشاء حساب جديد" : "Create a new account"}
+          {isAr ? "إنشاء حساب جديد" : "Sign up"}
         </Link>
       </div>
     </div>
