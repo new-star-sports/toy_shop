@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Label } from "@/components/ui";
-import { Checkbox } from "@/components/ui";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Filter } from "lucide-react";
 import type { Locale } from "@/lib/i18n";
 import { useState } from "react";
@@ -34,13 +34,13 @@ export function ProductFilters({ locale, brands }: ProductFiltersProps) {
   return (
     <div className="space-y-8 p-1">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-bold text-nss-text-primary flex items-center gap-2">
+        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <Filter className="h-4 w-4" />
           {isAr ? "الفلاتر" : "Filters"}
         </h3>
         <button 
           onClick={() => router.push(pathname)}
-          className="text-xs text-nss-primary font-medium hover:underline"
+          className="text-xs text-primary font-medium hover:underline"
         >
           {isAr ? "مسح الكل" : "Clear All"}
         </button>
@@ -48,36 +48,36 @@ export function ProductFilters({ locale, brands }: ProductFiltersProps) {
 
       {/* Price Range */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-nss-text-primary">
+        <h4 className="text-sm font-semibold text-foreground">
           {isAr ? "السعر (د.ك)" : "Price (KWD)"}
         </h4>
         <div className="grid grid-cols-2 gap-3 pb-2">
           <div className="space-y-1.5">
-            <Label className="text-[10px] uppercase text-nss-text-secondary">{isAr ? "من" : "Min"}</Label>
+            <Label className="text-[10px] uppercase text-muted-foreground">{isAr ? "من" : "Min"}</Label>
             <input
               type="number"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               onBlur={() => updateFilters("minPrice", minPrice)}
-              className="w-full h-9 px-3 text-sm border border-nss-border rounded-lg focus:ring-1 focus:ring-nss-primary/20 outline-none"
+              className="w-full h-9 px-3 text-sm border border-border rounded-lg focus:ring-1 focus:ring-primary/20 outline-none"
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-[10px] uppercase text-nss-text-secondary">{isAr ? "إلى" : "Max"}</Label>
+            <Label className="text-[10px] uppercase text-muted-foreground">{isAr ? "إلى" : "Max"}</Label>
             <input
               type="number"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               onBlur={() => updateFilters("maxPrice", maxPrice)}
-              className="w-full h-9 px-3 text-sm border border-nss-border rounded-lg focus:ring-1 focus:ring-nss-primary/20 outline-none"
+              className="w-full h-9 px-3 text-sm border border-border rounded-lg focus:ring-1 focus:ring-primary/20 outline-none"
             />
           </div>
         </div>
       </div>
 
       {/* Brands */}
-      <div className="space-y-4 border-t border-nss-border/30 pt-6">
-        <h4 className="text-sm font-semibold text-nss-text-primary">
+      <div className="space-y-4 border-t border-border pt-6">
+        <h4 className="text-sm font-semibold text-foreground">
           {isAr ? "العلامات التجارية" : "Brands"}
         </h4>
         <div className="space-y-3 max-h-60 overflow-y-auto pr-2 scrollbar-thin">
@@ -88,24 +88,21 @@ export function ProductFilters({ locale, brands }: ProductFiltersProps) {
                 <Checkbox
                   id={`brand-${brand.id}`}
                   checked={isChecked}
-                  onChange={(e) => {
-                    const checked = (e.target as HTMLInputElement).checked;
+                  onCheckedChange={(checked) => {
                     const currentBrands = searchParams.getAll("brand");
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.delete("brand");
                     if (checked) {
-                      const params = new URLSearchParams(searchParams.toString());
-                      params.append("brand", brand.slug);
-                      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                      [...currentBrands, brand.slug].forEach(b => params.append("brand", b));
                     } else {
-                      const params = new URLSearchParams(searchParams.toString());
-                      params.delete("brand");
                       currentBrands.filter(b => b !== brand.slug).forEach(b => params.append("brand", b));
-                      router.push(`${pathname}?${params.toString()}`, { scroll: false });
                     }
+                    router.push(`${pathname}?${params.toString()}`, { scroll: false });
                   }}
                 />
                 <Label
                   htmlFor={`brand-${brand.id}`}
-                  className="text-sm font-normal cursor-pointer select-none group-hover:text-nss-primary transition-colors"
+                  className="text-sm font-normal cursor-pointer select-none group-hover:text-primary transition-colors"
                 >
                   {isAr ? brand.name_ar : brand.name_en}
                 </Label>
@@ -116,8 +113,8 @@ export function ProductFilters({ locale, brands }: ProductFiltersProps) {
       </div>
 
       {/* Age Group Placeholder */}
-      <div className="space-y-4 border-t border-nss-border/30 pt-6">
-        <h4 className="text-sm font-semibold text-nss-text-primary">
+      <div className="space-y-4 border-t border-border pt-6">
+        <h4 className="text-sm font-semibold text-foreground">
           {isAr ? "العمر" : "Age Group"}
         </h4>
         <div className="flex flex-wrap gap-2">
@@ -129,8 +126,8 @@ export function ProductFilters({ locale, brands }: ProductFiltersProps) {
                  onClick={() => updateFilters("age", isChecked ? null : age)}
                  className={`px-3 py-1.5 text-xs rounded-full border transition-all ${
                    isChecked 
-                    ? "bg-nss-primary text-white border-nss-primary" 
-                    : "bg-white text-nss-text-secondary border-nss-border hover:border-nss-primary/30"
+                    ? "bg-primary text-white border-primary" 
+                    : "bg-background text-muted-foreground border-border hover:border-primary/30"
                  }`}
                >
                  {age} {isAr ? "سنوات" : "yrs"}

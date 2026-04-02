@@ -301,7 +301,7 @@ export interface Banner {
   id: string;
   banner_type: BannerType;
   title_en: string | null;
-  title_ar: string;
+  title_ar: string | null;
   subtitle_en: string | null;
   subtitle_ar: string | null;
   image_desktop_url: string | null;

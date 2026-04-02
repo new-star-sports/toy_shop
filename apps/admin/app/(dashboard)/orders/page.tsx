@@ -31,6 +31,15 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
+// Helper function to safely format dates
+function formatDate(dateStr: string): string {
+  try {
+    return format(new Date(dateStr), "MMM d, yyyy · HH:mm");
+  } catch {
+    return dateStr;
+  }
+}
+
 const STATUS_STYLES: Record<string, string> = {
   delivered: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/50",
   cancelled: "bg-red-50 text-red-600 ring-1 ring-red-200/50",
@@ -171,7 +180,7 @@ export default async function OrdersPage({
                     <span className="font-mono font-bold text-primary">#{order.order_number}</span>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-muted-foreground text-xs">
-                    {format(new Date(order.created_at), "MMM d, HH:mm")}
+                    {formatDate(order.created_at)}
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -228,7 +237,7 @@ export default async function OrdersPage({
                   <div>
                     <span className="font-mono font-bold text-primary text-base">#{order.order_number}</span>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      {format(new Date(order.created_at), "MMM d, yyyy · HH:mm")}
+                      {formatDate(order.created_at)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">

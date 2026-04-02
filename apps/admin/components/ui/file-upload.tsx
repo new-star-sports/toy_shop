@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 interface FileUploadProps {
   value?: string
   onChange: (url: string | null) => void
-  bucket: 'categories' | 'brands' | 'products' | 'banners'
+  bucket: 'categories' | 'brands' | 'products' | 'banners' | 'blogs'
   disabled?: boolean
   className?: string
   showPreview?: boolean

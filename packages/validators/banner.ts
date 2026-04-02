@@ -1,9 +1,13 @@
 import { z } from "zod";
 
 const datetimeOrEmpty = z
-  .string().datetime()
+  .string()
   .or(z.literal(""))
-  .transform(v => v || null)
+  .transform(v => {
+    if (!v) return null;
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  })
   .optional()
   .nullable();
 

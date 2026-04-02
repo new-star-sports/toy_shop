@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import Header from "../_components/header";
+import { SiteHeader } from "../_components/site-header";
 import Footer from "../_components/footer";
 import MobileBottomNav from "../_components/mobile-bottom-nav";
 import { CartDrawer } from "./_components/cart/cart-drawer";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/i18n";
 
-const geistSans = Geist({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-plus-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -47,15 +50,17 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`${plusJakartaSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background font-sans antialiased flex flex-col pb-16 sm:pb-0 selection:bg-primary/10 selection:text-primary">
-        <Header locale={locale as Locale} user={user} />
-        <main className="flex-1">{children}</main>
-        <Footer locale={locale as Locale} />
-        <MobileBottomNav locale={locale as Locale} />
-        <CartDrawer locale={locale as Locale} />
+      <body className="min-h-screen bg-background font-sans antialiased flex flex-col pb-16 sm:pb-0">
+        <TooltipProvider>
+          <SiteHeader locale={locale as Locale} user={user} />
+          <main className="flex-1 pt-[136px] sm:pt-[148px]">{children}</main>
+          <Footer locale={locale as Locale} />
+          <MobileBottomNav locale={locale as Locale} />
+          <CartDrawer locale={locale as Locale} />
+        </TooltipProvider>
       </body>
     </html>
   );

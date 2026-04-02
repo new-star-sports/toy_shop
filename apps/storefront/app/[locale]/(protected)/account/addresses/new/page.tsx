@@ -27,17 +27,17 @@ export default async function NewAddressPage({
   return (
     <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-nss-primary tracking-tight">
+        <h1 className="text-3xl font-bold text-primary tracking-tight">
           {isAr ? "إضافة عنوان جديد" : "Add New Address"}
         </h1>
-        <p className="mt-2 text-sm text-nss-text-secondary">
+        <p className="mt-2 text-sm text-muted-foreground">
           {isAr
             ? "أدخل تفاصيل عنوان التوصيل الخاص بك"
             : "Enter your delivery address details"}
         </p>
       </div>
 
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-nss-border/50 shadow-sm">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-border/50 shadow-sm">
         <AddressForm locale={locale} governorates={governorates} />
       </div>
     </div>

@@ -124,9 +124,9 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-20 bg-nss-card rounded-3xl border border-nss-border/50">
-        <ShoppingCart className="h-16 w-16 text-nss-text-secondary/30 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-nss-text-primary mb-2">
+      <div className="text-center py-20 bg-card rounded-3xl border border-border/50">
+        <ShoppingCart className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-foreground mb-2">
           {isAr ? "سلة التسوق فارغة" : "Your cart is empty"}
         </h2>
         <Button onClick={() => router.push(`/${locale}`)}>
@@ -141,23 +141,23 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
       {/* Left Column: Form Steps */}
       <div className="lg:col-span-2 space-y-6">
         {/* Shipping Address */}
-        <Card className="p-6 rounded-3xl border-nss-border/50 shadow-sm">
+        <Card className="p-6 rounded-3xl border-border/50 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-nss-primary/10 flex items-center justify-center text-nss-primary font-bold">1</div>
-              <h2 className="text-xl font-bold text-nss-text-primary">{isAr ? "عنوان التوصيل" : "Shipping Address"}</h2>
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
+              <h2 className="text-xl font-bold text-foreground">{isAr ? "عنوان التوصيل" : "Shipping Address"}</h2>
             </div>
             {user.user_metadata?.full_name && (
-              <span className="text-xs text-nss-text-secondary hidden md:inline-block">
+              <span className="text-xs text-muted-foreground hidden md:inline-block">
                 {isAr ? `مرحباً، ${user.user_metadata.full_name}` : `Welcome, ${user.user_metadata.full_name}`}
               </span>
             )}
           </div>
 
           {addresses.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-nss-border rounded-2xl">
-              <MapPin className="h-8 w-8 text-nss-text-secondary/30 mx-auto mb-2" />
-              <p className="text-nss-text-secondary mb-4">{isAr ? "ليس لديك عناوين مسجلة" : "No addresses found"}</p>
+            <div className="text-center py-8 border-2 border-dashed border-border rounded-2xl">
+              <MapPin className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-muted-foreground mb-4">{isAr ? "ليس لديك عناوين مسجلة" : "No addresses found"}</p>
               <Button variant="outline" onClick={() => router.push(`/${locale}/account/addresses`)}>
                  {isAr ? "أضف عنواناً جديداً" : "Add New Address"}
               </Button>
@@ -170,18 +170,18 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
                   onClick={() => setSelectedAddressId(address.id)}
                   className={`cursor-pointer p-4 rounded-2xl border-2 transition-all ${
                     selectedAddressId === address.id
-                      ? "border-nss-primary bg-nss-primary/5"
-                      : "border-nss-border hover:border-nss-primary/30"
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/30"
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-bold text-nss-text-primary">{address.recipient_name}</span>
-                    {selectedAddressId === address.id && <CheckCircle2 className="h-5 w-5 text-nss-primary" />}
+                    <span className="text-sm font-bold text-foreground">{address.recipient_name}</span>
+                    {selectedAddressId === address.id && <CheckCircle2 className="h-5 w-5 text-primary" />}
                   </div>
-                  <p className="text-xs text-nss-text-secondary line-clamp-2">
+                  <p className="text-xs text-muted-foreground line-clamp-2">
                     {address.area?.name_en}, Block {address.block}, St {address.street}, Bldg {address.building}
                   </p>
-                  <p className="text-xs text-nss-text-secondary mt-2">{address.recipient_phone}</p>
+                  <p className="text-xs text-muted-foreground mt-2">{address.recipient_phone}</p>
                 </div>
               ))}
             </div>
@@ -189,10 +189,10 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
         </Card>
 
         {/* Payment Method */}
-        <Card className="p-6 rounded-3xl border-nss-border/50 shadow-sm">
+        <Card className="p-6 rounded-3xl border-border/50 shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-nss-primary/10 flex items-center justify-center text-nss-primary font-bold">2</div>
-            <h2 className="text-xl font-bold text-nss-text-primary">{isAr ? "طريقة الدفع" : "Payment Method"}</h2>
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">2</div>
+            <h2 className="text-xl font-bold text-foreground">{isAr ? "طريقة الدفع" : "Payment Method"}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,16 +200,16 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
               onClick={() => setPaymentMethod("cod")}
               className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex items-center gap-4 ${
                 paymentMethod === "cod"
-                  ? "border-nss-primary bg-nss-primary/5"
-                  : "border-nss-border hover:border-nss-primary/30"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/30"
               }`}
             >
-              <div className={`p-3 rounded-xl ${paymentMethod === "cod" ? "bg-nss-primary text-white" : "bg-nss-surface text-nss-text-secondary"}`}>
+              <div className={`p-3 rounded-xl ${paymentMethod === "cod" ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
                 <Truck className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-bold text-nss-text-primary">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
-                <p className="text-xs text-nss-text-secondary">{isAr ? "ادفع نقداً عند باب منزلك" : "Pay cash at your doorstep"}</p>
+                <p className="font-bold text-foreground">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
+                <p className="text-xs text-muted-foreground">{isAr ? "ادفع نقداً عند باب منزلك" : "Pay cash at your doorstep"}</p>
               </div>
             </div>
 
@@ -217,16 +217,16 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
               onClick={() => setPaymentMethod("knet")}
               className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex items-center gap-4 ${
                 paymentMethod === "knet"
-                  ? "border-nss-primary bg-nss-primary/5"
-                  : "border-nss-border hover:border-nss-primary/30"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/30"
               }`}
             >
-              <div className={`p-3 rounded-xl ${paymentMethod === "knet" ? "bg-nss-primary text-white" : "bg-nss-surface text-nss-text-secondary"}`}>
+              <div className={`p-3 rounded-xl ${paymentMethod === "knet" ? "bg-primary text-white" : "bg-muted text-muted-foreground"}`}>
                 <CreditCard className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-bold text-nss-text-primary">K-Net / Card</p>
-                <p className="text-xs text-nss-text-secondary">{isAr ? "دفع سريع وآمن أونلاين" : "Fast & secure online payment"}</p>
+                <p className="font-bold text-foreground">K-Net / Card</p>
+                <p className="text-xs text-muted-foreground">{isAr ? "دفع سريع وآمن أونلاين" : "Fast & secure online payment"}</p>
               </div>
             </div>
           </div>
@@ -236,19 +236,19 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
       {/* Right Column: Summary */}
       <div className="lg:col-span-1">
         <div className="sticky top-24 space-y-6">
-          <Card className="p-6 rounded-3xl border-nss-border/50 shadow-lg bg-white overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-nss-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+          <Card className="p-6 rounded-3xl border-border/50 shadow-lg bg-white overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl" />
             
-            <h2 className="text-xl font-bold text-nss-text-primary mb-6 relative">{isAr ? "ملخص الطلب" : "Order Summary"}</h2>
+            <h2 className="text-xl font-bold text-foreground mb-6 relative">{isAr ? "ملخص الطلب" : "Order Summary"}</h2>
             
             <div className="space-y-4 mb-6 relative">
               <div className="flex justify-between text-sm">
-                <span className="text-nss-text-secondary">{isAr ? "المجموع الفرعي" : "Subtotal"}</span>
-                <span className="font-medium text-nss-text-primary">{subtotal.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
+                <span className="text-muted-foreground">{isAr ? "المجموع الفرعي" : "Subtotal"}</span>
+                <span className="font-medium text-foreground">{subtotal.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-nss-text-secondary">{isAr ? "رسوم التوصيل" : "Shipping Fee"}</span>
-                <span className={`font-medium ${shippingValue === 0 ? "text-green-600" : "text-nss-text-primary"}`}>
+                <span className="text-muted-foreground">{isAr ? "رسوم التوصيل" : "Shipping Fee"}</span>
+                <span className={`font-medium ${shippingValue === 0 ? "text-green-600" : "text-foreground"}`}>
                   {shippingValue === 0 ? (isAr ? "مجاني" : "FREE") : `${shippingValue.toFixed(3)} ${isAr ? "د.ك" : "KWD"}`}
                 </span>
               </div>
@@ -262,20 +262,20 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
                   <span className="font-bold text-green-600 line-nums">-{discountAmount.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
                 </div>
               )}
-              <div className="pt-4 border-t border-nss-border/30 flex justify-between">
-                <span className="text-lg font-bold text-nss-text-primary">{isAr ? "الإجمالي" : "Total"}</span>
-                <span className="text-2xl font-bold text-nss-primary">{totalValue.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
+              <div className="pt-4 border-t border-border/30 flex justify-between">
+                <span className="text-lg font-bold text-foreground">{isAr ? "الإجمالي" : "Total"}</span>
+                <span className="text-2xl font-bold text-primary">{totalValue.toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
               </div>
             </div>
 
             <div className="mb-6 space-y-2 relative">
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-nss-text-secondary" />
+                  <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
                     placeholder={isAr ? "كود الخصم" : "Coupon Code"}
-                    className="w-full h-11 pl-9 pr-4 rounded-xl border border-nss-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-nss-primary/20 focus:border-nss-primary/50 transition-all uppercase"
+                    className="w-full h-11 pl-9 pr-4 rounded-xl border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all uppercase"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   />
@@ -283,12 +283,12 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
                 <Button 
                   type="button" 
                   variant="outline" 
-                  className="h-11 rounded-xl px-4 font-bold border-nss-border/50 hover:bg-nss-surface"
+                  className="h-11 rounded-xl px-4 font-bold border-border/50 hover:bg-muted"
                   onClick={handleApplyCoupon}
                   disabled={isValidatingCoupon || !couponCode}
                 >
                   {isValidatingCoupon ? (
-                    <div className="h-4 w-4 border-2 border-nss-text-secondary/30 border-t-nss-text-primary rounded-full animate-spin" />
+                    <div className="h-4 w-4 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
                   ) : (
                     isAr ? "تطبيق" : "Apply"
                   )}
@@ -309,7 +309,7 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
             )}
 
             <Button
-              className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-nss-primary/20 bg-nss-primary hover:bg-nss-primary/90 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
+              className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
               onClick={handlePlaceOrder}
               disabled={isSubmitting || items.length === 0}
             >
@@ -326,7 +326,7 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
               )}
             </Button>
 
-            <p className="text-[10px] text-nss-text-secondary text-center mt-4">
+            <p className="text-[10px] text-muted-foreground text-center mt-4">
               {isAr 
                 ? "بالضغط على تأكيد الطلب، فإنك توافق على الشروط والأحكام" 
                 : "By placing your order, you agree to our Terms & Conditions"}
@@ -334,19 +334,19 @@ export function CheckoutForm({ locale, user, addresses, shippingSettings }: Chec
           </Card>
 
           {/* Cart Item Mini List */}
-          <Card className="p-4 rounded-2xl border-nss-border/30 bg-nss-surface/30">
-            <h3 className="text-xs font-bold text-nss-text-secondary uppercase tracking-wider mb-3">
+          <Card className="p-4 rounded-2xl border-border/30 bg-muted/30">
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">
               {isAr ? `منتجات السلة (${items.length})` : `Cart Items (${items.length})`}
             </h3>
             <div className="space-y-3 max-h-60 overflow-y-auto pr-2 scrollbar-hide">
               {items.map((item) => (
                 <div key={item.variantId} className="flex gap-3">
-                  <div className="h-12 w-12 rounded-lg bg-white border border-nss-border/30 flex-shrink-0 flex items-center justify-center p-1">
+                  <div className="h-12 w-12 rounded-lg bg-white border border-border/30 flex-shrink-0 flex items-center justify-center p-1">
                     {item.image && <img src={item.image} alt={item.nameEn} className="max-h-full max-w-full object-contain" />}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-nss-text-primary truncate">{isAr ? item.nameAr : item.nameEn}</p>
-                    <p className="text-[10px] text-nss-text-secondary">Qty: {item.quantity} × {item.price.toFixed(3)}</p>
+                    <p className="text-xs font-bold text-foreground truncate">{isAr ? item.nameAr : item.nameEn}</p>
+                    <p className="text-[10px] text-muted-foreground">Qty: {item.quantity} × {item.price.toFixed(3)}</p>
                   </div>
                 </div>
               ))}

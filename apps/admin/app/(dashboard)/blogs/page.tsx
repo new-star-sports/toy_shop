@@ -5,12 +5,29 @@ import { getBlogs, type Blog } from "@nss/db/queries"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui"
-import { IconPlus, IconSearch, IconFileText, IconEdit, IconCalendar } from "@tabler/icons-react"
+import { IconPlus, IconSearch, IconFileText, IconEdit, IconCalendar, IconPhoto, IconAlertCircle } from "@tabler/icons-react"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 
 export const metadata: Metadata = {
   title: "Blog Posts | Admin",
+}
+
+function BlogThumbnail({ blog }: { blog: Blog }) {
+  if (blog.image_url) {
+    return (
+      <img
+        src={blog.image_url}
+        alt={blog.title_en ?? "Blog"}
+        className="w-full h-full object-cover"
+      />
+    )
+  }
+  return (
+    <div className="w-full h-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+      <IconPhoto size={18} className="text-white/50" stroke={1.5} />
+    </div>
+  )
 }
 
 export default async function BlogListPage() {
@@ -41,7 +58,15 @@ export default async function BlogListPage() {
 }
 
 async function BlogList() {
-  const blogs = await getBlogs()
+  let blogs: Blog[] = []
+  let fetchError: string | null = null
+
+  try {
+    blogs = await getBlogs()
+  } catch (err) {
+    fetchError = err instanceof Error ? err.message : "Failed to load blogs"
+    console.error("BlogList fetch error:", err)
+  }
 
   return (
     <>
@@ -55,7 +80,18 @@ async function BlogList() {
         </CardContent>
       </Card>
 
-      {blogs.length === 0 ? (
+      {/* Error state */}
+      {fetchError && (
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800">
+          <IconAlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" stroke={2} />
+          <div>
+            <p className="text-sm font-semibold text-red-700 dark:text-red-400">Failed to load articles</p>
+            <p className="text-xs text-red-500 mt-0.5">{fetchError}</p>
+          </div>
+        </div>
+      )}
+
+      {blogs.length === 0 && !fetchError ? (
         <div className="text-center py-16 bg-muted/30 rounded-2xl border border-dashed border-border">
           <IconFileText className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-foreground">No articles found</h3>
@@ -73,6 +109,7 @@ async function BlogList() {
                 <tr>
                   <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-widest">Article</th>
                   <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-widest">Category</th>
+                  <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-widest">Media</th>
                   <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-widest">Status</th>
                   <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-widest">Published At</th>
                   <th className="px-6 py-4 font-bold text-[11px] uppercase tracking-widest text-right">Actions</th>
@@ -80,19 +117,18 @@ async function BlogList() {
               </thead>
               <tbody className="divide-y divide-border/30">
                 {blogs.map((blog: Blog) => (
-                  <tr key={blog.id} className="hover:bg-muted/5 transition-colors">
+                  <tr key={blog.id} className="hover:bg-muted/5 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {blog.image_url ? (
-                          <img src={blog.image_url} alt={blog.title_en} className="h-10 w-16 object-cover rounded-lg bg-muted/30 shrink-0" />
-                        ) : (
-                          <div className="h-10 w-16 bg-muted/30 rounded-lg flex items-center justify-center shrink-0">
-                            <IconFileText className="h-5 w-5 text-muted-foreground/40" />
-                          </div>
-                        )}
+                        <div className="w-20 h-12 rounded-xl overflow-hidden border border-border/30 shrink-0 bg-muted/20">
+                          <BlogThumbnail blog={blog} />
+                        </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-foreground line-clamp-1">{blog.title_en}</p>
+                          <p className="font-semibold text-foreground line-clamp-1 text-sm">
+                            {blog.title_en ?? <span className="text-muted-foreground italic font-normal">Untitled</span>}
+                          </p>
                           <p className="text-xs text-muted-foreground font-mono truncate">{blog.slug}</p>
+                          <p className="text-[10px] text-muted-foreground/60 mt-0.5">#{blog.display_order}</p>
                         </div>
                       </div>
                     </td>
@@ -101,6 +137,19 @@ async function BlogList() {
                         <Badge variant="outline" className="font-semibold border-primary/20 text-primary text-[10px]">{blog.category.name_en}</Badge>
                       ) : (
                         <span className="text-muted-foreground text-xs italic">Uncategorized</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {blog.image_url ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md bg-muted text-foreground border border-border/60 w-fit">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                          Image
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md bg-muted text-muted-foreground border border-border/60 w-fit">
+                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                          None
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -132,16 +181,18 @@ async function BlogList() {
               <Card key={blog.id} className="rounded-2xl border-border/40 overflow-hidden bg-card">
                 <div className="flex gap-0">
                   {blog.image_url ? (
-                    <img src={blog.image_url} alt={blog.title_en} className="w-20 h-full object-cover shrink-0 rounded-l-2xl" />
+                    <img src={blog.image_url} alt={blog.title_en ?? "Blog"} className="w-20 h-full object-cover shrink-0 rounded-l-2xl" />
                   ) : (
-                    <div className="w-20 bg-muted/30 flex items-center justify-center rounded-l-2xl shrink-0">
-                      <IconFileText className="h-6 w-6 text-muted-foreground/30" />
+                    <div className="w-20 bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center rounded-l-2xl shrink-0">
+                      <IconPhoto className="h-6 w-6 text-white/30" stroke={1.5} />
                     </div>
                   )}
                   <div className="flex-1 p-3 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-foreground text-sm line-clamp-2 leading-tight">{blog.title_en}</p>
+                        <p className="font-semibold text-foreground text-sm line-clamp-2 leading-tight">
+                          {blog.title_en ?? <span className="text-muted-foreground italic font-normal">Untitled</span>}
+                        </p>
                         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                           {blog.is_published ? (
                             <Badge className="bg-emerald-100 text-emerald-700 text-[9px] font-bold border-none h-4 px-1.5">Published</Badge>

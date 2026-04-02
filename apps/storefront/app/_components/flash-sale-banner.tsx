@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react"
+import { Zap } from "lucide-react"
 import { type Locale } from "@/lib/i18n"
 
 interface FlashSaleBannerProps {
@@ -40,41 +41,34 @@ export function FlashSaleBanner({ endTime, titleEn, titleAr, locale }: FlashSale
   if (!timeLeft) return null
 
   return (
-    <div className="bg-nss-danger text-white py-2.5 px-4 overflow-hidden relative">
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8">
+    <div className="bg-red-600 text-white py-2 px-4">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8">
         <div className="flex items-center gap-2">
-          <span className="animate-bounce">🔥</span>
-          <span className="font-bold uppercase tracking-wider text-sm sm:text-base">
+          <Zap size={16} className="fill-white" />
+          <span className="font-bold uppercase tracking-wider text-xs sm:text-sm">
             {isAr ? titleAr : titleEn}
           </span>
         </div>
-        
-        <div className="flex items-center gap-4 text-xs sm:text-sm font-mono">
-          <div className="flex flex-col items-center">
-            <span className="bg-white/20 rounded px-1.5 py-0.5 min-w-[32px] text-center font-bold">
-              {String(timeLeft.hours).padStart(2, "0")}
-            </span>
-            <span className="text-[10px] uppercase mt-0.5 opacity-80">{isAr ? "ساعة" : "HRS"}</span>
-          </div>
-          <span className="animate-pulse font-bold">:</span>
-          <div className="flex flex-col items-center">
-            <span className="bg-white/20 rounded px-1.5 py-0.5 min-w-[32px] text-center font-bold">
-              {String(timeLeft.minutes).padStart(2, "0")}
-            </span>
-            <span className="text-[10px] uppercase mt-0.5 opacity-80">{isAr ? "دقيقة" : "MIN"}</span>
-          </div>
-          <span className="animate-pulse font-bold">:</span>
-          <div className="flex flex-col items-center">
-            <span className="bg-white/20 rounded px-1.5 py-0.5 min-w-[32px] text-center font-bold">
-              {String(timeLeft.seconds).padStart(2, "0")}
-            </span>
-            <span className="text-[10px] uppercase mt-0.5 opacity-80">{isAr ? "ثانية" : "SEC"}</span>
-          </div>
-        </div>
 
-        <button className="hidden md:block bg-white text-nss-danger px-4 py-1 rounded-full text-xs font-bold hover:bg-opacity-90 transition-all uppercase">
-          {isAr ? "تسوق الآن" : "Shop Now"}
-        </button>
+        <div className="flex items-center gap-3 font-mono text-sm">
+          {[
+            { val: timeLeft.hours, labelEn: "HRS", labelAr: "ساعة" },
+            { val: timeLeft.minutes, labelEn: "MIN", labelAr: "دقيقة" },
+            { val: timeLeft.seconds, labelEn: "SEC", labelAr: "ثانية" },
+          ].map(({ val, labelEn, labelAr }, idx) => (
+            <div key={idx} className="flex items-center gap-3">
+              {idx > 0 && <span className="font-bold opacity-60">:</span>}
+              <div className="flex flex-col items-center">
+                <span className="bg-white/20 rounded px-2 py-0.5 min-w-[32px] text-center font-bold tabular-nums">
+                  {String(val).padStart(2, "0")}
+                </span>
+                <span className="text-[9px] uppercase mt-0.5 opacity-70">
+                  {isAr ? labelAr : labelEn}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

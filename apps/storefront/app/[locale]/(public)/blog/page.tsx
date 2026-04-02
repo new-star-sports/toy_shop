@@ -17,9 +17,9 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
   ])
 
   return (
-    <div className="bg-nss-background min-h-screen">
+    <div className="bg-background min-h-screen">
       {/* ── Hero section ── */}
-      <section className="bg-nss-primary text-white py-16 relative overflow-hidden">
+      <section className="bg-primary text-white py-16 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <path d="M0 100 C 20 0 50 0 100 100 Z" fill="currentColor" />
@@ -42,20 +42,20 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
           {/* ── Blog Grid ── */}
           <div className="lg:col-span-3 space-y-12">
             {blogs.length === 0 ? (
-              <div className="text-center py-20 bg-nss-card rounded-2xl border border-nss-border">
-                <FileText className="h-16 w-16 text-nss-text-secondary/20 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-nss-text-primary">
+              <div className="text-center py-20 bg-card rounded-2xl border border-border">
+                <FileText className="h-16 w-16 text-muted-foreground/20 mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-foreground">
                   {isAr ? "لا توجد مقالات حالياً" : "No articles yet"}
                 </h3>
-                <p className="text-nss-text-secondary mt-2">
+                <p className="text-muted-foreground mt-2">
                   {isAr ? "عد قريباً لمتابعة أحدث أخبارنا." : "Stay tuned for our latest updates."}
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {blogs.map((blog: Blog) => (
-                  <article key={blog.id} className="group bg-nss-card border border-nss-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full">
-                    <Link href={`/${locale}/blog/${blog.slug}`} className="block relative aspect-video bg-nss-surface overflow-hidden">
+                  <article key={blog.id} className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full">
+                    <Link href={`/${locale}/blog/${blog.slug}`} className="block relative aspect-video bg-muted overflow-hidden">
                       {blog.image_url ? (
                         <img 
                           src={blog.image_url} 
@@ -63,36 +63,36 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-nss-text-secondary/20">
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
                           <FileText className="h-12 w-12" />
                         </div>
                       )}
                       {blog.category && (
                         <div className={`absolute top-4 ${isAr ? 'right-4' : 'left-4'}`}>
-                          <span className="bg-nss-primary text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg">
+                          <span className="bg-primary text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg">
                             {isAr ? blog.category.name_ar : blog.category.name_en}
                           </span>
                         </div>
                       )}
                     </Link>
                     <div className="p-6 flex flex-col flex-1">
-                      <div className="flex items-center gap-4 text-xs text-nss-text-secondary mb-3">
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                         <span className="flex items-center gap-1.5">
                           <Calendar className="h-3.5 w-3.5" />
                           {blog.published_at ? format(new Date(blog.published_at), "MMM d, yyyy") : "Draft"}
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold text-nss-text-primary mb-3 line-clamp-2 leading-snug group-hover:underline">
+                      <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-snug group-hover:underline">
                         <Link href={`/${locale}/blog/${blog.slug}`}>
                           {isAr ? blog.title_ar : blog.title_en}
                         </Link>
                       </h3>
-                      <p className="text-nss-text-secondary text-sm line-clamp-3 mb-6 flex-1">
+                      <p className="text-muted-foreground text-sm line-clamp-3 mb-6 flex-1">
                         {(isAr ? blog.excerpt_ar : blog.excerpt_en) || (isAr ? blog.title_ar : blog.title_en)}
                       </p>
                       <Link 
                         href={`/${locale}/blog/${blog.slug}`} 
-                        className="inline-flex items-center text-sm font-bold text-nss-primary gap-1 group/btn"
+                        className="inline-flex items-center text-sm font-bold text-primary gap-1 group/btn"
                       >
                         {isAr ? "اقرأ المزيد" : "Read More"}
                         <ChevronRight className={`h-4 w-4 transition-transform ${isAr ? 'rotate-180 group-hover/btn:-translate-x-1' : 'group-hover/btn:translate-x-1'}`} />
@@ -106,9 +106,9 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
 
           {/* ── Sidebar ── */}
           <aside className="space-y-8">
-            <div className="bg-nss-card border border-nss-border rounded-2xl p-6 shadow-sm">
-              <h3 className="font-bold text-nss-text-primary mb-5 flex items-center gap-2">
-                <Tag className="h-4 w-4 text-nss-primary" />
+            <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+              <h3 className="font-bold text-foreground mb-5 flex items-center gap-2">
+                <Tag className="h-4 w-4 text-primary" />
                 {isAr ? "التصنيفات" : "Categories"}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -116,7 +116,7 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
                   <Link 
                     key={cat.id} 
                     href={`/${locale}/blog?category=${cat.slug}`}
-                    className="px-4 py-2 rounded-lg bg-nss-surface border border-nss-border text-sm text-nss-text-primary hover:border-nss-primary hover:bg-nss-primary hover:text-white transition-all"
+                    className="px-4 py-2 rounded-lg bg-muted border border-border text-sm text-foreground hover:border-primary hover:bg-primary hover:text-white transition-all"
                   >
                     {isAr ? cat.name_ar : cat.name_en}
                   </Link>
@@ -124,7 +124,7 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-nss-primary to-nss-primary/80 text-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-gradient-to-br from-primary to-primary/80 text-white rounded-2xl p-6 shadow-lg">
               <h3 className="font-bold text-xl mb-3">
                 {isAr ? "اشترك في نشرتنا" : "Subscribe"}
               </h3>
@@ -139,7 +139,7 @@ export default async function BlogIndexPage({ params }: BlogIndexPageProps) {
                   placeholder={isAr ? "بريدك الإلكتروني" : "Your email address"} 
                   className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-sm placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
                 />
-                <button className="w-full bg-white text-nss-primary font-bold py-2.5 rounded-lg text-sm hover:bg-white/90 transition-colors">
+                <button className="w-full bg-white text-primary font-bold py-2.5 rounded-lg text-sm hover:bg-white/90 transition-colors">
                   {isAr ? "اشترك الآن" : "Subscribe Now"}
                 </button>
               </div>

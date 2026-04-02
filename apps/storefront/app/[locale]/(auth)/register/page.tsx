@@ -19,10 +19,10 @@ export default async function RegisterPage({
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-nss-primary tracking-tight">
+        <h1 className="text-3xl font-bold text-primary tracking-tight">
           {isAr ? "إنشاء حساب جديد" : "Create Account"}
         </h1>
-        <p className="mt-2 text-sm text-nss-text-secondary">
+        <p className="mt-2 text-sm text-muted-foreground">
           {isAr
             ? "انضم إلينا اليوم للحصول على أفضل الألعاب والعروض"
             : "Join us today for the best toys and offers"}
@@ -32,12 +32,12 @@ export default async function RegisterPage({
       <RegisterForm locale={locale} />
 
       <div className="text-center text-sm">
-        <span className="text-nss-text-secondary">
+        <span className="text-muted-foreground">
           {isAr ? "لديك حساب بالفعل؟" : "Already have an account?"}{" "}
         </span>
         <Link
           href={`/${locale}/login`}
-          className="font-medium text-nss-primary hover:text-nss-accent transition-colors"
+          className="font-medium text-primary hover:text-primary transition-colors"
         >
           {isAr ? "تسجيل الدخول" : "Sign in here"}
         </Link>

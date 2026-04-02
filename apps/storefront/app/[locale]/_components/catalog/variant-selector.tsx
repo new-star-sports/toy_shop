@@ -28,11 +28,11 @@ export function VariantSelector({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-nss-text-primary">
+        <h3 className="text-sm font-medium text-foreground">
           {isAr ? "اختر" : "Select Option"}
         </h3>
         {selectedVariant && (
-          <span className="text-xs text-nss-text-secondary">
+          <span className="text-xs text-muted-foreground">
             {isAr ? "المختار:" : "Selected:"} {isAr ? selectedVariant.name_ar : selectedVariant.name_en}
           </span>
         )}
@@ -50,8 +50,8 @@ export function VariantSelector({
               size="sm"
               className={`h-10 px-4 rounded-xl border-2 transition-all ${
                 isSelected 
-                  ? "bg-nss-primary text-white border-nss-primary" 
-                  : "border-nss-border/50 hover:border-nss-primary/30"
+                  ? "bg-primary text-white border-primary" 
+                  : "border-border/50 hover:border-primary/30"
               } ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={() => !isOutOfStock && onSelect(variant)}
               disabled={isOutOfStock}

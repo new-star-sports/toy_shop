@@ -32,11 +32,11 @@ export function ProductSort({ locale }: { locale: Locale }) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-nss-text-secondary hidden sm:inline">
+      <span className="text-sm text-muted-foreground hidden sm:inline">
         {isAr ? "ترتيب حسب:" : "Sort by:"}
       </span>
       <Select value={currentSort} onValueChange={handleSortChange}>
-        <SelectTrigger className="w-[180px] rounded-xl border-nss-border bg-white text-sm font-medium hover:border-nss-primary/30 focus:ring-2 focus:ring-nss-primary/10">
+        <SelectTrigger className="w-[180px] rounded-xl border-border bg-white text-sm font-medium hover:border-primary/30 focus:ring-2 focus:ring-primary/10">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="w-[180px]">

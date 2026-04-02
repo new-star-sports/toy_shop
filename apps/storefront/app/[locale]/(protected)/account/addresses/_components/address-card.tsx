@@ -33,45 +33,45 @@ export function AddressCard({ address, locale }: AddressCardProps) {
   };
 
   return (
-    <Card className={`relative overflow-hidden border-2 transition-all ${address.is_default ? "border-nss-primary/20 shadow-md" : "border-nss-border/50 hover:border-nss-primary/10"}`}>
+    <Card className={`relative overflow-hidden border-2 transition-all ${address.is_default ? "border-primary/20 shadow-md" : "border-border/50 hover:border-primary/10"}`}>
       {address.is_default && (
         <div className="absolute top-0 right-0 p-2">
-          <Badge className="bg-nss-primary hover:bg-nss-primary text-white border-none text-[10px] px-2 py-0">
+          <Badge className="bg-primary hover:bg-primary text-white border-none text-[10px] px-2 py-0">
             {isAr ? "الافتراضي" : "DEFAULT"}
           </Badge>
         </div>
       )}
       
       <CardHeader className="pb-2 space-y-1">
-        <div className="flex items-center gap-2 text-nss-primary">
+        <div className="flex items-center gap-2 text-primary">
           <User className="h-4 w-4" />
           <span className="font-semibold">{address.recipient_name}</span>
         </div>
-        <div className="flex items-center gap-2 text-nss-text-secondary text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
           <Phone className="h-4 w-4 shrink-0" />
           <span dir="ltr">{address.recipient_phone}</span>
         </div>
       </CardHeader>
 
-      <CardContent className="pb-4 text-sm text-nss-text-primary">
+      <CardContent className="pb-4 text-sm text-foreground">
         <div className="flex gap-2">
-          <MapPin className="h-4 w-4 mt-0.5 text-nss-text-secondary shrink-0" />
+          <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
           <div className="space-y-1">
             <p className="font-medium">
               {isAr ? address.governorate?.name_ar : address.governorate?.name_en}, {isAr ? address.area?.name_ar : address.area?.name_en}
             </p>
-            <p className="text-nss-text-secondary">
+            <p className="text-muted-foreground">
               {isAr ? "قطعة" : "Block"} {address.block}, {isAr ? "شارع" : "Street"} {address.street}, {isAr ? "جادة" : "Avenue"} {address.building}
             </p>
             {(address.floor || address.apartment) && (
-              <p className="text-nss-text-secondary">
+              <p className="text-muted-foreground">
                 {address.floor && `${isAr ? "دور" : "Floor"} ${address.floor}`}
                 {address.floor && address.apartment && " — "}
                 {address.apartment && `${isAr ? "شقة" : "Apt"} ${address.apartment}`}
               </p>
             )}
             {address.landmark && (
-              <p className="text-xs text-nss-text-secondary italic mt-1">
+              <p className="text-xs text-muted-foreground italic mt-1">
                 {isAr ? "علامة مميزة:" : "Landmark:"} {address.landmark}
               </p>
             )}
@@ -79,12 +79,12 @@ export function AddressCard({ address, locale }: AddressCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-2 border-t border-nss-border/50 flex gap-2">
+      <CardFooter className="pt-2 border-t border-border/50 flex gap-2">
         {!address.is_default && (
           <Button 
             variant="ghost" 
             size="sm" 
-            className="flex-1 text-xs h-8 gap-1.5 hover:text-nss-primary hover:bg-nss-primary/5"
+            className="flex-1 text-xs h-8 gap-1.5 hover:text-primary hover:bg-primary/5"
             onClick={handleSetDefault}
             disabled={isSettingDefault}
           >
@@ -95,7 +95,7 @@ export function AddressCard({ address, locale }: AddressCardProps) {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-xs h-8 gap-1.5 text-nss-text-secondary hover:text-nss-primary hover:bg-nss-primary/5"
+          className="text-xs h-8 gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/5"
           asChild
         >
           <a href={`/${locale}/account/addresses/${address.id}`}>
@@ -106,7 +106,7 @@ export function AddressCard({ address, locale }: AddressCardProps) {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-xs h-8 gap-1.5 text-nss-text-secondary hover:text-red-600 hover:bg-red-50"
+          className="text-xs h-8 gap-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50"
           onClick={handleDelete}
           disabled={isDeleting}
         >

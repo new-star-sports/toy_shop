@@ -1,19 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogTrigger 
-} from "@/components/ui"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
 import { LoginForm } from "../(auth)/login/_components/login-form"
 import { RegisterForm } from "../(auth)/register/_components/register-form"
 import type { Locale } from "@/lib/i18n"
-import { Button } from "@/components/ui"
-import { IconUser } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import { User } from "lucide-react"
 
 interface AuthDialogProps {
   locale: Locale
@@ -33,7 +26,7 @@ export function AuthDialog({ locale, trigger, defaultView = "login" }: AuthDialo
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 border-border/40">
-            <IconUser size={20} stroke={1.5} />
+            <User size={20} strokeWidth={1.5} />
           </Button>
         )}
       </DialogTrigger>

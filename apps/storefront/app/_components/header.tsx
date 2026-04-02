@@ -1,139 +1,91 @@
+"use client";
+
 import Link from "next/link";
-import type { Locale } from "@/lib/i18n";
 import { SearchBar } from "./search-bar";
 import { CartButton } from "./cart-button";
 import { AccountButton } from "./account-button";
-import { getSetting } from "@nss/db/queries";
-import { 
-  IconHeart, 
-  IconSparkles
-} from "@tabler/icons-react";
-import { Button } from "@/components/ui";
+import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Locale } from "@/lib/i18n";
+import type { User } from "@supabase/supabase-js";
 
 interface HeaderProps {
   locale: Locale;
-  user?: {
-    email?: string;
-    user_metadata?: {
-      full_name?: string;
-    };
-  } | null;
+  user?: User | null;
 }
 
-export default async function Header({ locale, user }: HeaderProps) {
+export default function Header({ locale, user }: HeaderProps) {
   const isAr = locale === "ar";
-  
-  const annSettings = await getSetting("announcement_bar");
-  const showAnn = annSettings?.enabled && annSettings.messages.some(m => m.enabled);
-
   return (
-    <header className="sticky top-0 z-50">
-      {/* ── Announcement Bar ── */}
-      {showAnn && (
-        <div 
-          className="text-center py-2 px-4 text-[11px] sm:text-xs font-semibold uppercase tracking-wider overflow-hidden shadow-sm"
-          style={{ 
-            backgroundColor: annSettings.bg_color || 'hsl(var(--primary))',
-            color: annSettings.text_color || '#FFFFFF'
-          }}
-        >
-          <div className="flex items-center justify-center gap-4 animate-in slide-in-from-top-full duration-700">
-            {annSettings.messages
-              .filter(m => m.enabled)
-              .map((msg, idx) => (
-                <span key={idx} className={cn("flex items-center gap-2", idx > 0 ? "hidden md:flex" : "flex")}>
-                   <IconSparkles size={14} className="opacity-70" stroke={2} />
-                   {isAr ? msg.text_ar : msg.text_en}
-                </span>
-              ))}
-          </div>
-        </div>
-      )}
-
+    <header className="fixed top-0 left-0 right-0 z-50">
       {/* ── Main Nav ── */}
-      <nav className="bg-background/80 backdrop-blur-md border-b border-border/50 shadow-sm transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+      <nav style={{ background: "var(--gradient-header)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/20">
+          <div className="flex items-center justify-between h-16 sm:h-18">
             {/* Logo */}
-            <Link href={`/${locale}`} className="flex items-center gap-3 group transition-transform hover:scale-[1.02]">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 rotate-1 group-hover:rotate-0 transition-transform">
-                <span className="text-xl sm:text-2xl text-white font-black">★</span>
-              </div>
-              <div className="flex flex-col -space-y-1">
-                <span className="text-xl sm:text-2xl font-black text-primary tracking-tighter">
-                  {isAr ? "نيو ستار" : "NewStar"}
-                </span>
-                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.2em]">
-                  {isAr ? "سبورتس" : "Sports"}
-                </span>
-              </div>
+            <Link
+              href={`/${locale}`}
+              className="flex-shrink-0 group"
+            >
+              <img
+                src="/logo.png"
+                alt={isAr ? "نيو ستار سبورتس" : "NewStarSports"}
+                className="h-8 sm:h-10 w-auto transition-opacity group-hover:opacity-80"
+              />
             </Link>
 
-            {/* Search Bar - Center */}
-            <div className="flex-1 max-w-lg mx-6 hidden md:block">
-              <SearchBar locale={locale} />
-            </div>
+            {/* Nav Links — desktop center */}
+            <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
+              {[
+                { href: `/${locale}/products`, en: "Shop", ar: "المتجر" },
+                { href: `/${locale}/products?sort=new`, en: "New Arrivals", ar: "وصل حديثاً" },
+                { href: `/${locale}/products?sale=true`, en: "Sale", ar: "تخفيضات" },
+                { href: `/${locale}/blog`, en: "Blog", ar: "المدونة" },
+              ].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors text-white/80 hover:text-white"
+                >
+                  {isAr ? link.ar : link.en}
+                </Link>
+              ))}
+            </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-2">
               {/* Language Toggle */}
               <Link
                 href={`/${locale === "ar" ? "en" : "ar"}`}
-                className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full text-xs font-bold text-muted-foreground hover:bg-muted/40 hover:text-foreground border border-transparent hover:border-border/40 transition-all duration-200"
+                className="hidden sm:flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold border text-white border-white/30 hover:bg-white/15 transition-all duration-200"
               >
                 {isAr ? "EN" : "AR"}
               </Link>
 
+              {/* Search */}
+              <div className="hidden md:block">
+                <SearchBar locale={locale} />
+              </div>
+
               {/* Wishlist */}
-              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-destructive hover:bg-destructive/5" asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full transition-colors text-white/80 hover:text-white hover:bg-white/15"
+                asChild
+              >
                 <Link href={`/${locale}/account/wishlist`} aria-label={isAr ? "المفضلات" : "Wishlist"}>
-                  <IconHeart size={22} stroke={1.5} />
+                  <Heart size={20} />
                 </Link>
               </Button>
 
               {/* Cart */}
-              <CartButton locale={locale} />
+              <CartButton locale={locale} scrolled={true} />
 
-              <div className="h-6 w-px bg-border/40 mx-1 hidden sm:block" />
+              <div className="h-5 w-px mx-1 hidden sm:block bg-white/25" />
 
-              {/* Account / Login */}
-              <AccountButton locale={locale} user={user} />
-            </div>
-          </div>
-        </div>
-
-        {/* ── Category Nav Bar ── */}
-        <div className="border-t border-border/40 bg-muted/5">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-8 overflow-x-auto scrollbar-none py-3 text-[13px] font-semibold">
-              <Link href={`/${locale}/products`} className="whitespace-nowrap text-primary hover:opacity-80 transition-opacity flex items-center gap-1.5 uppercase tracking-wide">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                {isAr ? "الكل" : "Shop All"}
-              </Link>
-              <Link href={`/${locale}/products?sort=new`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all flex items-center gap-1.5">
-                {isAr ? "وصل حديثاً" : "New Arrivals"}
-              </Link>
-              <Link href={`/${locale}/products?sale=true`} className="whitespace-nowrap text-accent hover:opacity-80 transition-opacity flex items-center gap-1.5">
-                {isAr ? "تخفيضات" : "Sale"}
-                <span className="text-[10px] bg-accent/10 px-1.5 rounded-full">🔥</span>
-              </Link>
-              <div className="h-4 w-px bg-border/40 hidden sm:block" />
-              <Link href={`/${locale}/category/building-construction`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all">
-                {isAr ? "البناء" : "Building"}
-              </Link>
-              <Link href={`/${locale}/category/dolls-accessories`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all">
-                {isAr ? "الدمى" : "Dolls"}
-              </Link>
-              <Link href={`/${locale}/category/outdoor-sports`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all">
-                {isAr ? "خارجي" : "Outdoor"}
-              </Link>
-              <div className="h-4 w-px bg-border/40 hidden sm:block" />
-              <Link href={`/${locale}/brand/lego`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all uppercase tracking-tighter opacity-80 hover:opacity-100 italic">
-                LEGO
-              </Link>
-              <Link href={`/${locale}/brand/barbie`} className="whitespace-nowrap text-muted-foreground hover:text-foreground transition-all uppercase tracking-tighter opacity-80 hover:opacity-100 italic">
-                Barbie
-              </Link>
+              {/* Account */}
+              <AccountButton locale={locale} user={user} scrolled={true} />
             </div>
           </div>
         </div>
@@ -141,5 +93,3 @@ export default async function Header({ locale, user }: HeaderProps) {
     </header>
   );
 }
-
-import { cn } from "@/lib/utils";

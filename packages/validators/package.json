@@ -9,6 +9,7 @@
     "./checkout": "./checkout.ts",
     "./settings": "./settings.ts",
     "./banner": "./banner.ts",
+    "./blog": "./blog.ts",
     "./marketing": "./marketing.ts",
     "./coupon": "./coupon.ts"
   },

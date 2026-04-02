@@ -3,8 +3,9 @@
 import Link from "next/link"
 import type { Locale } from "@/lib/i18n"
 import { AuthDialog } from "../[locale]/_components/auth-dialog"
-import { Button } from "@/components/ui"
-import { IconUser } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import { User } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface AccountButtonProps {
   locale: Locale
@@ -14,9 +15,10 @@ interface AccountButtonProps {
       full_name?: string
     }
   } | null
+  scrolled?: boolean
 }
 
-export function AccountButton({ locale, user }: AccountButtonProps) {
+export function AccountButton({ locale, user, scrolled }: AccountButtonProps) {
   const isAr = locale === "ar"
   const userDisplayName = user?.user_metadata?.full_name || user?.email?.split("@")[0]
 
@@ -24,10 +26,15 @@ export function AccountButton({ locale, user }: AccountButtonProps) {
     return (
       <Link
         href={`/${locale}/account/profile`}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-all duration-200"
+        className={cn(
+          "flex items-center gap-2 px-2 py-1.5 rounded-full transition-all duration-200",
+          scrolled
+            ? "text-foreground/70 hover:text-foreground hover:bg-muted"
+            : "text-white/80 hover:text-white hover:bg-white/10"
+        )}
         aria-label={isAr ? "الحساب" : "Account"}
       >
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs ring-2 ring-primary/5">
+        <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs">
           {userDisplayName?.charAt(0).toUpperCase()}
         </div>
         <span className="hidden lg:block text-xs font-semibold max-w-[100px] truncate">
@@ -44,10 +51,15 @@ export function AccountButton({ locale, user }: AccountButtonProps) {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all duration-300"
+          className={cn(
+            "rounded-full h-9 w-9 transition-all duration-200",
+            scrolled
+              ? "text-foreground/70 hover:text-primary hover:bg-primary/5"
+              : "text-white/80 hover:text-white hover:bg-white/10"
+          )}
           aria-label={isAr ? "تسجيل الدخول" : "Login"}
         >
-          <IconUser size={22} stroke={1.5} />
+          <User size={20} />
         </Button>
       }
     />

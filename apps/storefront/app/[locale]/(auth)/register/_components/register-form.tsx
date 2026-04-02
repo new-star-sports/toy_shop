@@ -31,7 +31,7 @@ export function RegisterForm({ locale }: { locale: Locale }) {
   }
 
   return (
-    <Card className="shadow-lg border-nss-border/50">
+    <Card className="shadow-lg border-border/50">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -91,16 +91,16 @@ export function RegisterForm({ locale }: { locale: Locale }) {
             <Checkbox id="terms" name="terms" required className="mt-1" />
             <Label
               htmlFor="terms"
-              className="text-xs leading-normal font-normal text-nss-text-secondary"
+              className="text-xs leading-normal font-normal text-muted-foreground"
             >
               {isAr ? (
                 <>
                   أوافق على{" "}
-                  <Link href="/ar/terms" className="text-nss-primary hover:underline">
+                  <Link href="/ar/terms" className="text-primary hover:underline">
                     الشروط والأحكام
                   </Link>{" "}
                   و{" "}
-                  <Link href="/ar/privacy" className="text-nss-primary hover:underline">
+                  <Link href="/ar/privacy" className="text-primary hover:underline">
                     سياسة الخصوصية
                   </Link>{" "}
                   (بما في ذلك قانون حماية البيانات الكويتي PDPL)
@@ -108,11 +108,11 @@ export function RegisterForm({ locale }: { locale: Locale }) {
               ) : (
                 <>
                   I agree to the{" "}
-                  <Link href="/en/terms" className="text-nss-primary hover:underline">
+                  <Link href="/en/terms" className="text-primary hover:underline">
                     Terms & Conditions
                   </Link>{" "}
                   and{" "}
-                  <Link href="/en/privacy" className="text-nss-primary hover:underline">
+                  <Link href="/en/privacy" className="text-primary hover:underline">
                     Privacy Policy
                   </Link>{" "}
                   (including Kuwait PDPL compliance).

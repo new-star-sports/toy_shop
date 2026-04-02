@@ -55,10 +55,10 @@ export default async function SearchPage({
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-nss-text-primary">
+          <h1 className="text-3xl font-bold text-foreground">
             {isAr ? "نتائج البحث" : "Search Results"}
           </h1>
-          <p className="text-sm text-nss-text-secondary mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             {isAr 
               ? `تم العثور على ${count} منتج للبحث "${query}"` 
               : `Found ${count} products for "${query}"`}
@@ -74,8 +74,8 @@ export default async function SearchPage({
 
         <div className="lg:col-span-3">
           {products.length === 0 ? (
-            <div className="text-center py-20 bg-nss-surface rounded-3xl border border-nss-border/50">
-              <p className="text-nss-text-secondary">
+            <div className="text-center py-20 bg-muted rounded-3xl border border-border/50">
+              <p className="text-muted-foreground">
                 {isAr 
                   ? "عذراً، لم نجد أي نتائج. جرب كلمات بحث أخرى." 
                   : "Sorry, no results found. Try different keywords."}

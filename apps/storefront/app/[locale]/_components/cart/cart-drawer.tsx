@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, ShoppingBag, ArrowRight, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cart-store";
 import { CartItem } from "./cart-item";
 import type { Locale } from "@/lib/i18n";
@@ -43,7 +43,7 @@ export function CartDrawer({ locale }: { locale: Locale }) {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 bottom-0 z-[70] w-full max-w-md bg-nss-card border-nss-border shadow-2xl transition-transform duration-500 ease-in-out ${
+        className={`fixed top-0 bottom-0 z-[70] w-full max-w-md bg-background border-border shadow-2xl transition-transform duration-500 ease-in-out ${
           isOpen 
             ? "translate-x-0" 
             : (isAr ? "-translate-x-full" : "translate-x-full")
@@ -51,19 +51,19 @@ export function CartDrawer({ locale }: { locale: Locale }) {
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-nss-border/30">
+          <div className="flex items-center justify-between p-6 border-b border-border">
             <div className="flex items-center gap-2">
-              <ShoppingBag className="h-5 w-5 text-nss-primary" />
-              <h2 className="text-xl font-bold text-nss-text-primary">
+              <ShoppingBag className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">
                 {isAr ? "سلة التسوق" : "Shopping Cart"}
               </h2>
-              <span className="bg-nss-primary/10 text-nss-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
+              <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">
                 {getTotalItems()}
               </span>
             </div>
             <button
               onClick={() => toggleDrawer(false)}
-              className="p-2 -m-2 text-nss-text-secondary hover:text-nss-primary transition-colors"
+              className="p-2 -m-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-6 w-6" />
             </button>
@@ -73,14 +73,14 @@ export function CartDrawer({ locale }: { locale: Locale }) {
           <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
             {items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-20 h-20 rounded-full bg-nss-surface flex items-center justify-center">
-                  <ShoppingBag className="h-10 w-10 text-nss-text-secondary/30" />
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                <ShoppingBag className="h-10 w-10 text-muted-foreground/30" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-lg font-bold text-nss-text-primary">
+                  <p className="text-lg font-bold text-foreground">
                     {isAr ? "سلتك فارغة" : "Your cart is empty"}
                   </p>
-                  <p className="text-sm text-nss-text-secondary">
+                  <p className="text-sm text-muted-foreground">
                     {isAr ? "ابحث عن ألعاب رائعة لإضافتها هنا!" : "Find some awesome toys to add here!"}
                   </p>
                 </div>
@@ -102,12 +102,12 @@ export function CartDrawer({ locale }: { locale: Locale }) {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="p-6 border-t border-nss-border/30 bg-nss-surface/50 space-y-4">
-              <div className="flex items-center justify-between text-nss-text-primary">
+            <div className="p-6 border-t border-border bg-muted/20 space-y-4">
+              <div className="flex items-center justify-between text-foreground">
                 <span className="text-base font-medium">{isAr ? "المجموع الفرعي" : "Subtotal"}</span>
                 <span className="text-xl font-bold">{getTotalPrice().toFixed(3)} {isAr ? "د.ك" : "KWD"}</span>
               </div>
-              <p className="text-xs text-nss-text-secondary">
+              <p className="text-xs text-muted-foreground">
                 {isAr 
                   ? "سيتم حساب تكلفة الشحن والضرائب عند الدفع" 
                   : "Shipping & taxes calculated at checkout"}
@@ -116,7 +116,7 @@ export function CartDrawer({ locale }: { locale: Locale }) {
               <div className="grid grid-cols-1 gap-3">
                 <Button 
                   asChild
-                  className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-nss-primary/20 bg-nss-primary hover:bg-nss-primary/90"
+                  className="w-full h-12 rounded-full font-bold"
                   onClick={() => toggleDrawer(false)}
                 >
                   <Link href={`/${locale}/checkout`}>

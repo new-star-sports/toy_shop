@@ -33,11 +33,11 @@ export function LoginForm({ locale }: { locale: Locale }) {
   }
 
   return (
-    <Card className="shadow-lg border-nss-border/50">
+    <Card className="shadow-lg border-border/50">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {message === "check-email" && (
-            <Alert variant="success" className="mb-4">
+            <Alert variant="default" className="mb-4 border-green-200 bg-green-50 text-green-800">
               <AlertDescription>
                 {isAr
                   ? "تم إنشاء الحساب بنجاح. يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب."
@@ -69,7 +69,7 @@ export function LoginForm({ locale }: { locale: Locale }) {
               <Label htmlFor="password">{isAr ? "كلمة المرور" : "Password"}</Label>
               <Link
                 href={`/${locale}/forgot-password`}
-                className="text-xs text-nss-primary hover:underline"
+                className="text-xs text-primary hover:underline"
               >
                 {isAr ? "نسيت كلمة المرور؟" : "Forgot password?"}
               </Link>

@@ -13,9 +13,9 @@ export function Breadcrumbs({ items, locale }: BreadcrumbsProps) {
 
   return (
     <nav className="flex mb-6 overflow-x-auto pb-1" aria-label="Breadcrumb">
-      <ol className="flex items-center space-x-2 space-x-reverse text-sm text-nss-text-secondary whitespace-nowrap">
+      <ol className="flex items-center space-x-2 space-x-reverse text-sm text-muted-foreground whitespace-nowrap">
         <li>
-          <Link href={`/${locale}`} className="hover:text-nss-primary transition-colors flex items-center">
+          <Link href={`/${locale}`} className="hover:text-primary transition-colors flex items-center">
             <Home className="h-4 w-4" />
             <span className="sr-only">Home</span>
           </Link>
@@ -25,8 +25,8 @@ export function Breadcrumbs({ items, locale }: BreadcrumbsProps) {
             <Arrow className="h-4 w-4 flex-shrink-0 opacity-50" />
             <Link
               href={item.href}
-              className={`hover:text-nss-primary transition-colors ${
-                index === items.length - 1 ? "font-semibold text-nss-text-primary" : ""
+              className={`hover:text-primary transition-colors ${
+                index === items.length - 1 ? "font-semibold text-foreground" : ""
               }`}
             >
               {isAr ? item.label_ar : item.label_en}

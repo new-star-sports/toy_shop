@@ -58,7 +58,7 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Recipient Details */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-nss-text-secondary uppercase tracking-wider flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
             <User className="h-4 w-4" />
             {isAr ? "بيانات المستلم" : "Recipient Details"}
           </h3>
@@ -87,7 +87,7 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
 
         {/* Address Type */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-nss-text-secondary uppercase tracking-wider flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             {isAr ? "نوع العنوان" : "Address Type"}
           </h3>
@@ -100,8 +100,8 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
                 className="peer sr-only"
                 defaultChecked={!initialData || initialData.address_type === "home"}
               />
-              <div className="flex flex-col items-center justify-center p-4 border-2 border-nss-border rounded-xl bg-white transition-all peer-checked:border-nss-primary peer-checked:bg-nss-primary/5 hover:border-nss-primary/20">
-                <Home className="h-6 w-6 mb-2 text-nss-text-secondary peer-checked:text-nss-primary" />
+              <div className="flex flex-col items-center justify-center p-4 border-2 border-border rounded-xl bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/20">
+                <Home className="h-6 w-6 mb-2 text-muted-foreground peer-checked:text-primary" />
                 <span className="text-xs font-medium">{isAr ? "منزل" : "Home"}</span>
               </div>
             </label>
@@ -113,8 +113,8 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
                 className="peer sr-only"
                 defaultChecked={initialData?.address_type === "work"}
               />
-              <div className="flex flex-col items-center justify-center p-4 border-2 border-nss-border rounded-xl bg-white transition-all peer-checked:border-nss-primary peer-checked:bg-nss-primary/5 hover:border-nss-primary/20">
-                <Briefcase className="h-6 w-6 mb-2 text-nss-text-secondary peer-checked:text-nss-primary" />
+              <div className="flex flex-col items-center justify-center p-4 border-2 border-border rounded-xl bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/20">
+                <Briefcase className="h-6 w-6 mb-2 text-muted-foreground peer-checked:text-primary" />
                 <span className="text-xs font-medium">{isAr ? "عمل" : "Work"}</span>
               </div>
             </label>
@@ -126,8 +126,8 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
                 className="peer sr-only"
                 defaultChecked={initialData?.address_type === "other"}
               />
-              <div className="flex flex-col items-center justify-center p-4 border-2 border-nss-border rounded-xl bg-white transition-all peer-checked:border-nss-primary peer-checked:bg-nss-primary/5 hover:border-nss-primary/20">
-                <Plus className="h-6 w-6 mb-2 text-nss-text-secondary peer-checked:text-nss-primary" />
+              <div className="flex flex-col items-center justify-center p-4 border-2 border-border rounded-xl bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/20">
+                <Plus className="h-6 w-6 mb-2 text-muted-foreground peer-checked:text-primary" />
                 <span className="text-xs font-medium">{isAr ? "آخر" : "Other"}</span>
               </div>
             </label>
@@ -135,11 +135,11 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
         </div>
       </div>
 
-      <hr className="border-nss-border/50" />
+      <hr className="border-border/50" />
 
       {/* Location Details */}
       <div className="space-y-6">
-        <h3 className="text-sm font-semibold text-nss-text-secondary uppercase tracking-wider flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
           <Building2 className="h-4 w-4" />
           {isAr ? "بيانات الموقع" : "Location Details"}
         </h3>
@@ -150,7 +150,7 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
             <select
               id="governorateId"
               name="governorateId"
-              className="w-full h-10 px-3 py-2 text-sm border border-nss-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-nss-primary/20 transition-all appearance-none"
+              className="w-full h-10 px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none"
               value={selectedGov}
               onChange={(e) => setSelectedGov(e.target.value)}
               required
@@ -168,7 +168,7 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
             <select
               id="areaId"
               name="areaId"
-              className="w-full h-10 px-3 py-2 text-sm border border-nss-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-nss-primary/20 transition-all appearance-none disabled:bg-nss-surface disabled:cursor-not-allowed"
+              className="w-full h-10 px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none disabled:bg-muted disabled:cursor-not-allowed"
               defaultValue={initialData?.area_id}
               disabled={!selectedGov || isLoadingAreas}
               required
@@ -231,10 +231,10 @@ export function AddressForm({ locale, governorates, initialData }: AddressFormPr
         </Label>
       </div>
 
-      <div className="flex gap-4 pt-4 border-t border-nss-border/50">
+      <div className="flex gap-4 pt-4 border-t border-border/50">
         <Button 
           type="submit" 
-          className="flex-1 bg-nss-primary hover:bg-nss-primary/90 h-11 text-base"
+          className="flex-1 bg-primary hover:bg-primary/90 h-11 text-base"
           disabled={isPending}
         >
           {isPending ? (isAr ? "جاري الحفظ..." : "Saving...") : (isAr ? "حفظ العنوان" : "Save Address")}

@@ -1,13 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserOrders } from "@nss/db/queries";
-import { 
-  IconPackage, 
-  IconChevronRight, 
-  IconCalendar, 
-  IconCreditCard, 
-  IconShoppingBag 
-} from "@tabler/icons-react";
+import { Package, ChevronRight, Calendar, CreditCard, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n";
@@ -59,22 +53,22 @@ export default async function MyOrdersPage({
   };
 
   return (
-    <div className="bg-nss-surface min-h-screen py-12">
+    <div className="bg-muted min-h-screen py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-nss-text-primary mb-2">{t.title}</h1>
-          <p className="text-nss-text-secondary">{t.subtitle}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{t.title}</h1>
+          <p className="text-muted-foreground">{t.subtitle}</p>
         </div>
 
         {orders.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-nss-border p-12 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-nss-surface rounded-full mb-6">
-              <IconShoppingBag className="w-8 h-8 text-nss-text-secondary" />
+          <div className="bg-white rounded-2xl shadow-sm border border-border p-12 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-muted rounded-full mb-6">
+              <ShoppingBag className="w-8 h-8 text-muted-foreground" />
             </div>
-            <p className="text-lg font-medium text-nss-text-primary mb-6">{t.empty}</p>
+            <p className="text-lg font-medium text-foreground mb-6">{t.empty}</p>
             <Link
               href={`/${locale}/products`}
-              className="inline-flex bg-nss-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-nss-primary/90 transition-shadow shadow-md shadow-nss-primary/20"
+              className="inline-flex bg-primary text-white px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-shadow shadow-md shadow-primary/20"
             >
               {t.startShopping}
             </Link>
@@ -85,20 +79,20 @@ export default async function MyOrdersPage({
               <Link
                 key={order.id}
                 href={`/${locale}/account/orders/${order.id}`}
-                className="block bg-white rounded-2xl shadow-sm border border-nss-border overflow-hidden hover:border-nss-primary transition-all group"
+                className="block bg-white rounded-2xl shadow-sm border border-border overflow-hidden hover:border-primary transition-all group"
               >
                 <div className="p-6">
                   <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-nss-surface rounded-xl flex items-center justify-center group-hover:bg-nss-primary/10 transition-colors">
-                        <IconPackage className="w-5 h-5 text-nss-text-secondary group-hover:text-nss-primary transition-colors" />
+                      <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <Package className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="font-bold text-nss-text-primary">
+                        <p className="font-bold text-foreground">
                           {t.orderHash}{order.order_number}
                         </p>
-                        <p className="text-xs text-nss-text-secondary flex items-center gap-1">
-                          <IconCalendar className="w-3 h-3" />
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
                           {t.placedOn} {new Date(order.created_at).toLocaleDateString(locale === "ar" ? "ar-KW" : "en-KW")}
                         </p>
                       </div>
@@ -107,18 +101,18 @@ export default async function MyOrdersPage({
                       <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${getStatusColor(order.status)}`}>
                         {(t.status as any)[order.status] || order.status}
                       </span>
-                      <IconChevronRight className={`w-5 h-5 text-nss-text-secondary group-hover:text-nss-primary transition-all ${isAr ? 'rotate-180' : ''}`} />
+                      <ChevronRight className={`w-5 h-5 text-muted-foreground group-hover:text-primary transition-all ${isAr ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-between pt-4 border-t border-nss-border">
-                    <div className="flex items-center gap-2 text-sm text-nss-text-secondary">
-                      <IconCreditCard className="w-4 h-4" />
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CreditCard className="w-4 h-4" />
                       <span className="uppercase">{order.payment_method}</span>
                     </div>
                     <div>
-                      <span className="text-xs text-nss-text-secondary mr-2">{t.total}</span>
-                      <span className="text-lg font-bold text-nss-primary">
+                      <span className="text-xs text-muted-foreground mr-2">{t.total}</span>
+                      <span className="text-lg font-bold text-primary">
                         {formatCurrency(order.total_kwd, locale)}
                       </span>
                     </div>

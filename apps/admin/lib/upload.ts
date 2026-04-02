@@ -1,10 +1,8 @@
-import { createStorageClient } from '@nss/db/client'
-import { v4 as uuidv4 } from 'uuid'
 import imageCompression from 'browser-image-compression'
 
 export interface UploadOptions {
   file: File
-  bucket: 'categories' | 'brands' | 'products' | 'banners'
+  bucket: 'categories' | 'brands' | 'products' | 'banners' | 'blogs'
   maxSize?: number
   allowedTypes?: string[]
 }
@@ -43,6 +41,11 @@ const BUCKET_CONFIGS: Record<string, BucketConfig> = {
     maxSize: 50 * 1024 * 1024, // 50MB (videos)
     allowedTypes: ['jpeg', 'jpg', 'png', 'webp', 'mp4', 'webm'],
     pathPrefix: 'banners'
+  },
+  blogs: {
+    maxSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['jpeg', 'jpg', 'png', 'webp'],
+    pathPrefix: 'images'
   }
 }
 
@@ -105,34 +108,29 @@ export async function uploadFile(options: UploadOptions): Promise<UploadResult> 
     // Validate processed file
     validateFile(processedFile, config, maxSize, allowedTypes)
     
-    // Upload to Supabase
-    const supabase = createStorageClient()
-    const fileExt = processedFile.name.split('.').pop()?.toLowerCase()
-    const fileName = `${uuidv4()}.${fileExt}`
-    const filePath = `${config.pathPrefix}/${fileName}`
+    // Upload via API route (server-side with service role key)
+    const formData = new FormData()
+    formData.append('file', processedFile)
+    formData.append('bucket', bucket)
     
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, processedFile, {
-        contentType: processedFile.type,
-        upsert: false,
-      })
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
     
-    if (error) {
-      throw new Error(`Upload failed: ${error.message}`)
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || `Upload failed: ${response.statusText}`)
     }
     
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath)
+    const result = await response.json()
     
     return {
-      url: publicUrl,
-      path: filePath,
-      size: processedFile.size,
-      contentType: processedFile.type,
-      bucket
+      url: result.url,
+      path: result.path,
+      size: result.size,
+      contentType: result.contentType,
+      bucket: result.bucket
     }
   } catch (error) {
     console.error('Upload error:', error)

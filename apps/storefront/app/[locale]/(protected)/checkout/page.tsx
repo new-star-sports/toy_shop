@@ -25,9 +25,9 @@ export default async function CheckoutPage({
   const shippingFee = shippingData?.standard_rate_kwd ?? 2;
 
   return (
-    <div className="bg-nss-surface min-h-screen py-8">
+    <div className="bg-muted min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-nss-text-primary mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-8">
           {locale === "ar" ? "إتمام الطلب" : "Checkout"}
         </h1>
         

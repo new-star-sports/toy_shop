@@ -28,9 +28,13 @@ import {
 } from "@tabler/icons-react"
 
 const datetimeOrEmpty = z
-  .string().datetime()
+  .string()
   .or(z.literal(""))
-  .transform(v => v || null)
+  .transform(v => {
+    if (!v) return null
+    const d = new Date(v)
+    return isNaN(d.getTime()) ? null : d.toISOString()
+  })
   .optional()
   .nullable()
 
@@ -74,6 +78,18 @@ const BANNER_TYPES = [
   },
 ]
 
+function toDateTimeLocal(iso: string | null | undefined): string {
+  if (!iso) return ""
+  try {
+    const d = new Date(iso)
+    if (isNaN(d.getTime())) return ""
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  } catch {
+    return ""
+  }
+}
+
 interface BannerFormProps {
   initialData?: any
   categories?: Category[]
@@ -100,9 +116,9 @@ export function BannerForm({ initialData, categories = [], brands = [] }: Banner
       video_mobile_url: initialData?.video_mobile_url ?? "",
       display_order: initialData?.display_order ?? 0,
       is_active: initialData?.is_active ?? true,
-      schedule_start: initialData?.schedule_start ?? "",
-      schedule_end: initialData?.schedule_end ?? "",
-      countdown_end: initialData?.countdown_end ?? "",
+      schedule_start: toDateTimeLocal(initialData?.schedule_start),
+      schedule_end: toDateTimeLocal(initialData?.schedule_end),
+      countdown_end: toDateTimeLocal(initialData?.countdown_end),
       slot: initialData?.slot ?? "left",
       category_id: initialData?.category_id ?? null,
       brand_id: initialData?.brand_id ?? null,
@@ -208,6 +224,93 @@ export function BannerForm({ initialData, categories = [], brands = [] }: Banner
       </div>
     </div>
   )
+
+  // Mobile-specific preview: portrait aspect ratios + smaller text
+  const renderMobilePreview = () => {
+    const MobileMedia = ({ className }: { className?: string }) => previewMediaUrl ? (
+      previewIsVideo ? (
+        <video key={previewMediaUrl} src={previewMediaUrl} className={cn("w-full h-full object-cover", className)} autoPlay loop muted playsInline />
+      ) : (
+        <img key={previewMediaUrl} src={previewMediaUrl} alt="Preview" className={cn("w-full h-full object-cover", className)} />
+      )
+    ) : (
+      <div className={cn("w-full h-full bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 flex items-center justify-center", className)}>
+        <div className="text-center text-white/60">
+          <IconPhotoOff size={18} className="mx-auto mb-1 opacity-50" stroke={1.5} />
+          <p className="text-[9px] font-medium">No media</p>
+        </div>
+      </div>
+    )
+
+    switch (bannerType) {
+      case "announcement":
+        return (
+          <div className="w-full h-9 flex items-center justify-center bg-gradient-to-r from-teal-600 to-emerald-600 px-3">
+            {watchTitle
+              ? <p className="text-white font-semibold text-[10px] text-center line-clamp-1">{watchTitle}</p>
+              : <p className="text-white/50 text-[9px] italic">Announcement text</p>
+            }
+          </div>
+        )
+      case "editorial":
+        return (
+          <div className="w-full">
+            <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
+              <div className="absolute inset-0"><MobileMedia /></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            </div>
+            <div className="p-2.5 bg-white dark:bg-gray-900">
+              {watchTitle
+                ? <h3 className="text-gray-900 dark:text-white font-bold text-[11px] leading-tight mb-1 line-clamp-2">{watchTitle}</h3>
+                : <div className="h-2.5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
+              }
+              {watchSubtitle
+                ? <p className="text-gray-500 dark:text-gray-400 text-[9px] leading-relaxed line-clamp-2">{watchSubtitle}</p>
+                : <div className="h-2 w-full bg-gray-100 dark:bg-gray-700/50 rounded" />
+              }
+            </div>
+          </div>
+        )
+      case "split_promo": {
+        const slot = watchSlot ?? "left"
+        return (
+          <div className="w-full">
+            <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
+              <div className="absolute inset-0"><MobileMedia /></div>
+              <div className="absolute top-1.5 left-1.5 z-10">
+                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500 text-white uppercase">{slot} slot</span>
+              </div>
+              {watchTitle && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2.5 pointer-events-none">
+                  <div>
+                    <h3 className="text-white font-bold text-[11px] leading-tight">{watchTitle}</h3>
+                    {watchSubtitle && <p className="text-white/70 text-[9px] mt-0.5 line-clamp-1">{watchSubtitle}</p>}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="w-full h-8 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              <span className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-widest">Other panel</span>
+            </div>
+          </div>
+        )
+      }
+      default: // hero
+        return (
+          <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
+            <div className="absolute inset-0"><MobileMedia /></div>
+            {(watchTitle || watchSubtitle) && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex items-end pointer-events-none">
+                <div className="p-2.5 space-y-0.5">
+                  {watchTitle && <h3 className="text-white font-black text-xs leading-tight drop-shadow-lg">{watchTitle}</h3>}
+                  {watchSubtitle && <p className="text-white/80 text-[10px] font-medium drop-shadow line-clamp-2">{watchSubtitle}</p>}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+    }
+  }
 
   const renderPreview = () => {
     switch (bannerType) {
@@ -389,9 +492,77 @@ export function BannerForm({ initialData, categories = [], brands = [] }: Banner
         {previewMode === "desktop" || isAnnouncement ? (
           <div className="overflow-hidden">{renderPreview()}</div>
         ) : (
-          <div className="py-6 flex justify-center bg-nss-border/10">
-            <div className="bg-gray-900 rounded-[40px] p-2.5 shadow-2xl ring-4 ring-gray-800/60 w-[280px]">
-              <div className="rounded-[30px] overflow-hidden">{renderPreview()}</div>
+          <div className="py-8 flex justify-center bg-gradient-to-b from-nss-border/20 to-nss-border/5">
+            {/* Phone shell */}
+            <div
+              className="relative w-[248px] bg-gray-950 rounded-[44px] overflow-visible flex-shrink-0"
+              style={{ boxShadow: "0 0 0 2px #374151, 0 0 0 4px #111827, 0 25px 50px rgba(0,0,0,0.5)" }}
+            >
+              {/* Volume / side buttons */}
+              <div className="absolute -left-[3px] top-[70px] w-[3px] h-[26px] bg-gray-700 rounded-l-full" />
+              <div className="absolute -left-[3px] top-[106px] w-[3px] h-[42px] bg-gray-700 rounded-l-full" />
+              <div className="absolute -left-[3px] top-[158px] w-[3px] h-[42px] bg-gray-700 rounded-l-full" />
+              <div className="absolute -right-[3px] top-[110px] w-[3px] h-[58px] bg-gray-700 rounded-r-full" />
+
+              {/* Screen */}
+              <div className="rounded-[44px] overflow-hidden bg-white dark:bg-gray-900">
+                {/* Status bar */}
+                <div className="bg-gray-950 flex items-center justify-between px-6 pt-3 pb-1.5">
+                  <span className="text-white text-[10px] font-bold tracking-tight">9:41</span>
+                  <div className="w-[80px] h-[16px] bg-gray-900 rounded-full" />
+                  <div className="flex items-end gap-[3px] h-[10px]">
+                    {[3, 5, 7, 9].map(h => (
+                      <div key={h} style={{ height: `${h}px` }} className="w-[2px] bg-white rounded-full" />
+                    ))}
+                    <div className="w-[14px] h-[7px] border border-white/70 rounded-[2px] ml-0.5 flex items-center pl-[2px]">
+                      <div className="w-[6px] h-[4px] bg-white/70 rounded-[1px]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fake storefront navbar */}
+                <div className="bg-white dark:bg-gray-900 px-3 py-2 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded-sm bg-emerald-500 flex-shrink-0" />
+                    <div className="h-[7px] w-10 bg-gray-200 dark:bg-gray-700 rounded" />
+                  </div>
+                  <div className="h-[18px] flex-1 mx-2 bg-gray-100 dark:bg-gray-800 rounded-full" />
+                  <div className="w-[18px] h-[18px] rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+                </div>
+
+                {/* Banner content */}
+                {renderMobilePreview()}
+
+                {/* Skeleton product grid */}
+                <div className="bg-white dark:bg-gray-900 p-2 pt-2.5">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800">
+                        <div className="aspect-square bg-gray-100 dark:bg-gray-750" />
+                        <div className="p-1 space-y-1">
+                          <div className="h-[6px] w-full bg-gray-200 dark:bg-gray-700 rounded" />
+                          <div className="h-[5px] w-2/3 bg-gray-100 dark:bg-gray-600 rounded" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom nav */}
+                <div className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 px-4 py-2.5 flex justify-around">
+                  {[0, 1, 2, 3, 4].map(i => (
+                    <div key={i} className="flex flex-col items-center gap-1">
+                      <div className={cn("w-4 h-4 rounded bg-gray-200 dark:bg-gray-700", i === 0 && "bg-emerald-200 dark:bg-emerald-900")} />
+                      <div className="w-5 h-[4px] bg-gray-100 dark:bg-gray-700/50 rounded" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Home indicator */}
+                <div className="bg-white dark:bg-gray-900 flex justify-center pb-2 pt-1">
+                  <div className="w-[60px] h-[4px] bg-gray-900 dark:bg-gray-100 rounded-full opacity-20" />
+                </div>
+              </div>
             </div>
           </div>
         )}

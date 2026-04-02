@@ -742,7 +742,7 @@ export function ProductForm({ initialData, categories = [], brands = [] }: Produ
                         <CircleDollarSign size={20} className="text-primary" />
                         <h4 className="text-xs font-black uppercase tracking-widest">Promotion</h4>
                     </div>
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 mb-6 shadow-inner" onClick={() => form.setValue("include_in_flash_sale", !form.watch("include_in_flash_sale"))}>
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 mb-6 shadow-inner">
                         <div>
                             <p className="text-xs font-black uppercase">Flash Sale</p>
                             <p className="text-[10px] text-muted-foreground font-medium">Seasonal opt-in</p>

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ProductGallery } from "./product-gallery";
 import { VariantSelector } from "./variant-selector";
 import { Breadcrumbs } from "./breadcrumbs";
-import { Button } from "@/components/ui";
-import { Badge } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Share2, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import type { ProductWithRelations } from "@nss/db/queries";
@@ -93,17 +93,17 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
         <div className="space-y-8">
           <div className="space-y-4">
             {product.brand && (
-              <Link href={`/${locale}/brand/${product.brand.slug}`} className="text-sm font-semibold text-nss-primary uppercase tracking-widest hover:underline">
+              <Link href={`/${locale}/brand/${product.brand.slug}`} className="text-sm font-semibold text-primary uppercase tracking-widest hover:underline">
                 {isAr ? product.brand.name_ar : product.brand.name_en}
               </Link>
             )}
             <div className="flex flex-wrap gap-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-nss-text-primary leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                 {isAr ? product.name_ar : product.name_en}
               </h1>
               {hasFlashSale && (
-                <Badge className="bg-nss-danger hover:bg-nss-danger text-white border-none animate-pulse">
-                  ⚡ {isAr ? "عرض بطل" : "FLASH SALE"}
+                <Badge className="bg-red-500 hover:bg-red-500 text-white border-none">
+                  {isAr ? "عرض بطل" : "FLASH SALE"}
                 </Badge>
               )}
             </div>
@@ -115,31 +115,31 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                   </svg>
                 ))}
-                <span className="text-sm text-nss-text-primary font-medium ms-1">
+                <span className="text-sm text-foreground font-medium ms-1">
                   {product.avg_rating || "0.0"}
                 </span>
-                <span className="text-xs text-nss-text-secondary ms-1">
+                <span className="text-xs text-muted-foreground ms-1">
                   ({product.review_count} {isAr ? "تقييم" : "reviews"})
                 </span>
               </div>
-              <div className="h-4 w-px bg-nss-border" />
-              <div className="text-xs font-medium text-nss-text-secondary uppercase tracking-wider">
+              <div className="h-4 w-px bg-border" />
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 SKU: {selectedVariant?.sku || product.sku || "N/A"}
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 bg-nss-surface p-6 rounded-3xl border border-nss-border/30">
+          <div className="space-y-4 bg-muted/30 p-6 rounded-2xl border border-border">
             <div className="flex items-baseline gap-3">
-              <span className={`text-3xl font-bold ${hasFlashSale ? 'text-nss-danger' : 'text-nss-primary'}`}>
+              <span className={`text-3xl font-bold ${hasFlashSale ? 'text-red-600' : 'text-primary'}`}>
                 {finalPrice.toFixed(3)} {isAr ? "د.ك" : "KWD"}
               </span>
               {finalComparePrice && finalComparePrice > finalPrice && (
                 <>
-                  <span className="text-lg text-nss-text-secondary line-through">
+                  <span className="text-lg text-muted-foreground line-through">
                     {finalComparePrice.toFixed(3)}
                   </span>
-                  <Badge className="bg-nss-accent hover:bg-nss-accent text-white border-none">
+                  <Badge className="bg-primary hover:bg-primary text-white border-none">
                     -{discount}%
                   </Badge>
                 </>
@@ -172,7 +172,7 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
-              className="flex-1 h-14 rounded-2xl text-lg font-bold gap-3 shadow-lg shadow-nss-primary/20 bg-nss-primary hover:bg-nss-primary/90 transition-all active:scale-95"
+              className="flex-1 h-12 rounded-full font-bold gap-2"
               disabled={isOutOfStock}
               onClick={handleAddToCart}
             >
@@ -183,14 +183,14 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="h-14 w-14 rounded-2xl border-2 border-nss-border/50 hover:text-red-500 hover:border-red-500/30 transition-all active:scale-95"
+                className="h-11 w-11 rounded-full border border-border hover:text-red-500 hover:border-red-500/30 transition-all"
               >
                 <Heart className="h-6 w-6" />
               </Button>
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="h-14 w-14 rounded-2xl border-2 border-nss-border/50 hover:text-nss-primary hover:border-nss-primary/30 transition-all active:scale-95"
+                className="h-11 w-11 rounded-full border border-border hover:text-primary hover:border-primary/30 transition-all"
               >
                 <Share2 className="h-6 w-6" />
               </Button>
@@ -198,22 +198,22 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
           </div>
 
           {/* Trust Points */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6 border-y border-nss-border/30">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6 border-y border-border">
             <div className="flex items-center gap-3">
-              <ShieldCheck className="h-5 w-5 text-nss-primary flex-shrink-0" />
-              <span className="text-xs font-medium text-nss-text-secondary leading-tight">
+              <ShieldCheck className="h-5 w-5 text-primary flex-shrink-0" />
+              <span className="text-xs font-medium text-muted-foreground leading-tight">
                 {isAr ? "منتج أصلي 100%" : "100% Genuine Product"}
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <Truck className="h-5 w-5 text-nss-primary flex-shrink-0" />
-              <span className="text-xs font-medium text-nss-text-secondary leading-tight">
+              <Truck className="h-5 w-5 text-primary flex-shrink-0" />
+              <span className="text-xs font-medium text-muted-foreground leading-tight">
                 {isAr ? "توصيل سريع" : "Fast Delivery"}
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <RotateCcw className="h-5 w-5 text-nss-primary flex-shrink-0" />
-              <span className="text-xs font-medium text-nss-text-secondary leading-tight">
+              <RotateCcw className="h-5 w-5 text-primary flex-shrink-0" />
+              <span className="text-xs font-medium text-muted-foreground leading-tight">
                 {isAr ? "إرجاع سهل خلال 14 يوم" : "Easy 14-day Returns"}
               </span>
             </div>
@@ -221,10 +221,10 @@ export function ProductDetail({ product, locale, flashSaleActive = false }: Prod
 
           {/* Description */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-nss-text-primary">
+            <h3 className="text-lg font-bold text-foreground">
               {isAr ? "الوصف" : "Description"}
             </h3>
-            <div className="prose prose-sm max-w-none text-nss-text-secondary leading-relaxed">
+            <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed">
               {isAr ? product.description_ar : product.description_en}
             </div>
           </div>

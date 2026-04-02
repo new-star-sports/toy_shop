@@ -25,10 +25,10 @@ export default async function ProfilePage({
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-nss-primary tracking-tight">
+        <h1 className="text-3xl font-bold text-primary tracking-tight">
           {isAr ? "حسابي" : "My Account"}
         </h1>
-        <p className="mt-2 text-sm text-nss-text-secondary">
+        <p className="mt-2 text-sm text-muted-foreground">
           {isAr
             ? "إدارة معلومات حسابك وطلباتك"
             : "Manage your account information and orders"}
@@ -41,25 +41,25 @@ export default async function ProfilePage({
           <nav className="space-y-1">
             <a
               href={`/${locale}/account/profile`}
-              className="block px-4 py-2 text-sm font-medium text-nss-primary bg-nss-surface rounded-lg"
+              className="block px-4 py-2 text-sm font-medium text-primary bg-muted rounded-lg"
             >
               {isAr ? "الملف الشخصي" : "Profile Settings"}
             </a>
             <a
               href={`/${locale}/account/orders`}
-              className="block px-4 py-2 text-sm font-medium text-nss-text-secondary hover:text-nss-primary hover:bg-nss-surface rounded-lg transition-colors"
+              className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
             >
               {isAr ? "طلباتي" : "My Orders"}
             </a>
             <a
               href={`/${locale}/account/addresses`}
-              className="block px-4 py-2 text-sm font-medium text-nss-text-secondary hover:text-nss-primary hover:bg-nss-surface rounded-lg transition-colors"
+              className="block px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
             >
               {isAr ? "دفتر العناوين" : "Address Book"}
             </a>
           </nav>
 
-          <div className="pt-4 border-t border-nss-border">
+          <div className="pt-4 border-t border-border">
             <form action={logout.bind(null, locale)}>
               <Button
                 variant="destructive"
@@ -82,25 +82,25 @@ export default async function ProfilePage({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 border-b border-nss-border/50 pb-4">
-                <span className="text-sm font-medium text-nss-text-secondary">
+              <div className="grid grid-cols-2 gap-4 border-b border-border/50 pb-4">
+                <span className="text-sm font-medium text-muted-foreground">
                   {isAr ? "الاسم الكامل" : "Full Name"}
                 </span>
-                <span className="text-sm text-nss-text-primary">
+                <span className="text-sm text-foreground">
                   {user.user_metadata?.full_name || "—"}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-4 border-b border-nss-border/50 pb-4">
-                <span className="text-sm font-medium text-nss-text-secondary">
+              <div className="grid grid-cols-2 gap-4 border-b border-border/50 pb-4">
+                <span className="text-sm font-medium text-muted-foreground">
                   {isAr ? "البريد الإلكتروني" : "Email"}
                 </span>
-                <span className="text-sm text-nss-text-primary">{user.email}</span>
+                <span className="text-sm text-foreground">{user.email}</span>
               </div>
               <div className="grid grid-cols-2 gap-4 pb-2">
-                <span className="text-sm font-medium text-nss-text-secondary">
+                <span className="text-sm font-medium text-muted-foreground">
                   {isAr ? "رقم الهاتف" : "Phone Number"}
                 </span>
-                <span className="text-sm text-nss-text-primary">
+                <span className="text-sm text-foreground">
                   {user.user_metadata?.phone || "—"}
                 </span>
               </div>
